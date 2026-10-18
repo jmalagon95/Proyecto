@@ -40,6 +40,7 @@ namespace KamiNoChallenge {
         public int damageMax;
         public int bonusStatSlots;
         public int passiveSlots;
+        public List<string> allowedClasses = new List<string>();
         public bool isNew = true;
         public string equippedBy;
     }
