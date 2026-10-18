@@ -21,6 +21,9 @@
       10
     ],
     "totalEnemies": 45,
-    "noRewardsOnFailure": true
+    "noRewardsOnFailure": true,
+    "enemyLevel": 1,
+    "baseXpPerKill": 2,
+    "xpOnlyOnSuccess": true
   }
 }
