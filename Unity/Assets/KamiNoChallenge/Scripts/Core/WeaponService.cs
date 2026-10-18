@@ -55,7 +55,20 @@ namespace KamiNoChallenge {
                 .Replace(" ","").Replace("-","").Replace("_","");
         }
 
+        public static void EnsureCompatibility(WeaponInstance weapon){
+            if(weapon==null) return;
+            if(weapon.allowedClasses!=null && weapon.allowedClasses.Count>0) return;
+            foreach(var f in Families){
+                if(f.name==weapon.family && AllowedClassesByFamily.TryGetValue(f.id,out var allowed)){
+                    weapon.allowedClasses=new List<string>(allowed);
+                    return;
+                }
+            }
+            if(weapon.allowedClasses==null) weapon.allowedClasses=new List<string>();
+        }
+
         public static bool CanClassUse(WeaponInstance weapon,string classNameOrId){
+            EnsureCompatibility(weapon);
             if(weapon==null || weapon.allowedClasses==null || weapon.allowedClasses.Count==0) return false;
             string target=NormalizeClass(classNameOrId);
             foreach(var c in weapon.allowedClasses){
