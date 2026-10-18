@@ -20,7 +20,7 @@ export async function startGame(app) {
     world: () => renderWorld({ app,state,save,onBack:()=>routes.cover(),onComplete:()=>routes.race() }),
     race: () => renderRace({ app,data,state,save,onBack:()=>routes.world(),onNext:()=>routes.class() }),
     class: () => renderClass({ app,data,state,save,onBack:()=>routes.race(),onConfirm:(cls)=>{
-      const race = raceById(data,state.selectedRace); const hero=createHero(race,cls,state.heroName); state.characters=[hero];state.activeCharacterId=hero.id;save();routes.reveal(hero);
+      const race = raceById(data,state.selectedRace); const hero=createHero(race,cls,state.heroName); state.characters=[hero];state.activeCharacterId=hero.id;if(state.inhabitantsRemaining!=null)state.inhabitantsRemaining=Math.max(0,state.inhabitantsRemaining-1);save();routes.reveal(hero);
     }}),
     reveal: (hero=activeHero()) => renderReveal({ app,race:raceById(data,hero.raceId),hero,onEnter:()=>routes.lobby() }),
     lobby: () => renderLobby({ app,state,activeHero:activeHero(),onOpen:(type)=>routes.building(type) }),
