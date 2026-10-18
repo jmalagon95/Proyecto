@@ -75,6 +75,8 @@ export function applyMissionResult(state,result){
     state.resources.gold=(state.resources.gold||0)+result.rewards.gold;
     state.resources.wood=(state.resources.wood||0)+result.rewards.wood;
     state.resources.stone=(state.resources.stone||0)+result.rewards.stone;
+    state.inventory=state.inventory||[];
+    if(Array.isArray(result.weaponDrops))state.inventory.push(...result.weaponDrops);
     state.missionProgress=state.missionProgress||{};
     state.missionProgress.survival1Completions=(state.missionProgress.survival1Completions||0)+1;
   }
