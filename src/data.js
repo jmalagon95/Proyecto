@@ -1,9 +1,10 @@
 export async function loadGameData() {
-  const [races, classes] = await Promise.all([
+  const [races, classes, missions] = await Promise.all([
     fetch('/data/races.json').then(r => r.json()),
     fetch('/data/classes.json').then(r => r.json()),
+    fetch('/data/missions.json').then(r => r.json()),
   ]);
-  return { races, classes };
+  return { races, classes, missions };
 }
 
 export function raceById(data, id) {
