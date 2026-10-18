@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "philosophy": "La progresión de nivel es deliberadamente lenta. Los enemigos muy inferiores dejan de aportar experiencia rápidamente.",
+  "levelCurve": {
+    "formula": "xpToNext = round(150 * level^1.585)",
+    "reference": {
+      "1": 150,
+      "2": 450,
+      "3": 856,
+      "4": 1354,
+      "5": 1926,
+      "10": 5780
+    }
+  },
+  "enemyLevelScaling": {
+    "sameLevel": 1,
+    "oneLevelAboveEnemy": 0.5,
+    "twoOrMoreLevelsAboveEnemy": 0,
+    "higherLevelEnemyBonusPerLevel": 0.25,
+    "maxHigherLevelBonus": 2
+  },
+  "survival1": {
+    "enemyLevel": 1,
+    "baseXpPerKill": 2,
+    "xpOnlyOnMissionSuccess": true
+  }
+}
