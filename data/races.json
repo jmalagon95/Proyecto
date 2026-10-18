@@ -1,50 +1,68 @@
 [
   {
-    "id":"kairakh","name":"Kairakh","tag":"Sangre y energía","image":"/assets/races/kairakh.png",
-    "description":"Atléticos y feroces, canalizan su instinto a través de venas energéticas visibles, colmillos y un único cuerno frontal ancestral.",
-    "history":"Linajes nómadas y orgullosos, marcados por una cultura de supervivencia, voluntad y dominio de la energía corporal.",
-    "origin":"Rhaz’Kel · Reino de Varkh","emblem":"✦"
+    "id": "kairakh",
+    "name": "Kairakh",
+    "tag": "Sangre y energía",
+    "image": "/assets/races/kairakh.webp",
+    "emblem": "✦",
+    "description": "Guerreros de sangre y energía. Feroces, ágiles y marcados por venas de poder visibles.",
+    "history": "Linajes orgullosos forjados en regiones montañosas y salvajes. Su cultura premia la supervivencia, la voluntad y el dominio del propio cuerpo.",
+    "origin": "Rhaz’Kel · Reino de Varkh",
+    "visualRules": "Humanoide atlético de estética anime/manga oscura. EXACTAMENTE un cuerno central frontal, nunca dos. Orejas largas y puntiagudas, colmillos, uñas o garras y venas energéticas visibles bajo la piel. El cuerno, las venas y la anatomía deben leerse como rasgos biológicos de la raza, no como accesorios."
   },
   {
-    "id":"humanos","name":"Humanos","tag":"Voluntad y equilibrio","image":"/assets/races/humanos.png",
-    "description":"Adaptables y ambiciosos, construyen su destino mediante disciplina, ingenio y una enorme variedad cultural.",
-    "history":"No existe una única cultura humana: reinos medievales, potencias industriales, órdenes arcanas, clanes y ciudades mercantes compiten y cooperan.",
-    "origin":"Hoflip · Reino de Kergelian","emblem":"✠"
+    "id": "elfos",
+    "name": "Elfos",
+    "tag": "Gracia ancestral",
+    "image": "/assets/races/elfos.webp",
+    "emblem": "❋",
+    "description": "Herederos de la gracia ancestral. Viven en armonía con la naturaleza y la magia antigua.",
+    "history": "Civilizaciones longevas de bosques, ciudades lunares y santuarios antiguos, donde la precisión, la memoria y la belleza forman parte de la vida cotidiana.",
+    "origin": "Sylvaris · Reino de Elenor",
+    "visualRules": "Humanoide elegante de proporciones naturales, orejas claramente puntiagudas y facciones refinadas. Anime/manga oscuro, líneas limpias, sin convertirlo en un humano genérico ni añadir rasgos de otras razas."
   },
   {
-    "id":"elfos","name":"Elfos","tag":"Armonía natural","image":"/assets/races/elfos.png",
-    "description":"Refinados y longevos, combinan sensibilidad espiritual, precisión técnica y una fuerte conexión con tradiciones antiguas.",
-    "history":"Sus civilizaciones pueden ser naturales, lunares, cristalinas, nobles o espirituales. No están limitados al arco ni a la magia.",
-    "origin":"Sylvaris · Reino de Elenor","emblem":"❋"
+    "id": "kijins",
+    "name": "Kijins",
+    "tag": "Honor y poder",
+    "image": "/assets/races/kijins.webp",
+    "emblem": "☯",
+    "description": "Onís nobles de dos cuernos y piel pálida, con marcas lacrimales bajo los ojos. Honor, poder y disciplina.",
+    "history": "Clanes guerreros y cortes ceremoniales donde disciplina y fuerza conviven con una estética refinada de inspiración oriental.",
+    "origin": "Kozan · Reino de Hokuren",
+    "visualRules": "Humanoide Oni elegante y noble, piel generalmente pálida, DOS cuernos visibles y bien separados. Líneas oscuras o rojizas que descienden desde los ojos como lágrimas rituales. No debe parecer un Kairakh: nunca un único cuerno central. Evitar aspecto de ogro bruto."
   },
   {
-    "id":"kijins","name":"Kijins","tag":"Poder interior","image":"/assets/races/kijins.png",
-    "description":"Humanoides elegantes de presencia demoníaca y noble. Uno o dos cuernos, marcas rituales opcionales y gran variedad estética.",
-    "history":"Clanes guerreros y cortes refinadas donde la fuerza, el honor, la disciplina y la expresión del poder interior ocupan un lugar central.",
-    "origin":"Kozan · Reino de Hokuren","emblem":"☯"
+    "id": "vampiros",
+    "name": "Vampiros",
+    "tag": "Elegancia y dominio",
+    "image": "/assets/races/vampiros.webp",
+    "emblem": "◆",
+    "description": "Señores de la noche, refinados y predadores. Ambición, dominio y una fisiología sobrenatural.",
+    "history": "Casas, cortes y clanes nocturnos compiten por influencia. La sangre es parte de su fisiología y cultura, aunque la hemomancia requiere técnicas concretas.",
+    "origin": "Nocthera · Reino de Valdrenn",
+    "visualRules": "Humanoide refinado, belleza inquietante, piel clara o fría, colmillos visibles y ojos predatorios sobrenaturales. Estética gótica anime/manga oscura; elegante, no monstruoso salvo que el individuo lo requiera."
   },
   {
-    "id":"bestias","name":"Hombres Bestia","tag":"Instinto y libertad","image":"/assets/races/bestias.png",
-    "description":"Humanoides completamente bestiales de linajes lobo, zorro, león, tigre, toro o pantera. Rostro animal, pelaje, garras y silueta propia.",
-    "history":"Tribus, clanes y manadas con culturas muy distintas, unidas por una relación intensa con territorio, instinto, familia y caza.",
-    "origin":"Garoum · Territorio de Vaelra","emblem":"♞"
+    "id": "insectoides",
+    "name": "Insectoides",
+    "tag": "Evolución y orden",
+    "image": "/assets/races/insectoides.webp",
+    "emblem": "🜲",
+    "description": "Hijos de la colmena. Precisión biológica, adaptación extrema y culturas de metamorfosis.",
+    "history": "Mantis, escarabajos, polillas, avispas, hormigas, libélulas y especies insectoides originales dan lugar a sociedades de enorme diversidad.",
+    "origin": "Thryx · Colmena de Irix",
+    "visualRules": "Humanoide insecto anime/manga oscuro con quitina integrada, antenas y anatomía funcional. Puede inspirarse en mantis, escarabajo, polilla, avispa, hormiga o libélula. No usar arañas ni rasgos arácnidos."
   },
   {
-    "id":"vampiros","name":"Vampiros","tag":"Elegancia y dominio","image":"/assets/races/vampiros.png",
-    "description":"Humanoides refinados con colmillos visibles, mirada sobrenatural y culturas organizadas en casas, cortes, clanes y órdenes.",
-    "history":"La sangre es parte de su cultura y fisiología, pero la hemomancia no es automática: depende de skills, clases o pasivas concretas.",
-    "origin":"Nocthera · Reino de Valdrenn","emblem":"◆"
-  },
-  {
-    "id":"insectoides","name":"Insectoides","tag":"Evolución y orden","image":"/assets/races/insectoides.png",
-    "description":"Humanoides insecto con quitina visible, antenas y adaptaciones biológicas. Mantis, escarabajo, polilla, avispa, hormiga, libélula y especies originales.",
-    "history":"Colmenas, castas y metamorfosis definen muchas de sus sociedades, aunque cada individuo puede desviarse radicalmente de su función de origen.",
-    "origin":"Thryx · Colmena de Irix","emblem":"🜲"
-  },
-  {
-    "id":"huecos","name":"Huecos","tag":"Vacío y trascendencia","image":"/assets/races/huecos.png",
-    "description":"Exopiel blanca, líneas anatómicas negras, máscara orgánica parcial y un agujero físico real que atraviesa el torso de delante a atrás.",
-    "history":"Entidades que materializan cuerpos a partir de otras formas de vida. Su morfología puede variar enormemente sin perder sus rasgos canónicos.",
-    "origin":"Abyr · Ruinas del Eco","emblem":"◉"
+    "id": "reptro",
+    "name": "Reptro",
+    "tag": "Sol y electricidad",
+    "image": "/assets/races/reptro.webp",
+    "emblem": "☀",
+    "description": "Humanoides escamados del sol árido. Cuerpos ágiles, rayos vivos y mirada reptiliana.",
+    "history": "Habitan mesetas, cañones y cordilleras secas sometidas a un sol intenso, lejos de grandes masas de agua. Su fisiología canaliza calor y carga eléctrica.",
+    "origin": "Mesetas de Khar-Sol",
+    "visualRules": "Humanoide ágil cubierto COMPLETAMENTE de escamas verde oscuro o verde grisáceo. Boca serpentiforme/reptiliana, ojos de camaleón o reptil y SIN orejas externas: solo un orificio auditivo en cada lado. Garras retráctiles como las de un felino. NO tiene pelo físico: el cabello está formado ÚNICAMENTE por rayos eléctricos que nacen de la cabeza. NO tiene cola física: la cola está formada ÚNICAMENTE por electricidad. Mantener la cantidad de rayos moderada y legible, sin saturar la silueta."
   }
 ]
