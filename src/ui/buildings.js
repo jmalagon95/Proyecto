@@ -3,6 +3,7 @@ import { createHero } from './reveal.js';
 import { EQUIPMENT_SLOTS, normalizeEquipment } from '../systems/equipment.js';
 import { ascensionRequirement, levelCap } from '../systems/progression.js';
 import { simulateSurvivalMission, applyMissionResult } from '../systems/mission-simulator.js';
+import { rollSurvival1WeaponDrops, applyWeaponDrops } from '../systems/loot.js';
 
 const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
 const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
@@ -233,9 +234,11 @@ function renderMissions(body,state,data,save,onBack){
 
   const startBtn=body.querySelector('#startSurvival');
   if(!startBtn||!mission)return;
-  startBtn.onclick=()=>{
+  startBtn.onclick=async()=>{
     startBtn.disabled=true;
     const result=simulateSurvivalMission(team,mission);
+    const weaponDrops=result.completed?await rollSurvival1WeaponDrops(result.enemiesDefeated):[];
+    result.weaponDrops=weaponDrops;
     const consoleEl=body.querySelector('#battleConsole');
     const log=body.querySelector('#battleLog');
     const clock=body.querySelector('#battleClock');
@@ -244,7 +247,9 @@ function renderMissions(body,state,data,save,onBack){
     let i=0;
     const showNext=()=>{
       if(i>=result.events.length){
-        applyMissionResult(state,result);save();
+        applyMissionResult(state,result);
+        applyWeaponDrops(state,result.weaponDrops||[],result.completed);
+        save();
         results.classList.remove('hidden');
         results.innerHTML=`
           <div class="mission-result-head ${result.completed?'success':'failure'}">
@@ -259,6 +264,8 @@ function renderMissions(body,state,data,save,onBack){
               <div><b>Madera</b><span>+${result.rewards.wood}</span></div>
               <div><b>Piedra</b><span>+${result.rewards.stone}</span></div>
               ${result.rewards.bonusGold?'<small>Incluye +'+result.rewards.bonusGold+' de oro procedente del loot.</small>':''}
+              <div class="weapon-drop-summary"><b>Armas encontradas</b><span>${(result.weaponDrops||[]).length}</span></div>
+              ${(result.weaponDrops||[]).map(w=>'<div class="weapon-drop-line"><b>'+escapeHtml(w.name)+'</b><span>'+'★'.repeat(w.rarity)+' · '+w.damage.min+'–'+w.damage.max+' daño · +'+(w.enhancement||0)+'</span></div>').join('')}
             `:'<p class="no-rewards">Sin recompensas por derrota.</p>'}
           </div>
           <div class="damage-report">
