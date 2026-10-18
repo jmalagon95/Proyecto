@@ -11,3 +11,21 @@
 .ascension-material small,.ascension-material strong{display:block}.ascension-material small{color:#c5a35f;letter-spacing:.14em;font-size:8px}.ascension-material strong{font:26px Georgia,serif;color:#ffe1a2;margin:5px 0}.ascension-material p{color:#c7cfda;line-height:1.5}
 .premium-blue-button.wide{width:100%;margin-top:10px}
 @media(max-width:700px){.upgrade-character-card{grid-template-columns:1fr}.upgrade-character-art{min-height:360px}}
+
+.battle-console{margin-top:12px;border:1px solid #7d6540;background:#04080f}
+.battle-console>header{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #7d6540;background:#0b1728;color:#f1d9a7}
+.battle-log{max-height:360px;overflow:auto;padding:10px 12px;font-family:ui-monospace,Consolas,monospace}
+.battle-line{margin:0 0 8px;color:#c8d1df;line-height:1.45;font-size:12px}
+.battle-line.wave{color:#f0ca72}.battle-line.death{color:#ff7b78}.battle-line.success{color:#78d68a}.battle-line.failure{color:#ff7b78}.battle-line.support{color:#7ed0ff}
+.mission-results{margin-top:12px;border:1px solid #8e7445;background:#07101d;padding:12px}
+.mission-result-head{text-align:center;padding:12px;border-bottom:1px solid #6f5a36}
+.mission-result-head h2{font:32px Georgia,serif;margin:4px 0}.mission-result-head.success h2{color:#8add94}.mission-result-head.failure h2{color:#ff7975}
+.mission-rewards{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mission-rewards h3,.damage-report h3{grid-column:1/-1;font:22px Georgia,serif;color:#e7c477;margin:4px 0}
+.mission-rewards>div{display:flex;justify-content:space-between;padding:9px;border:1px solid #ffffff12;background:#ffffff05}
+.mission-rewards>small,.no-rewards{grid-column:1/-1;color:#aeb8c8}
+.no-rewards{padding:10px;border:1px solid #6f3434;background:#2a1012}
+.damage-report{margin-top:12px}
+.damage-row{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff0d}
+.damage-row div b,.damage-row div small{display:block}.damage-row div small{color:#8f9db1;font-size:9px}.damage-row>span{color:#e8d7b5}.damage-row>i{grid-column:1/2;height:7px;background:#ffffff0d}.damage-row>i u{display:block;height:100%;background:linear-gradient(90deg,#5daeff,#e4bd68);text-decoration:none}.damage-row>em{font-style:normal;color:#d8bd83;font-size:11px}
+.mission-summary{margin-top:10px;padding:9px;border-left:2px solid #d4ae62;background:#ffffff05}
