@@ -4,3 +4,5 @@ url('/assets/cover/cover-premium.webp') center 56%/cover no-repeat;filter:satura
 .lobby-resources small{display:none}
 .lobby-hero-strip{appearance:none;width:auto;text-align:left;color:inherit;cursor:pointer}
 @media(max-width:600px){.lobby-resources small{display:none}.lobby-resources>div{gap:4px}}
+
+.lobby-landmark small{display:block;margin-top:3px;color:#aeb9c9;font:10px system-ui,sans-serif}
