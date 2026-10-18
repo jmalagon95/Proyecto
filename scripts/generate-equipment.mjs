@@ -4,57 +4,14 @@ import path from 'node:path';
 const root=process.cwd();
 const source=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_families_star1.json'),'utf8'));
 const progression=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_progression.json'),'utf8'));
-const classes=JSON.parse(fs.readFileSync(path.join(root,'data/classes.json'),'utf8'));
+const compatibility=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_class_compatibility.json'),'utf8'));
 const outDir=path.join(root,'data/generated/equipment');
 fs.mkdirSync(outDir,{recursive:true});
 
 const prefixes=['Oxidado','Mellado','Astillado','Gastado','Remendado','Rudimentario','Viejo','Mal Forjado','Deslucido','Improvisado'];
 
-const familyAliases={
-  sword_1h:['espada larga','espadas cortas','espadas gemelas','espadas curvas gemelas','espada y escudo','espada élfica y escudo','espada larga y escudo'],
-  greatsword_2h:['mandoble','espada bastarda'],
-  rapier_1h:['estoque','sable'],
-  dagger_1h:['dagas','dagas curvas','dagas gemelas'],
-  axe_1h:['hacha'],
-  throwing_axe:['hachas arrojadizas'],
-  mace_1h:['maza','maza ritual','maza y escudo'],
-  heavy_club_2h:['kanabō a dos manos','maza pesada'],
-  hammer_2h:['gran martillo'],
-  spear_1h:['lanza de una mano','lanza física','lanza viviente','lanza ritual','lanza y escudo'],
-  spear_2h:['lanza larga a dos manos'],
-  halberd_2h:['alabarda'],
-  javelin:['jabalinas','jabalinas gigantes'],
-  scythe_2h:['guadaña larga','guadañas gemelas'],
-  bow_2h:['arco','arco corto','arco espiritual','arco largo viviente'],
-  crossbow_2h:['ballesta','ballesta ligera','arma de proyectiles compatible'],
-  staff_2h:['bastón','báculo','bastón ritual','bastón conductor','bastón de invocación','bastón espiritual','bastón druídico','bastón de madera viva','bastón de resonancia','bastón de colmena'],
-  wand_1h:['varita','varita espiritual'],
-  tome_1h:['tomo','tomo de apoyo','tomo de pactos','tomo de sangre','tomo de sellos'],
-  scepter_1h:['cetro'],
-  catalyst_1h:['catalizador','catalizador hemático','catalizador solar','catalizadores de descarga','catalizadores de energía','catalizador de feromonas','tótem catalizador','tótem orgánico'],
-  gauntlets_pair:['guanteletes','armas de puño','guanteletes de canalización','guanteletes malditos','guanteletes rituales','guanteletes hemománticos','guanteletes ligeros','guanteletes conductores'],
-  chakrams_pair:['chakrams'],
-  cannon_2h:['cañones de antebrazo','cañón biológico de antebrazo','cañón de quitina'],
-  fan_1h:['abanico ritual'],
-  spike_launcher:['lanzador de espinas','lanzadores orgánicos'],
-  arm_blades_pair:['cuchillas de antebrazo'],
-  bio_weapon_pair:['armas biológicas mutables']
-};
-
-function normalizeText(v=''){
-  return v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
-}
-const classEntries=Object.entries(classes).flatMap(([group,list])=>
-  list.map(cls=>({group,name:cls.name,weapons:cls.weapons||[]}))
-);
 function allowedClassesForFamily(familyId){
-  const aliases=(familyAliases[familyId]||[]).map(normalizeText);
-  return classEntries
-    .filter(cls=>cls.weapons.some(w=>{
-      const nw=normalizeText(w);
-      return aliases.some(a=>nw===a);
-    }))
-    .map(cls=>({group:cls.group,name:cls.name}));
+  return (compatibility.families?.[familyId]||[]).map(name=>({name}));
 }
 
 const nouns={
