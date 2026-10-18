@@ -87,7 +87,7 @@ namespace KamiNoChallenge {
         void Storage(){
             foreach(var w in S.weapons.OrderByDescending(x=>x.rarity).ThenByDescending(x=>x.level)){
                 GUILayout.BeginHorizontal(GUI.skin.box);
-                GUILayout.Label($"{(w.isNew?"NUEVO · ":"")}{w.name} · {new string('★',w.rarity)} · Nv.{w.level} · +{w.enhancement} · {w.damageMin}-{w.damageMax} daño");
+                GUILayout.Label($"{(w.isNew?"NUEVO · ":"")}{w.name} · {new string('★',w.rarity)} · Nv.{w.level} · +{w.enhancement} · {w.damageMin}-{w.damageMax} daño\nClases: {(w.allowedClasses!=null&&w.allowedClasses.Count>0?string.Join(", ",w.allowedClasses):"Sin clase asignada")}");
                 if(GUILayout.Button(w.enhancement>=15?"+15 MAX":$"Mejorar {WeaponService.UpgradeCost(w)} oro",GUILayout.Width(150))){
                     if(WeaponService.Upgrade(S,w,out var err)){w.isNew=false;GameStateService.Save();message="Arma mejorada.";}else message=err;
                 }
