@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const root=process.cwd();
 const source=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_families_star1.json'),'utf8'));
+const progression=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_progression.json'),'utf8'));
 const outDir=path.join(root,'data/generated/equipment');
 fs.mkdirSync(outDir,{recursive:true});
 
@@ -38,36 +39,50 @@ const nouns={
   bio_weapon_pair:['Arma biológica joven','Arma biológica simple','Arma biológica pobre','Arma biológica inestable','Arma biológica ordinaria','Arma biológica de recluta','Arma biológica menor','Arma biológica de frontera','Arma biológica básica','Arma biológica rudimentaria']
 };
 
-function variants(f){
-  const names=nouns[f.id]||Array.from({length:10},(_,i)=>`${f.name} ★1 ${i+1}`);
-  return names.map((name,i)=>{
-    const spread=f.damage[1]-f.damage[0];
+function variants(f,rarity){
+  const mult=progression.weaponRarity.damageMultipliers[String(rarity)]||1;
+  const magicMult=progression.weaponRarity.magicPowerMultipliers[String(rarity)]||mult;
+  const names=nouns[f.id]||Array.from({length:10},(_,i)=>`${f.name} ★${rarity} ${i+1}`);
+  return names.map((baseName,i)=>{
     const shift=(i%3)-1;
-    const min=Math.max(1,f.damage[0]+(shift>0?1:0));
-    const max=Math.max(min,f.damage[1]+(shift<0?-1:0));
+    const baseMin=Math.max(1,f.damage[0]+(shift>0?1:0));
+    const baseMax=Math.max(baseMin,f.damage[1]+(shift<0?-1:0));
+    const min=Math.max(1,Math.round(baseMin*mult));
+    const max=Math.max(min,Math.round(baseMax*mult));
+    const name=rarity===1?baseName:`${baseName} ★${rarity}`;
     const item={
-      id:`W1-${f.id.toUpperCase()}-${String(i+1).padStart(2,'0')}`,
+      id:`W${rarity}-${f.id.toUpperCase()}-${String(i+1).padStart(2,'0')}`,
       name,
-      rarity:1,
+      rarity,
+      enhancement:0,
       category:'weapon',
       familyId:f.id,
       familyName:f.name,
       hands:f.hands,
+      baseDamage:{min,max},
       damage:{min,max},
       speed:f.speed,
       scalingStat:f.stat,
       compatibleKeywords:f.compatibleKeywords,
-      sellValueGold:Math.max(8,12+i*2)
+      sellValueGold:Math.max(8,Math.round((12+i*2)*mult))
     };
     if(f.range)item.range=f.range;
     if(f.magicPower){
-      item.magicPower={min:f.magicPower[0],max:f.magicPower[1]};
+      const mpMin=Math.max(1,Math.round(f.magicPower[0]*magicMult));
+      const mpMax=Math.max(mpMin,Math.round(f.magicPower[1]*magicMult));
+      item.baseMagicPower={min:mpMin,max:mpMax};
+      item.magicPower={min:mpMin,max:mpMax};
     }
     return item;
   });
 }
 
-const items=source.families.flatMap(variants);
-const out={schemaVersion:1,rarity:1,total:items.length,variantsPerFamily:10,items};
-fs.writeFileSync(path.join(outDir,'weapons-star1.json'),JSON.stringify(out,null,2));
-console.log(`Generated ${items.length} ★1 weapon items across ${source.families.length} weapon families.`);
+const allByRarity={};
+for(let rarity=1;rarity<=8;rarity++){
+  const items=source.families.flatMap(f=>variants(f,rarity));
+  allByRarity[rarity]=items;
+  fs.writeFileSync(path.join(outDir,`weapons-star${rarity}.json`),JSON.stringify({schemaVersion:1,rarity,total:items.length,variantsPerFamily:10,items},null,2));
+}
+const allItems=Object.values(allByRarity).flat();
+fs.writeFileSync(path.join(outDir,'weapons-all.json'),JSON.stringify({schemaVersion:1,total:allItems.length,items:allItems},null,2));
+console.log(`Generated ${allItems.length} weapons: ${source.families.length} families × 10 variants × 8 rarities.`);
