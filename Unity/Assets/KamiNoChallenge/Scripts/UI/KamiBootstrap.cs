@@ -67,7 +67,7 @@ namespace KamiNoChallenge {
         void Characters(){
             foreach(var c in S.characters.OrderByDescending(x=>x.Power)){
                 GUILayout.BeginHorizontal(GUI.skin.box);
-                GUILayout.Label($"{c.name} · {new string('★',c.currentStar)} · Nv.{c.level} · XP {c.experience}/{ProgressionService.XpToNext(c.level)} · Poder {c.Power:N0}"+(c.dead?" · CAÍDO":""));
+                GUILayout.Label($"{c.name} · {new string('★',c.currentStar)} · Nv.{c.level} · XP {c.experience}/{ProgressionService.XpToNext(c.level)} · Poder {c.Power:N0}\nMisiones sobrevividas: {c.missionsSurvived} · Enemigos eliminados: {c.totalKills}"+(c.dead?" · CAÍDO":""));
                 if(!c.dead&&GUILayout.Button("Seleccionar",GUILayout.Width(100))){S.activeCharacterId=c.id;GameStateService.Save();}
                 if(GUILayout.Button("Progresión",GUILayout.Width(100))){S.activeCharacterId=c.id;screen="progression";}
                 GUILayout.EndHorizontal();
