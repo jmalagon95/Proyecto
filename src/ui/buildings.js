@@ -2,7 +2,7 @@ import { el, button, stars, escapeHtml } from './components.js';
 import { createHero } from './reveal.js';
 
 const rarityColors={1:'#aab2c2',2:'#67c86f',3:'#5aa4ff',4:'#a777ff',5:'#f1c965',6:'#ff855e',7:'#ff56cf',8:'#f7f7ff'};
-const namePools={kairakh:['Kael','Varik','Nayra'],humanos:['Kai','Aren','Mira'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],bestias:['Fenra','Rogar','Lyka'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],huecos:['Astra','Nohr','Eidra']};
+const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
 
 function living(state){return state.characters.filter(c=>!c.dead)}
 function capacity(state){return 11+Math.max(0,state.lobbyLevel-1)*2}
