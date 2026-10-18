@@ -116,42 +116,92 @@ function equipSlot(label,item){
 }
 
 function renderProfile(body,state,save,rerender,onBack){
-  const chars=living(state),hero=chars.find(c=>c.id===state.activeCharacterId)||chars[0];
+  const chars=(state.characters||[]),hero=chars.find(c=>c.id===state.activeCharacterId)||chars.find(c=>!c.dead)||chars[0];
   if(!hero){renderDorms(body,state,save,rerender,onBack);return}
+  state.ui=state.ui||{};
+  const activeTab=state.ui.profileTab||'equipment';
   const color=rarityColors[hero.currentStar];
   const equipment=normalizeEquipment(hero);
   const req=ascensionRequirement(hero,state);
+  const tabs=[
+    ['summary','Resumen'],['equipment','Equipo'],['skills','Skills'],['passives','Pasivas'],['progression','Progresión']
+  ];
+  const summary=`
+    <section class="profile-tab-panel">
+      <h2>Atributos principales</h2>
+      <div class="profile-stats">${Object.entries(hero.stats||{}).map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div>
+      <h2>Descripción</h2>
+      <p class="profile-description">${escapeHtml(hero.classDescription||'Un aventurero cuyo destino aún está por escribirse.')}</p>
+      <div class="profile-summary-grid">
+        <div><small>Rareza de nacimiento</small><b>${stars(hero.birthStar||hero.currentStar)}</b></div>
+        <div><small>Rareza actual</small><b>${stars(hero.currentStar)}</b></div>
+        <div><small>Poder</small><b>${characterPower(hero).toLocaleString('es-ES')}</b></div>
+        <div><small>Estado</small><b>${hero.dead?'Caído':'Activo'}</b></div>
+      </div>
+    </section>`;
+  const equipmentPanel=`
+    <section class="profile-tab-panel">
+      <h2>Equipamiento</h2>
+      <div class="profile-equipment">${EQUIPMENT_SLOTS.map(slot=>equipSlot(slot.label,equipment[slot.id])).join('')}</div>
+      <p class="equipment-rule">Cada pieza pertenece a un hueco concreto. Las armas a dos manos ocupan Mano izquierda y Mano derecha simultáneamente.</p>
+      <button class="premium-blue-button wide" id="openStorageFromProfile">Abrir Almacén</button>
+    </section>`;
+  const skillsPanel=`
+    <section class="profile-tab-panel">
+      <h2>Skills</h2>
+      <div class="profile-list">
+        ${(hero.skills||[]).length?(hero.skills||[]).map(s=>`<article><b>${escapeHtml(s.name||s.Habilidad||'Habilidad')}</b><span>${escapeHtml(s.rank||s.Rango||'')}</span><p>${escapeHtml(s.description||s['Descripción mecánica']||'')}</p></article>`).join(''):'<p>No tiene habilidades aprendidas todavía.</p>'}
+      </div>
+    </section>`;
+  const passivesPanel=`
+    <section class="profile-tab-panel">
+      <h2>Pasivas</h2>
+      <div class="profile-list">
+        ${(hero.passives||[]).length?(hero.passives||[]).map(p=>`<article><b>${escapeHtml(p.name||p.Pasiva||'Pasiva')}</b><span>${escapeHtml(p.rank||p.Rango||'')}</span><p>${escapeHtml(p.positive||p['Efecto positivo']||p.description||'')}</p></article>`).join(''):'<p>No tiene pasivas asignadas todavía.</p>'}
+      </div>
+    </section>`;
+  const progressionPanel=`
+    <section class="profile-tab-panel">
+      <h2>Progresión</h2>
+      <div class="upgrade-level"><b>Nv. ${hero.level}</b><span>Límite actual: Nv. ${levelCap(hero)}</span></div>
+      <section class="ascension-material">
+        <small>MATERIAL DE ASCENSIÓN</small>
+        <strong>${req.rank>=8?'Rango máximo':req.stoneName}</strong>
+        <p>${req.rank>=8?'No existe una ascensión superior.':`Tienes ${req.owned} / ${req.needed}. Para fabricar una piedra ★${req.rank} necesitas sacrificar 10 personajes ★${req.rank}.`}</p>
+      </section>
+      <div class="profile-actions"><button id="upgradeBtn">Mejorar</button><button id="ascendBtn" ${req.possible?'':'disabled'}>Ascender</button></div>
+      <div class="profile-rename">
+        <input id="renameInput" maxlength="28" value="${escapeHtml(hero.name)}" ${(hero.renameRemaining??1)<1?'disabled':''}>
+        <button id="renameBtn" ${(hero.renameRemaining??1)<1?'disabled':''}>Renombrar</button>
+      </div>
+    </section>`;
+  const panels={summary,equipment:equipmentPanel,skills:skillsPanel,passives:passivesPanel,progression:progressionPanel};
+
   body.innerHTML=`
     <div class="profile-scene" style="background-image:url('${hero.wallpaper||''}')"></div>
     <div class="profile-layout" style="--rarity:${color}">
       <section class="profile-art" style="background-image:url('${hero.wallpaper||''}')">
         <div class="profile-art-fade"></div>
-        <div class="profile-power"><small>⚔ PODER DE COMBATE</small><b>${Object.values(hero.stats||{}).reduce((a,b)=>a+b,0)*100}</b></div>
+        <div class="profile-power"><small>⚔ PODER DE COMBATE</small><b>${characterPower(hero).toLocaleString('es-ES')}</b></div>
       </section>
       <section class="profile-panel">
         <div class="profile-topline"><button id="profileBack">←</button><div>● ${state.resources.gold}</div><div>▥ ${state.resources.wood}</div><div>⬢ ${state.resources.stone}</div></div>
         <h1>${escapeHtml(hero.name)}</h1>
         <div class="profile-stars">${stars(hero.currentStar)}</div>
-        <p class="profile-meta">${escapeHtml(hero.raceName)} · ${escapeHtml(hero.className)} · DPS / Rol</p>
-        <div class="profile-level"><b>Nv. ${hero.level}</b><span>de ${hero.currentStar*10}</span><i><u style="width:${Math.min(100,hero.level/(hero.currentStar*10)*100)}%"></u></i></div>
-        <h2>Atributos principales</h2>
-        <div class="profile-stats">${Object.entries(hero.stats).map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div>
-        <h2>Equipamiento</h2>
-        <div class="profile-equipment">
-          ${EQUIPMENT_SLOTS.map(slot=>equipSlot(slot.label,equipment[slot.id])).join('')}
-        </div>
-        <p class="equipment-rule">Cada objeto tiene un hueco de equipo fijo. Una pieza de armadura no puede colocarse en otro grupo. Las armas a dos manos ocupan Mano izquierda y Mano derecha simultáneamente.</p>
-        <h2>Descripción</h2>
-        <p class="profile-description">${escapeHtml(hero.classDescription||'Un aventurero cuyo destino aún está por escribirse.')}</p>
-        <div class="profile-rename">
-          <input id="renameInput" maxlength="28" value="${escapeHtml(hero.name)}" ${(hero.renameRemaining??1)<1?'disabled':''}>
-          <button id="renameBtn" ${(hero.renameRemaining??1)<1?'disabled':''}>Renombrar</button>
-        </div>
-        <div class="profile-actions"><button id="upgradeBtn">Mejorar</button><button id="ascendBtn">Ascender</button></div>
+        <p class="profile-meta">${escapeHtml(hero.raceName)} · ${escapeHtml(hero.className)} · Nv.${hero.level}</p>
+        <div class="profile-level"><b>Nv. ${hero.level}</b><span>de ${levelCap(hero)}</span><i><u style="width:${Math.min(100,hero.level/levelCap(hero)*100)}%"></u></i></div>
+        <nav class="profile-tabs">${tabs.map(([id,label])=>`<button data-profile-tab="${id}" class="${activeTab===id?'active':''}">${label}</button>`).join('')}</nav>
+        ${panels[activeTab]||equipmentPanel}
       </section>
     </div>`;
-  body.querySelector('#profileBack').onclick=()=>rerender('dorms');
-  body.querySelector('#upgradeBtn').onclick=()=>rerender('upgrade');
+
+  body.querySelector('#profileBack').onclick=()=>rerender('characters');
+  body.querySelectorAll('[data-profile-tab]').forEach(btn=>btn.onclick=()=>{
+    state.ui.profileTab=btn.dataset.profileTab;
+    save();rerender('profile');
+  });
+  body.querySelector('#upgradeBtn')?.addEventListener('click',()=>rerender('upgrade'));
+  body.querySelector('#openStorageFromProfile')?.addEventListener('click',()=>rerender('storage'));
   body.querySelector('#renameBtn')?.addEventListener('click',()=>{
     const v=body.querySelector('#renameInput').value.trim();
     if(!v||(hero.renameRemaining??1)<1)return;
