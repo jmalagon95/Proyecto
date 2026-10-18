@@ -16,6 +16,54 @@ namespace KamiNoChallenge {
             {1,100},{2,180},{3,320},{4,550},{5,900},{6,1500},{7,2500},{8,4000}
         };
 
+
+        static readonly Dictionary<string,string[]> AllowedClassesByFamily = new Dictionary<string,string[]>{
+            {"sword",new[]{"Guerrero","Defensor","Pícaro","Danzante de la Luna","Guardián Silvano","Sanguinario Noble","Caballero de la Sed Eterna"}},
+            {"greatsword",new[]{"Caballero de la Sed Eterna"}},
+            {"rapier",new[]{"Sanguinario Noble"}},
+            {"dagger",new[]{"Pícaro","Depredador de las Cumbres","Danzante de la Luna"}},
+            {"axe",new[]{"Guerrero"}},
+            {"throwaxe",new[]{"Lanzador de Calamidades"}},
+            {"mace",new[]{"Guerrero","Defensor","Guardián del Cuerno Ancestral","Devorador de Maldiciones","Bastión Escarabajo","Bastión de Escama Seca"}},
+            {"kanabo",new[]{"Destructor Kijin"}},
+            {"hammer",new[]{"Destructor Kijin"}},
+            {"spear",new[]{"Defensor","Lancero del Cuerno Primordial","Guardián del Cuerno Ancestral","Guardián Silvano","Hemolancero","Bastión de Escama Seca"}},
+            {"longspear",new[]{"Lancero del Cuerno Primordial"}},
+            {"halberd",new[]{"Lancero del Cuerno Primordial"}},
+            {"javelin",new[]{"Lanzador de Calamidades","Hemolancero","Ojo del Pedregal"}},
+            {"scythe",new[]{"Segador","Segador Mantídeo"}},
+            {"bow",new[]{"Ranger","Arquero de la Arboleda Primigenia","Ojo del Pedregal"}},
+            {"crossbow",new[]{"Ranger","Ojo del Pedregal"}},
+            {"staff",new[]{"Mago","Invocador","Apoyo","Resonador Kairakh","Cantor de Raíces","Tejedor de Espíritus","Monje de los Cuernos","Señor de los Cien Demonios","Señor de los Murciélagos","Emperador de la Colmena","Conductor del Sol Árido"}},
+            {"wand",new[]{"Mago","Tejedor de Espíritus","Tejedor Carmesí"}},
+            {"tome",new[]{"Mago","Invocador","Apoyo","Tejedor de Espíritus","Señor de los Cien Demonios","Señor de los Murciélagos","Tejedor Carmesí"}},
+            {"scepter",new[]{"Apoyo","Señor de los Murciélagos"}},
+            {"catalyst",new[]{"Invocador","Proyector de Venas","Resonador Kairakh","Hemolancero","Emperador de la Colmena","Azote de Cola Eléctrica","Conductor del Sol Árido"}},
+            {"gauntlets",new[]{"Pícaro","Proyector de Venas","Depredador de las Cumbres","Devorador de Maldiciones","Monje de los Cuernos","Tejedor Carmesí","Garra Fulminante","Conductor del Sol Árido"}},
+            {"chakrams",new[]{"Danzante de la Luna"}},
+            {"cannon",new[]{"Proyector de Venas","Artillero Quitinoso"}},
+            {"fan",new[]{"Señor de los Cien Demonios"}},
+            {"spikelauncher",new[]{"Artillero Quitinoso","Maestro de la Metamorfosis"}},
+            {"armblades",new[]{"Segador Mantídeo"}},
+            {"bioweapon",new[]{"Maestro de la Metamorfosis"}}
+        };
+
+        static string NormalizeClass(string value){
+            if(string.IsNullOrWhiteSpace(value)) return "";
+            return value.ToLowerInvariant()
+                .Replace("á","a").Replace("é","e").Replace("í","i").Replace("ó","o").Replace("ú","u").Replace("ñ","n")
+                .Replace(" ","").Replace("-","").Replace("_","");
+        }
+
+        public static bool CanClassUse(WeaponInstance weapon,string classNameOrId){
+            if(weapon==null || weapon.allowedClasses==null || weapon.allowedClasses.Count==0) return false;
+            string target=NormalizeClass(classNameOrId);
+            foreach(var c in weapon.allowedClasses){
+                if(NormalizeClass(c)==target) return true;
+            }
+            return false;
+        }
+
         static readonly (string id,string name,int hands,int min,int max)[] Families = {
             ("sword","Espada",1,3,5),("greatsword","Mandoble",2,5,8),("rapier","Estoque",1,2,5),
             ("dagger","Daga",1,2,4),("axe","Hacha",1,3,6),("throwaxe","Hacha arrojadiza",1,2,5),
@@ -40,7 +88,8 @@ namespace KamiNoChallenge {
                 baseMinDamage=Math.Max(1,(int)Math.Round(f.min*rm)),
                 baseMaxDamage=Math.Max(1,(int)Math.Round(f.max*rm)),
                 bonusStatSlots=BonusStatSlots[rarity],
-                passiveSlots=PassiveSlots[rarity]
+                passiveSlots=PassiveSlots[rarity],
+                allowedClasses=new List<string>(AllowedClassesByFamily.TryGetValue(f.id,out var allowed)?allowed:Array.Empty<string>())
             };
             Recalculate(w);
             return w;
