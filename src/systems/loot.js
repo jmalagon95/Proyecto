@@ -50,5 +50,8 @@ export function applyWeaponDrops(state,drops,missionCompleted){
   if(!missionCompleted)return [];
   state.inventory=state.inventory||[];
   state.inventory.push(...drops);
+  state.ui=state.ui||{};
+  state.ui.newItemIds=state.ui.newItemIds||[];
+  for(const item of drops){const id=item.instanceId||item.id;if(id&&!state.ui.newItemIds.includes(id))state.ui.newItemIds.push(id);}
   return drops;
 }
