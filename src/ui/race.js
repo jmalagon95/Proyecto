@@ -1,4 +1,4 @@
-import { el, button, escapeHtml } from './components.js';
+import { el, escapeHtml } from './components.js';
 
 export function renderRace({ app, data, state, save, onBack, onNext }) {
   app.innerHTML = '';
@@ -7,14 +7,14 @@ export function renderRace({ app, data, state, save, onBack, onNext }) {
     <div class="race-page-frame">
       <header class="race-page-head">
         <div class="race-brand">KAMI NO CHALLENGE</div>
-        <h1>Escoge tu raza</h1>
+        <h1>Selección de raza</h1>
         <div class="ornament-line"><span>◇</span></div>
-        <p>Cada raza tiene su propia historia y una identidad única.<br>Tú eliges la raza; la rareza, atributos y afinidades se sortearán después.</p>
+        <p>Ocho pueblos, infinitas historias.<br>Elige tu origen; la rareza, atributos y afinidades se sortearán después.</p>
       </header>
       <div class="race-card-grid"></div>
       <footer class="race-page-actions">
-        <div class="back-stack"><button class="round-back">←</button><span>Volver</span></div>
-        <button class="race-confirm-button"><span>Elegir raza</span><i>›</i></button>
+        <div class="back-stack"><button class="round-back" type="button">←</button><span>Volver</span></div>
+        <button class="race-confirm-button" type="button"><span>Confirmar raza</span><i>›</i></button>
         <div></div>
       </footer>
     </div>`;
