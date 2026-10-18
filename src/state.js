@@ -1,4 +1,4 @@
-const KEY = 'kami_no_challenge_v03_state';
+const KEY = 'kami_no_challenge_v04_state';
 
 export const defaultState = {
   screen: 'cover',
@@ -10,22 +10,56 @@ export const defaultState = {
   heroName: '',
   playerName: 'Jugador',
   lobbyLevel: 1,
-  resources: { crystals: 15, gold: 100, essence: 0, wood: 24, stone: 16 },
+
+  // Recursos visibles del asentamiento inicial.
+  resources: { gold: 1000, wood: 0, stone: 0 },
+
+  // Materiales especiales de progresión. No forman parte del HUD básico.
+  progression: {
+    ascensionStones: { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0 }
+  },
+
   inventory: [],
   characters: [],
   activeCharacterId: null,
-  summon: { freeMultiUsed: false, history: [] }
+
+  summon: {
+    freeMultiUsed: false,
+    history: [],
+    costs: { singleGold: 1000, multiGold: 10000 }
+  },
+
+  missionProgress: {
+    survival1Completions: 0
+  }
 };
 
 export function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    return {
+    const state = {
       ...structuredClone(defaultState),
       ...(saved || {}),
       resources:{...structuredClone(defaultState.resources),...((saved&&saved.resources)||{})},
-      summon:{...structuredClone(defaultState.summon),...((saved&&saved.summon)||{})}
+      progression:{
+        ...structuredClone(defaultState.progression),
+        ...((saved&&saved.progression)||{}),
+        ascensionStones:{
+          ...structuredClone(defaultState.progression.ascensionStones),
+          ...((saved&&saved.progression&&saved.progression.ascensionStones)||{})
+        }
+      },
+      summon:{
+        ...structuredClone(defaultState.summon),
+        ...((saved&&saved.summon)||{}),
+        costs:{
+          ...structuredClone(defaultState.summon.costs),
+          ...((saved&&saved.summon&&saved.summon.costs)||{})
+        }
+      },
+      missionProgress:{...structuredClone(defaultState.missionProgress),...((saved&&saved.missionProgress)||{})}
     };
+    return state;
   } catch {
     return structuredClone(defaultState);
   }
