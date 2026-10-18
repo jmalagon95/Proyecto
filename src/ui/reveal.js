@@ -79,7 +79,7 @@ export function createHero(race,cls,name=''){
   const hero={
     id:crypto.randomUUID(),name:name.trim()||'Aspirante',raceId:race.id,raceName:race.name,
     className:cls.name,classDescription:cls.description,role:cls.role,weapons:cls.weapons,weapon:cls.weapons[0],
-    birthStar:starLevel,currentStar:starLevel,level:1,stats,skills:[],passives:[],dead:false,
+    birthStar:starLevel,currentStar:starLevel,level:1,experience:0,stats,skills:[],passives:[],dead:false,
     equipment:emptyEquipment(),
     wallpaper:race.image,renameRemaining:1,appearance:buildAppearance(race,cls)
   };
