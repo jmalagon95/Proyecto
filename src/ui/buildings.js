@@ -1,5 +1,7 @@
 import { el, button, stars, escapeHtml } from './components.js';
 import { createHero } from './reveal.js';
+import { EQUIPMENT_SLOTS, normalizeEquipment } from '../systems/equipment.js';
+import { ascensionRequirement, levelCap } from '../systems/progression.js';
 
 const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
 const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
@@ -47,17 +49,23 @@ function renderDorms(body,state,save,rerender,onBack){
         <button class="premium-blue-button">▤ <span>Gestionar habitaciones</span></button>
       </div>
     </div>`;
-  body.querySelectorAll('[data-char]').forEach(x=>x.onclick=()=>{state.activeCharacterId=x.dataset.char;save();rerender('dorms')});
+  body.querySelectorAll('[data-char]').forEach(x=>x.onclick=()=>{state.activeCharacterId=x.dataset.char;save();rerender('profile')});
   body.querySelector('#viewCharacter')?.addEventListener('click',()=>rerender('profile'));
   backButton(onBack,body.querySelector('.premium-content'));
 }
 
-function equipSlot(label,value='Vacío'){return `<div class="profile-equip"><span>✦</span><b>${escapeHtml(value)}</b><small>${label}</small></div>`}
+function equipSlot(label,item){
+  const value=item?.twoHandedMirror?'Ocupado por arma a dos manos':(item?.name||item||'Vacío');
+  const extra=item?.armorGroup?` · ${item.armorGroup}`:'';
+  return `<div class="profile-equip"><span>✦</span><b>${escapeHtml(value)}</b><small>${label}${extra}</small></div>`;
+}
 
 function renderProfile(body,state,save,rerender,onBack){
   const chars=living(state),hero=chars.find(c=>c.id===state.activeCharacterId)||chars[0];
   if(!hero){renderDorms(body,state,save,rerender,onBack);return}
   const color=rarityColors[hero.currentStar];
+  const equipment=normalizeEquipment(hero);
+  const req=ascensionRequirement(hero,state);
   body.innerHTML=`
     <div class="profile-scene" style="background-image:url('${hero.wallpaper||''}')"></div>
     <div class="profile-layout" style="--rarity:${color}">
@@ -66,7 +74,7 @@ function renderProfile(body,state,save,rerender,onBack){
         <div class="profile-power"><small>⚔ PODER DE COMBATE</small><b>${Object.values(hero.stats||{}).reduce((a,b)=>a+b,0)*100}</b></div>
       </section>
       <section class="profile-panel">
-        <div class="profile-topline"><button id="profileBack">←</button><div>◆ ${state.resources.crystals}</div><div>● ${state.resources.gold}</div></div>
+        <div class="profile-topline"><button id="profileBack">←</button><div>● ${state.resources.gold}</div><div>▥ ${state.resources.wood}</div><div>⬢ ${state.resources.stone}</div></div>
         <h1>${escapeHtml(hero.name)}</h1>
         <div class="profile-stars">${stars(hero.currentStar)}</div>
         <p class="profile-meta">${escapeHtml(hero.raceName)} · ${escapeHtml(hero.className)} · DPS / Rol</p>
@@ -75,23 +83,51 @@ function renderProfile(body,state,save,rerender,onBack){
         <div class="profile-stats">${Object.entries(hero.stats).map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div>
         <h2>Equipamiento</h2>
         <div class="profile-equipment">
-          ${equipSlot('Arma',hero.weapon)}${equipSlot('Cabeza')}${equipSlot('Pecho')}${equipSlot('Brazos')}${equipSlot('Piernas')}${equipSlot('Botas')}${equipSlot('Accesorio I')}${equipSlot('Accesorio II')}
+          ${EQUIPMENT_SLOTS.map(slot=>equipSlot(slot.label,equipment[slot.id])).join('')}
         </div>
+        <p class="equipment-rule">Cada objeto tiene un hueco de equipo fijo. Una pieza de armadura no puede colocarse en otro grupo. Las armas a dos manos ocupan Mano izquierda y Mano derecha simultáneamente.</p>
         <h2>Descripción</h2>
         <p class="profile-description">${escapeHtml(hero.classDescription||'Un aventurero cuyo destino aún está por escribirse.')}</p>
         <div class="profile-rename">
           <input id="renameInput" maxlength="28" value="${escapeHtml(hero.name)}" ${(hero.renameRemaining??1)<1?'disabled':''}>
           <button id="renameBtn" ${(hero.renameRemaining??1)<1?'disabled':''}>Renombrar</button>
         </div>
-        <div class="profile-actions"><button>Mejorar</button><button>Ascender</button></div>
+        <div class="profile-actions"><button id="upgradeBtn">Mejorar</button><button id="ascendBtn">Ascender</button></div>
       </section>
     </div>`;
   body.querySelector('#profileBack').onclick=()=>rerender('dorms');
+  body.querySelector('#upgradeBtn').onclick=()=>rerender('upgrade');
   body.querySelector('#renameBtn')?.addEventListener('click',()=>{
     const v=body.querySelector('#renameInput').value.trim();
     if(!v||(hero.renameRemaining??1)<1)return;
     hero.name=v;hero.renameRemaining=0;save();rerender('profile');
   });
+}
+
+function renderUpgrade(body,state,save,rerender,onBack){
+  const hero=living(state).find(c=>c.id===state.activeCharacterId)||living(state)[0];
+  if(!hero){rerender('dorms');return}
+  const req=ascensionRequirement(hero,state);
+  body.innerHTML=`
+    <div class="page-scene dorm-scene"></div>
+    <div class="premium-content">
+      ${frameTitle('PROGRESIÓN','Mejorar personaje','Consulta el límite actual y los materiales necesarios para ascender.')}
+      <div class="upgrade-character-card">
+        <div class="upgrade-character-art" style="background-image:url('${hero.wallpaper||''}')"></div>
+        <div class="upgrade-character-info">
+          <h2>${escapeHtml(hero.name)}</h2>
+          <p>${stars(hero.currentStar)} · ${escapeHtml(hero.raceName)} · ${escapeHtml(hero.className)}</p>
+          <div class="upgrade-level"><b>Nv. ${hero.level}</b><span>Límite actual: Nv. ${levelCap(hero)}</span></div>
+          <section class="ascension-material">
+            <small>MATERIAL DE ASCENSIÓN</small>
+            <strong>${req.rank>=8?'Rango máximo':req.stoneName}</strong>
+            <p>${req.rank>=8?'No existe una ascensión superior.':`Tienes ${req.owned} / ${req.needed}. Para fabricar una piedra ★${req.rank} debes sacrificar 10 personajes ★${req.rank}.`}</p>
+          </section>
+        </div>
+      </div>
+      <button class="premium-blue-button wide" id="upgradeBack">← Volver al equipamiento</button>
+    </div>`;
+  body.querySelector('#upgradeBack').onclick=()=>rerender('profile');
 }
 
 function renderSanctuary(body,state,data,save,rerender,onBack){
@@ -109,8 +145,8 @@ function renderSanctuary(body,state,data,save,rerender,onBack){
         </div>
         <div class="rarity-row">${rarityLegend()}</div>
         <div class="sanctuary-actions">
-          <button id="summon1" class="summon-one" ${free<1||remaining<1?'disabled':''}><b>Invocar x1</b><span>◆ 1</span></button>
-          <button id="summon10" class="summon-ten" ${free<1||remaining<1?'disabled':''}><small>PRIMERA MULTI x10</small><b>${state.summon?.freeMultiUsed?'Invocar x10':'GRATIS'}</b><span>${state.summon?.freeMultiUsed?'◆ 10':'◆ 0'}</span></button>
+          <button id="summon1" class="summon-one" ${free<1||remaining<1?'disabled':''}><b>Invocar x1</b><span>● ${state.summon?.costs?.singleGold||1000}</span></button>
+          <button id="summon10" class="summon-ten" ${free<1||remaining<1?'disabled':''}><small>PRIMERA MULTI x10</small><b>${state.summon?.freeMultiUsed?'Invocar x10':'GRATIS'}</b><span>${state.summon?.freeMultiUsed?'● '+(state.summon?.costs?.multiGold||10000):'● 0'}</span></button>
         </div>
         <div id="summonResult" class="summon-results"></div>
       </section>
@@ -132,9 +168,9 @@ function renderSanctuary(body,state,data,save,rerender,onBack){
     const count=Math.min(wanted,slots,rem);if(count<1)return;
     state.summon=state.summon||{freeMultiUsed:false,history:[]};
     const freeMulti=wanted===10&&!state.summon.freeMultiUsed;
-    const cost=freeMulti?0:(wanted===10?10:1);
-    if((state.resources.crystals||0)<cost){body.querySelector('#summonResult').innerHTML='<p class="summon-message">No tienes suficientes cristales.</p>';return}
-    state.resources.crystals-=cost;if(freeMulti)state.summon.freeMultiUsed=true;
+    const cost=freeMulti?0:(wanted===10?(state.summon?.costs?.multiGold||10000):(state.summon?.costs?.singleGold||1000));
+    if((state.resources.gold||0)<cost){body.querySelector('#summonResult').innerHTML='<p class="summon-message">No tienes suficiente oro.</p>';return}
+    state.resources.gold-=cost;if(freeMulti)state.summon.freeMultiUsed=true;
     const results=Array.from({length:count},()=>summonOne(data));
     state.characters.push(...results);state.inhabitantsRemaining=Math.max(0,rem-count);
     state.summon.history=results.map(x=>({id:x.id,star:x.currentStar}));save();
@@ -148,9 +184,7 @@ function renderSanctuary(body,state,data,save,rerender,onBack){
 
 function renderStorage(body,state,onBack){
   const items=[
-    ['Cristales',state.resources.crystals,'◆','rare-blue'],
     ['Oro',state.resources.gold,'●','rare-gold'],
-    ['Esencia',state.resources.essence,'✦','rare-purple'],
     ['Madera',state.resources.wood,'▥','rare-green'],
     ['Piedra',state.resources.stone,'⬢','rare-silver'],
     ['Inventario',state.inventory.length,'▣','rare-blue']
@@ -163,7 +197,7 @@ function renderStorage(body,state,onBack){
       <div class="storage-toolbar"><button>☷ Ordenar: Rareza</button><button>▽ Todos</button><span>▣ ${state.inventory.length} / 300</span></div>
       <div class="storage-layout">
         <div class="storage-grid-premium">${items.map(([n,v,icon,c])=>`<button class="storage-item ${c}"><span>${icon}</span><b>${v}</b><small>${n}</small><i>★★★</i></button>`).join('')}</div>
-        <aside class="storage-detail"><div class="storage-big-icon">◆</div><h2>Cristales</h2><div class="storage-rarity">★★★★★</div><p>Recurso precioso utilizado por los sistemas de invocación y progresión. Los objetos reales obtenidos durante la aventura aparecerán aquí.</p><h3>Usos principales</h3><div>✦ Invocación</div><div>⚒ Mejora de equipo</div><div>⚖ Intercambio</div></aside>
+        <aside class="storage-detail"><div class="storage-big-icon">▥</div><h2>Materiales</h2><p>Al inicio solo gestionas oro, madera y piedra. La madera y la piedra se obtienen principalmente en misiones normales.</p><h3>Economía inicial</h3><div>● Oro: invocaciones y gastos</div><div>▥ Madera: construcción y mejoras</div><div>⬢ Piedra: construcción y mejoras</div></aside>
       </div>
     </div>`;
   backButton(onBack,body.querySelector('.premium-content'));
@@ -177,7 +211,7 @@ function renderMissions(body,state,onBack){
       ${frameTitle('PORTAL DE MISIONES','Supervivencia I','Resiste 180 segundos. La muerte permanente está activa.')}
       <div class="mission-card">
         <div class="mission-portal-art"><span>✦</span></div>
-        <div><small>TORRE · PISO 1</small><h2>Supervivencia I</h2><p>Goblins ★1 · 3 carriles invisibles · ataques diagonales · sin jefe.</p></div>
+        <div><small>TORRE · PISO 1</small><h2>Supervivencia I</h2><p>Goblins ★1 · 3 carriles invisibles · ataques diagonales · sin jefe.</p><p><b>Recompensa fija: 250 de oro</b>. El loot puede añadir oro, madera y piedra.</p></div>
       </div>
       <div class="team-premium">${[0,1,2,3,4].map(i=>`<div class="${chars[i]?'filled':''}">${chars[i]?`<figure style="background-image:url('${chars[i].wallpaper}')"></figure><b>${escapeHtml(chars[i].name)}</b><span>${stars(chars[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('')}</div>
       <button class="premium-gold-button wide">Preparar misión</button>
@@ -199,6 +233,7 @@ export function renderBuilding({app,type,state,data,save,activeHero,onBack}){
   const rerender=next=>renderBuilding({app,type:next||type,state,data,save,activeHero:state.characters.find(c=>c.id===state.activeCharacterId)||activeHero,onBack});
   if(type==='dorms')renderDorms(body,state,save,rerender,onBack);
   else if(type==='profile')renderProfile(body,state,save,rerender,onBack);
+  else if(type==='upgrade')renderUpgrade(body,state,save,rerender,onBack);
   else if(type==='sanctuary')renderSanctuary(body,state,data,save,rerender,onBack);
   else if(type==='storage')renderStorage(body,state,onBack);
   else if(type==='missions')renderMissions(body,state,onBack);
