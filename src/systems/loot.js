@@ -3,14 +3,41 @@ import { setWeaponLevel } from './weapon-upgrade.js';
 
 const cache=new Map();
 
+const FALLBACK_FAMILIES=[
+  ['Espada',1,3,5],['Mandoble',2,5,8],['Estoque',1,2,5],['Daga',1,2,4],
+  ['Hacha',1,3,6],['Maza',1,3,6],['Lanza',1,3,6],['Alabarda',2,5,8],
+  ['Arco',2,3,6],['Ballesta',2,4,7],['Bastón',2,2,4],['Varita',1,1,3]
+];
+const RARITY_MULT={1:1,2:5,3:15,4:50,5:150,6:450,7:1100,8:2700};
+
+function fallbackCatalog(rarity){
+  const mult=RARITY_MULT[rarity]||1;
+  return FALLBACK_FAMILIES.flatMap(([name,hands,min,max],fi)=>
+    Array.from({length:10},(_,i)=>({
+      id:`W${rarity}-FALLBACK-${fi+1}-${i+1}`,
+      name:`${name} ${String(i+1).padStart(2,'0')}${rarity>1?' ★'+rarity:''}`,
+      rarity,level:1,enhancement:0,category:'weapon',familyName:name,hands,
+      baseDamage:{min:Math.max(1,Math.round(min*mult)),max:Math.max(1,Math.round(max*mult))},
+      damage:{min:Math.max(1,Math.round(min*mult)),max:Math.max(1,Math.round(max*mult))}
+    }))
+  );
+}
+
 async function loadCatalog(rarity){
   if(cache.has(rarity))return cache.get(rarity);
-  const data=await fetch('/data/generated/equipment/weapons-star'+rarity+'.json').then(r=>{
-    if(!r.ok)throw new Error('No se pudo cargar el catálogo de armas ★'+rarity);
-    return r.json();
-  });
-  cache.set(rarity,data.items||[]);
-  return data.items||[];
+  try{
+    const data=await fetch('/data/generated/equipment/weapons-star'+rarity+'.json').then(r=>{
+      if(!r.ok)throw new Error('No se pudo cargar el catálogo de armas ★'+rarity);
+      return r.json();
+    });
+    const items=data.items||[];
+    cache.set(rarity,items);
+    return items;
+  }catch{
+    const items=fallbackCatalog(rarity);
+    cache.set(rarity,items);
+    return items;
+  }
 }
 
 function rollRarity(){
