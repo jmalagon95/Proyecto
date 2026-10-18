@@ -93,6 +93,8 @@ namespace KamiNoChallenge {
             foreach(var m in r.metrics){
                 var c=s.characters.Find(x=>x.id==m.characterId);
                 if(c==null)continue;
+                c.totalKills+=m.kills;
+                if(m.survived)c.missionsSurvived++;
                 if(!m.survived)c.dead=true;
             }
             if(!r.completed)return;
