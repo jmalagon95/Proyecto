@@ -108,6 +108,8 @@ namespace KamiNoChallenge {
             }
             if(lastResult!=null){
                 GUILayout.Label(lastResult.completed?"MISIÓN COMPLETADA":"MISIÓN FALLIDA");
+                GUILayout.Space(8);
+                GUILayout.Label("NARRADOR DE BATALLA");
                 foreach(var e in lastResult.events)GUILayout.Label(e);
                 if(lastResult.completed)GUILayout.Label($"Oro +{lastResult.gold} · Madera +{lastResult.wood} · Piedra +{lastResult.stone} · Armas {lastResult.weaponDrops.Count}");
                 foreach(var m in lastResult.metrics)GUILayout.Label($"{m.name}: {m.damage} daño · {m.kills} bajas · +{m.xp} XP · {(m.survived?"Vivo":"Caído")}");
