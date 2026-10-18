@@ -4,6 +4,7 @@ import { EQUIPMENT_SLOTS, normalizeEquipment } from '../systems/equipment.js';
 import { ascensionRequirement, levelCap } from '../systems/progression.js';
 import { simulateSurvivalMission, applyMissionResult } from '../systems/mission-simulator.js';
 import { rollSurvival1WeaponDrops, applyWeaponDrops } from '../systems/loot.js';
+import { upgradeWeapon, weaponUpgradeCost } from '../systems/weapon-upgrade.js';
 
 const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
 const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
@@ -184,7 +185,8 @@ function renderSanctuary(body,state,data,save,rerender,onBack){
   backButton(onBack,body.querySelector('.premium-content'));
 }
 
-function renderStorage(body,state,onBack){
+function renderStorage(body,state,save,rerender,onBack){
+  const weaponItems=(state.inventory||[]).filter(x=>x.category==='weapon');
   const items=[
     ['Oro',state.resources.gold,'●','rare-gold'],
     ['Madera',state.resources.wood,'▥','rare-green'],
@@ -198,10 +200,32 @@ function renderStorage(body,state,onBack){
       <div class="storage-tabs-premium"><button class="active">◇<b>Materiales</b></button><button>⚔<b>Equipo</b></button><button>◉<b>Consumibles</b></button><button>✦<b>Especiales</b></button></div>
       <div class="storage-toolbar"><button>☷ Ordenar: Rareza</button><button>▽ Todos</button><span>▣ ${state.inventory.length} / 300</span></div>
       <div class="storage-layout">
-        <div class="storage-grid-premium">${items.map(([n,v,icon,c])=>`<button class="storage-item ${c}"><span>${icon}</span><b>${v}</b><small>${n}</small><i>★★★</i></button>`).join('')}</div>
-        <aside class="storage-detail"><div class="storage-big-icon">▥</div><h2>Materiales</h2><p>Al inicio solo gestionas oro, madera y piedra. La madera y la piedra se obtienen principalmente en misiones normales.</p><h3>Economía inicial</h3><div>● Oro: invocaciones y gastos</div><div>▥ Madera: construcción y mejoras</div><div>⬢ Piedra: construcción y mejoras</div></aside>
+        <div>
+          <div class="storage-grid-premium">${items.map(([n,v,icon,c])=>`<button class="storage-item ${c}"><span>${icon}</span><b>${v}</b><small>${n}</small><i>★★★</i></button>`).join('')}</div>
+          <section class="weapon-inventory">
+            <h2>Armas</h2>
+            ${weaponItems.length?weaponItems.map(w=>`
+              <div class="weapon-inventory-row">
+                <div>
+                  <b>${escapeHtml(w.name)} +${w.enhancement||0}</b>
+                  <small>${'★'.repeat(w.rarity||1)} · ${w.damage?.min||0}–${w.damage?.max||0} daño · ${w.hands||1} mano(s)</small>
+                </div>
+                <button data-upgrade-weapon="${w.instanceId||w.id}" ${(w.enhancement||0)>=15?'disabled':''}>
+                  ${(w.enhancement||0)>=15?'Máximo +15':'Mejorar · '+weaponUpgradeCost(w)+' oro'}
+                </button>
+              </div>`).join(''):'<p class="empty-equipment">Aún no has conseguido armas.</p>'}
+          </section>
+        </div>
+        <aside class="storage-detail"><div class="storage-big-icon">▥</div><h2>Materiales</h2><p>Al inicio solo gestionas oro, madera y piedra. La madera y la piedra se obtienen principalmente en misiones normales.</p><h3>Economía inicial</h3><div>● Oro: invocaciones y mejoras</div><div>▥ Madera: construcción</div><div>⬢ Piedra: construcción</div></aside>
       </div>
     </div>`;
+  body.querySelectorAll('[data-upgrade-weapon]').forEach(btn=>btn.onclick=()=>{
+    const weapon=(state.inventory||[]).find(w=>(w.instanceId||w.id)===btn.dataset.upgradeWeapon);
+    if(!weapon)return;
+    const result=upgradeWeapon(state,weapon);
+    if(result.ok){save();rerender('storage');}
+    else btn.textContent=result.reason||'No se puede mejorar';
+  });
   backButton(onBack,body.querySelector('.premium-content'));
 }
 
@@ -306,7 +330,7 @@ export function renderBuilding({app,type,state,data,save,activeHero,onBack}){
   else if(type==='profile')renderProfile(body,state,save,rerender,onBack);
   else if(type==='upgrade')renderUpgrade(body,state,save,rerender,onBack);
   else if(type==='sanctuary')renderSanctuary(body,state,data,save,rerender,onBack);
-  else if(type==='storage')renderStorage(body,state,onBack);
+  else if(type==='storage')renderStorage(body,state,save,rerender,onBack);
   else if(type==='missions')renderMissions(body,state,data,save,onBack);
   else renderMenu(body,onBack);
 }
