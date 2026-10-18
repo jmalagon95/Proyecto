@@ -20,17 +20,28 @@ export function normalizeEquipment(character){
   return character.equipment;
 }
 
-export function canEquip(item,slotId){
+export function canEquip(item,slotId,character=null){
   if(!item||!slotId)return false;
   const slot=EQUIPMENT_SLOTS.find(s=>s.id===slotId);
   if(!slot)return false;
   if(item.equipSlot && item.equipSlot!==slotId && !(item.equipSlot==='hand'&&['leftHand','rightHand'].includes(slotId)))return false;
-  return slot.accepts.includes(item.category);
+  if(!slot.accepts.includes(item.category))return false;
+  if(item.category==='weapon'&&character&&Array.isArray(item.allowedClasses)&&item.allowedClasses.length){
+    const className=character.className||character.classId||'';
+    const allowed=item.allowedClasses.some(x=>(typeof x==='string'?x:x?.name)===className);
+    if(!allowed)return false;
+  }
+  return true;
 }
 
 export function equipItem(character,item,slotId){
   const equipment=normalizeEquipment(character);
-  if(!canEquip(item,slotId))return {ok:false,reason:'Ese objeto no pertenece a este hueco de equipo.'};
+  if(!canEquip(item,slotId,character)){
+    if(item?.category==='weapon'&&Array.isArray(item.allowedClasses)&&item.allowedClasses.length){
+      return {ok:false,reason:'La clase de este personaje no puede usar esta arma.'};
+    }
+    return {ok:false,reason:'Ese objeto no pertenece a este hueco de equipo.'};
+  }
 
   if(item.category==='weapon'&&item.hands===2){
     if(!['leftHand','rightHand'].includes(slotId))return {ok:false,reason:'Un arma a dos manos debe equiparse en las manos.'};
