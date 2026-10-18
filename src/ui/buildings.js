@@ -289,7 +289,7 @@ function renderMissions(body,state,data,save,onBack){
               <div><b>Piedra</b><span>+${result.rewards.stone}</span></div>
               ${result.rewards.bonusGold?'<small>Incluye +'+result.rewards.bonusGold+' de oro procedente del loot.</small>':''}
               <div class="weapon-drop-summary"><b>Armas encontradas</b><span>${(result.weaponDrops||[]).length}</span></div>
-              ${(result.weaponDrops||[]).map(w=>'<div class="weapon-drop-line"><b>'+escapeHtml(w.name)+'</b><span>'+'★'.repeat(w.rarity)+' · '+w.damage.min+'–'+w.damage.max+' daño · +'+(w.enhancement||0)+'</span></div>').join('')}
+              ${(result.weaponDrops||[]).map(w=>'<div class="weapon-drop-line"><b>'+escapeHtml(w.name)+'</b><span>'+'★'.repeat(w.rarity)+' · Nv.'+(w.level||1)+' · '+w.damage.min+'–'+w.damage.max+' daño · +'+(w.enhancement||0)+'</span></div>').join('')}
             `:'<p class="no-rewards">Sin recompensas por derrota.</p>'}
           </div>
           <div class="damage-report">
