@@ -1,3 +1,5 @@
+import { killXpForLevels, grantExperience } from './experience.js';
+import { levelCap } from './progression.js';
 function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
 function roleBias(c){
   const role=(c.role||'').toLowerCase();
@@ -62,11 +64,12 @@ export function simulateSurvivalMission(team,mission){
   const completed=survivors.length>0;
   events.push(ev(completed?duration:Math.min(duration,time+30),completed?'El contador alcanza 180 segundos. El portal de extracción se abre: misión completada.':'La formación ha sido destruida antes de completar el tiempo de supervivencia. Misión fallida.',completed?'success':'failure'));
   const damageMetrics=chars.map(x=>({id:x.id,name:x.name,damage:x.damage,kills:x.kills,survived:x.alive,damagePct:0}));
+  const xpMetrics=chars.map(x=>({id:x.id,name:x.name,kills:x.kills,xp:completed?x.kills*killXpForLevels(x.ref.level,mission.enemyLevel||1,mission.baseXpPerKill||0):0}));
   const totalDamage=damageMetrics.reduce((a,b)=>a+b.damage,0)||1;
   damageMetrics.forEach(x=>x.damagePct=Math.round(x.damage/totalDamage*1000)/10);
   const rewards={gold:0,wood:0,stone:0,bonusGold:0};
   if(completed){rewards.bonusGold=Math.random()<.45?Math.floor(Math.random()*101):0;rewards.gold=(mission.fixedGoldReward||0)+rewards.bonusGold;rewards.wood=Math.floor(Math.random()*6);rewards.stone=Math.floor(Math.random()*5);}
-  return {completed,duration:completed?duration:Math.min(duration,time+30),enemiesDefeated,totalEnemies,enemyRemaining,events:events.sort((a,b)=>a.t-b.t),survivors:survivors.map(x=>x.id),fallen:chars.filter(x=>!x.alive).map(x=>x.id),damageMetrics,rewards};
+  return {completed,duration:completed?duration:Math.min(duration,time+30),enemiesDefeated,totalEnemies,enemyRemaining,events:events.sort((a,b)=>a.t-b.t),survivors:survivors.map(x=>x.id),fallen:chars.filter(x=>!x.alive).map(x=>x.id),damageMetrics,xpMetrics,rewards};
 }
 
 export function applyMissionResult(state,result){
@@ -77,5 +80,9 @@ export function applyMissionResult(state,result){
     state.resources.stone=(state.resources.stone||0)+result.rewards.stone;
     state.missionProgress=state.missionProgress||{};
     state.missionProgress.survival1Completions=(state.missionProgress.survival1Completions||0)+1;
+    for(const metric of result.xpMetrics||[]){
+      const char=(state.characters||[]).find(c=>c.id===metric.id);
+      if(char&&!char.dead&&metric.xp>0)grantExperience(char,metric.xp,levelCap(char));
+    }
   }
 }
