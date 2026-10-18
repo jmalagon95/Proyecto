@@ -479,6 +479,8 @@ function renderMissions(body,state,data,save,onBack){
             `:'<p class="no-rewards">Sin recompensas por derrota.</p>'}
           </div>
           <div class="damage-report">
+            <h3>Experiencia</h3>
+            ${(result.xpMetrics||[]).map(x=>`<div class="damage-row"><div><b>${escapeHtml(x.name)}</b><small>${x.kills} bajas</small></div><span>+${x.xp} XP</span></div>`).join('')}
             <h3>Métrica de daño</h3>
             ${result.damageMetrics.sort((a,b)=>b.damage-a.damage).map(m=>`
               <div class="damage-row">
