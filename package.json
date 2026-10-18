@@ -1,12 +1,15 @@
 {
   "name": "kami-no-challenge",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "content:build": "node scripts/generate-content.mjs",
+    "predev": "node scripts/generate-content.mjs",
+    "prebuild": "node scripts/generate-content.mjs"
   },
   "dependencies": {
     "pixi.js": "^8.8.1"
