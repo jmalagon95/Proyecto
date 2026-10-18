@@ -2,11 +2,11 @@ import { el, button } from './components.js';
 
 const WORLD_NAMES = ['Velmora','Astreon','Myrhalis','Eryndor','Kaelthar','Lumyra','Neravia','Aetheris'];
 const BIOMES = [
-  {name:'Templado', desc:'Praderas, bosques, montañas y costas equilibradas.'},
-  {name:'Continental', desc:'Grandes masas de tierra y estaciones marcadas.'},
-  {name:'Archipiélago', desc:'Mares extensos, islas y civilizaciones costeras.'},
-  {name:'Frío', desc:'Cordilleras nevadas, tundras y regiones glaciares.'},
-  {name:'Volcánico', desc:'Zonas fértiles, cordilleras ígneas y tierras de ceniza.'}
+  {name:'Templado', desc:'Praderas, bosques, montañas y costas equilibradas.', icon:'🌿'},
+  {name:'Continental', desc:'Grandes masas de tierra y estaciones marcadas.', icon:'⛰️'},
+  {name:'Archipiélago', desc:'Mares extensos, islas y civilizaciones costeras.', icon:'🌊'},
+  {name:'Frío', desc:'Cordilleras nevadas, tundras y regiones glaciares.', icon:'❄️'},
+  {name:'Volcánico', desc:'Zonas fértiles, cordilleras ígneas y tierras de ceniza.', icon:'🌋'}
 ];
 
 function makeWorld(nameOverride='') {
@@ -25,55 +25,67 @@ export function renderWorld({ app, state, save, onBack, onComplete }) {
   const draft = state.world || makeWorld();
   const screen = el('section', 'screen world-screen');
   screen.innerHTML = `
-    <div class="world-page-pro">
-      <header class="world-head-pro">
-        <div class="world-brand-pro">KAMI NO CHALLENGE</div>
-        <h1>Creación del mundo</h1>
-        <div class="ornament-line"><span>◇</span></div>
-        <p>Un nuevo destino comienza aquí. El planeta fija población, civilizaciones y el origen de todos los personajes de esta partida.</p>
+    <div class="world-ornate-frame">
+      <div class="world-corner tl"></div><div class="world-corner tr"></div><div class="world-corner bl"></div><div class="world-corner br"></div>
+
+      <header class="world-title-block">
+        <div class="world-logo-mini">KAMI NO CHALLENGE</div>
+        <h1>CREACIÓN DEL MUNDO</h1>
+        <div class="gold-divider"><span>✦</span></div>
+        <p>Un nuevo destino comienza aquí.</p>
       </header>
 
-      <div class="world-stage-pro">
-        <div class="world-astral-bg"></div>
-        <div class="world-orbits"><i></i><i></i><i></i></div>
+      <section class="world-orbital-chamber">
+        <div class="world-rune-ring ring-a"></div>
+        <div class="world-rune-ring ring-b"></div>
+        <div class="world-rune-ring ring-c"></div>
+        <div class="world-crystal c1"></div><div class="world-crystal c2"></div><div class="world-crystal c3"></div><div class="world-crystal c4"></div>
         <div class="planet-pro" id="planetPro">
           <div class="p-ocean"></div><div class="p-land l1"></div><div class="p-land l2"></div><div class="p-clouds"></div><div class="p-shade"></div><div class="p-atmo"></div><div class="p-shine"></div>
         </div>
-      </div>
+      </section>
 
-      <div class="world-config-pro">
-        <div class="world-field world-name-field">
-          <small>NOMBRE DEL MUNDO</small>
-          <div class="world-name-row"><input id="worldName" maxlength="24" value="${draft.name}"><button id="randomWorld" type="button">⚄</button></div>
+      <section class="world-controls-card">
+        <div class="world-control full">
+          <label>NOMBRE DEL MUNDO</label>
+          <div class="world-name-row"><input id="worldName" maxlength="24" value="${draft.name}"><button id="randomWorld" type="button" aria-label="Nombre aleatorio">⚄</button></div>
         </div>
-        <div class="world-field">
-          <small>BIOMA / CLIMA PRINCIPAL</small>
-          <b id="biomeName">${draft.biome.name}</b><span id="biomeDesc">${draft.biome.desc}</span>
-        </div>
-        <div class="world-field">
-          <small>POBLACIÓN TOTAL</small>
-          <b id="populationPreview">${draft.population.toLocaleString('es-ES')}</b><span>Generación aleatoria entre 6 y 10 billones</span>
-        </div>
-        <div class="world-field">
-          <small>CIVILIZACIONES FUNDACIONALES</small>
-          <b>8</b><span>Una base cultural para cada raza oficial</span>
-        </div>
-        <div class="world-field">
-          <small>HABITANTES INVOCABLES</small>
-          <b id="invocablePreview">${draft.invocablePopulation.toLocaleString('es-ES')}</b><span>Cada invocación resta 1 de este total</span>
-        </div>
-      </div>
 
-      <div class="world-genesis-pro">
-        <div class="world-genesis-label"><span id="worldStep">Preparado para comenzar</span><b id="worldPct">0%</b></div>
-        <div class="world-progress"><div id="worldFill"></div></div>
-      </div>
+        <div class="world-control biome-card">
+          <label>BIOMA / CLIMA PRINCIPAL</label>
+          <div class="biome-visual"><span id="biomeIcon">${draft.biome.icon}</span><strong id="biomeName">${draft.biome.name}</strong></div>
+          <p id="biomeDesc">${draft.biome.desc}</p>
+        </div>
+
+        <div class="world-control number-card">
+          <label>POBLACIÓN TOTAL</label>
+          <strong id="populationPreview">${draft.population.toLocaleString('es-ES')}</strong>
+          <p>Generación aleatoria entre 6 y 10 billones.</p>
+        </div>
+
+        <div class="world-control number-card">
+          <label>CIVILIZACIONES PRESENTES</label>
+          <strong>8</strong>
+          <p>Las 8 razas fundacionales forman parte de este planeta.</p>
+        </div>
+
+        <div class="world-control number-card">
+          <label>HABITANTES INVOCABLES</label>
+          <strong id="invocablePreview">${draft.invocablePopulation.toLocaleString('es-ES')}</strong>
+          <p>Tu protagonista y cada invocación restan 1.</p>
+        </div>
+
+        <div class="world-genesis-bar full">
+          <div class="genesis-head"><span id="worldStep">Preparado para comenzar</span><b id="worldPct">0%</b></div>
+          <div class="genesis-track"><div id="worldFill"></div></div>
+        </div>
+      </section>
 
       <div class="world-result-pro hidden" id="worldResult"></div>
 
-      <footer class="world-footer-pro">
-        <button id="worldBack" class="world-back-pro" type="button">← <span>Volver</span></button>
-        <button id="forge" class="world-confirm-pro" type="button"><span>Crear mundo</span><i>›</i></button>
+      <footer class="world-actions-pro">
+        <button id="worldBack" class="world-back-round" type="button">←</button>
+        <button id="forge" class="world-create-button" type="button"><span>CREAR MUNDO</span><i>›</i></button>
       </footer>
     </div>`;
   app.append(screen);
@@ -91,6 +103,7 @@ export function renderWorld({ app, state, save, onBack, onComplete }) {
   };
 
   function updatePreview(){
+    screen.querySelector('#biomeIcon').textContent = preview.biome.icon;
     screen.querySelector('#biomeName').textContent = preview.biome.name;
     screen.querySelector('#biomeDesc').textContent = preview.biome.desc;
     screen.querySelector('#populationPreview').textContent = preview.population.toLocaleString('es-ES');
@@ -106,8 +119,13 @@ export function renderWorld({ app, state, save, onBack, onComplete }) {
     save();
     screen.querySelector('#planetPro').classList.add('forming');
     const steps = [
-      [9,'Encendiendo el núcleo'],[23,'Formando océanos'],[39,'Elevando continentes'],
-      [55,'Definiendo biomas'],[70,'Fundando civilizaciones'],[85,'Inscribiendo destinos'],[100,'Mundo completado']
+      [10,'Encendiendo el núcleo'],
+      [24,'Formando océanos'],
+      [40,'Elevando continentes'],
+      [57,'Definiendo biomas'],
+      [72,'Fundando civilizaciones'],
+      [88,'Inscribiendo destinos'],
+      [100,'Mundo completado']
     ];
     let i=0;
     const tick=()=>{
@@ -123,7 +141,12 @@ export function renderWorld({ app, state, save, onBack, onComplete }) {
   function showResult(world){
     const result=screen.querySelector('#worldResult');
     result.classList.remove('hidden');
-    result.innerHTML=`<div><small>MUNDO CREADO</small><h2>${world.name}</h2><p>${world.population.toLocaleString('es-ES')} habitantes potenciales · ${world.civilizations} civilizaciones fundacionales · Clima ${world.biome.name}</p></div>`;
+    result.innerHTML=`
+      <div class="world-created-card">
+        <small>MUNDO CREADO</small>
+        <h2>${world.name}</h2>
+        <p>${world.population.toLocaleString('es-ES')} habitantes potenciales · 8 civilizaciones · ${world.biome.name}</p>
+      </div>`;
     const next=button('Confirmar mundo','game-button gold wide');
     next.onclick=onComplete;
     result.append(next);
