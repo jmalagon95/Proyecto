@@ -1,6 +1,6 @@
 import { el, button, stars, escapeHtml } from './components.js';
 import { createHero } from './reveal.js';
-import { EQUIPMENT_SLOTS, normalizeEquipment } from '../systems/equipment.js';
+import { EQUIPMENT_SLOTS, normalizeEquipment, canEquip, equipItem, unequipSlot } from '../systems/equipment.js';
 import { ascensionRequirement, levelCap } from '../systems/progression.js';
 import { simulateSurvivalMission, applyMissionResult } from '../systems/mission-simulator.js';
 import { rollSurvival1WeaponDrops, applyWeaponDrops } from '../systems/loot.js';
@@ -109,10 +109,101 @@ function renderDorms(body,state,save,rerender,onBack){
   backButton(onBack,body.querySelector('.premium-content'));
 }
 
-function equipSlot(label,item){
+function itemKey(item){return item?.instanceId||item?.id||item?.linkedTo||null}
+
+function syncInventoryEquippedBy(state){
+  for(const item of state.inventory||[]) if(item&&typeof item==='object') item.equippedBy=null;
+  for(const char of state.characters||[]){
+    const eq=normalizeEquipment(char);
+    for(const item of Object.values(eq)){
+      if(!item||item.twoHandedMirror)continue;
+      const key=itemKey(item);
+      const stored=(state.inventory||[]).find(x=>itemKey(x)===key);
+      if(stored)stored.equippedBy=char.id;
+    }
+  }
+}
+
+function equipSlot(slot,item){
   const value=item?.twoHandedMirror?'Ocupado por arma a dos manos':(item?.name||item||'Vacío');
   const extra=item?.armorGroup?` · ${item.armorGroup}`:'';
-  return `<div class="profile-equip"><span>✦</span><b>${escapeHtml(value)}</b><small>${label}${extra}</small></div>`;
+  const detail=item&&!item.twoHandedMirror
+    ? `${item.rarity?'★'.repeat(item.rarity)+' · ':''}${item.level?'Nv.'+item.level+' · ':''}${item.enhancement!=null?'+'+item.enhancement:''}`
+    : '';
+  return `<button class="profile-equip" data-equip-slot="${slot.id}" type="button">
+    <span>✦</span><b>${escapeHtml(value)}</b><small>${slot.label}${extra}</small>
+    ${detail?`<em>${detail}</em>`:''}
+  </button>`;
+}
+
+function compatibleStoredItems(state,hero,slotId){
+  syncInventoryEquippedBy(state);
+  return (state.inventory||[])
+    .filter(item=>canEquip(item,slotId,hero))
+    .filter(item=>!item.equippedBy || item.equippedBy===hero.id)
+    .sort((a,b)=>(b.rarity||1)-(a.rarity||1)||(b.level||1)-(a.level||1)||(b.enhancement||0)-(a.enhancement||0));
+}
+
+function renderEquipmentPicker(body,state,hero,slotId,save,rerender){
+  const slot=EQUIPMENT_SLOTS.find(s=>s.id===slotId);
+  if(!slot)return;
+  const equipment=normalizeEquipment(hero);
+  const current=equipment[slotId];
+  const choices=compatibleStoredItems(state,hero,slotId);
+  let overlay=body.querySelector('.equipment-picker-overlay');
+  if(overlay)overlay.remove();
+  overlay=document.createElement('div');
+  overlay.className='equipment-picker-overlay';
+  overlay.innerHTML=`
+    <div class="equipment-picker">
+      <header>
+        <div><small>EQUIPAMIENTO</small><h3>${escapeHtml(slot.label)}</h3></div>
+        <button data-close-equip>×</button>
+      </header>
+      ${current?`<div class="equipped-current"><span>Equipado</span><b>${escapeHtml(current.twoHandedMirror?'Arma a dos manos':current.name||'Objeto')}</b><button data-unequip-slot>Quitar</button></div>`:''}
+      <div class="equipment-picker-list">
+        ${choices.length?choices.map(item=>`
+          <button class="equipment-choice" data-equip-item="${itemKey(item)}">
+            <div>
+              <b>${escapeHtml(item.name||'Objeto')}</b>
+              <span>${'★'.repeat(item.rarity||1)} · Nv.${item.level||1}${item.enhancement!=null?' · +'+item.enhancement:''}</span>
+              <small>${item.damage?item.damage.min+'–'+item.damage.max+' daño · ':''}${item.hands?item.hands+' mano(s)':''}</small>
+            </div>
+            <strong>Equipar</strong>
+          </button>`).join(''):`
+          <div class="equipment-picker-empty">
+            <b>No tienes objetos compatibles en el almacén.</b>
+            <small>Solo aparecen piezas válidas para este hueco y, en armas, para la clase ${escapeHtml(hero.className||hero.classId||'actual')}.</small>
+          </div>`}
+      </div>
+    </div>`;
+  body.append(overlay);
+
+  const close=()=>overlay.remove();
+  overlay.querySelector('[data-close-equip]').onclick=close;
+  overlay.onclick=e=>{if(e.target===overlay)close()};
+  overlay.querySelector('[data-unequip-slot]')?.addEventListener('click',()=>{
+    unequipSlot(hero,slotId);
+    syncInventoryEquippedBy(state);
+    save();rerender('profile');
+  });
+  overlay.querySelectorAll('[data-equip-item]').forEach(btn=>btn.onclick=()=>{
+    const item=(state.inventory||[]).find(x=>itemKey(x)===btn.dataset.equipItem);
+    if(!item)return;
+    const result=equipItem(hero,item,slotId);
+    if(!result.ok){
+      const empty=overlay.querySelector('.equipment-picker-empty')||document.createElement('div');
+      empty.className='equipment-picker-empty error';
+      empty.textContent=result.reason||'No se puede equipar este objeto.';
+      if(!empty.parentNode)overlay.querySelector('.equipment-picker-list').prepend(empty);
+      return;
+    }
+    syncInventoryEquippedBy(state);
+    item.equippedBy=hero.id;
+    state.ui=state.ui||{};
+    state.ui.newItemIds=(state.ui.newItemIds||[]).filter(id=>id!==itemKey(item));
+    save();rerender('profile');
+  });
 }
 
 function renderProfile(body,state,save,rerender,onBack){
@@ -142,7 +233,7 @@ function renderProfile(body,state,save,rerender,onBack){
   const equipmentPanel=`
     <section class="profile-tab-panel">
       <h2>Equipamiento</h2>
-      <div class="profile-equipment">${EQUIPMENT_SLOTS.map(slot=>equipSlot(slot.label,equipment[slot.id])).join('')}</div>
+      <div class="profile-equipment">${EQUIPMENT_SLOTS.map(slot=>equipSlot(slot,equipment[slot.id])).join('')}</div>
       <p class="equipment-rule">Cada pieza pertenece a un hueco concreto. Las armas a dos manos ocupan Mano izquierda y Mano derecha simultáneamente.</p>
       <button class="premium-blue-button wide" id="openStorageFromProfile">Abrir Almacén</button>
     </section>`;
@@ -199,6 +290,9 @@ function renderProfile(body,state,save,rerender,onBack){
   body.querySelectorAll('[data-profile-tab]').forEach(btn=>btn.onclick=()=>{
     state.ui.profileTab=btn.dataset.profileTab;
     save();rerender('profile');
+  });
+  body.querySelectorAll('[data-equip-slot]').forEach(btn=>btn.onclick=()=>{
+    renderEquipmentPicker(body,state,hero,btn.dataset.equipSlot,save,rerender);
   });
   body.querySelector('#upgradeBtn')?.addEventListener('click',()=>rerender('upgrade'));
   body.querySelector('#openStorageFromProfile')?.addEventListener('click',()=>rerender('storage'));
