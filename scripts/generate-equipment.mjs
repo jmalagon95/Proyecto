@@ -3,7 +3,6 @@ import path from 'node:path';
 
 const root=process.cwd();
 const source=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_families_star1.json'),'utf8'));
-const balance=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_balance.json'),'utf8'));
 const progression=JSON.parse(fs.readFileSync(path.join(root,'data/equipment/weapon_progression.json'),'utf8'));
 const outDir=path.join(root,'data/generated/equipment');
 fs.mkdirSync(outDir,{recursive:true});
@@ -86,40 +85,4 @@ for(let rarity=1;rarity<=8;rarity++){
 }
 const allItems=Object.values(allByRarity).flat();
 fs.writeFileSync(path.join(outDir,'weapons-all.json'),JSON.stringify({schemaVersion:1,total:allItems.length,items:allItems},null,2));
-console.log(`Generated ${allItems.length} weapons: ${source.families.length} families × 10 variants × 8 rarities.`);function variants(f,rarity){
-  const names=nouns[f.id]||Array.from({length:10},(_,i)=>`${f.name} ★${rarity} ${i+1}`);
-  const mult=balance.rarityDamageMultipliers[rarity]||1;
-  return names.map((baseName,i)=>{
-    const shift=(i%3)-1;
-    const rawMin=Math.max(1,f.damage[0]+(shift>0?1:0));
-    const rawMax=Math.max(rawMin,f.damage[1]+(shift<0?-1:0));
-    const min=Math.max(1,Math.round(rawMin*mult));
-    const max=Math.max(min,Math.round(rawMax*mult));
-    const item={
-      id:`W${rarity}-${f.id.toUpperCase()}-${String(i+1).padStart(2,'0')}`,
-      templateId:`W${rarity}-${f.id.toUpperCase()}-${String(i+1).padStart(2,'0')}`,
-      name:rarity===1?baseName:`${baseName} ★${rarity}`,
-      rarity,
-      category:'weapon',
-      familyId:f.id,
-      familyName:f.name,
-      hands:f.hands,
-      enhancement:0,
-      baseDamage:{min,max},
-      damage:{min,max},
-      speed:f.speed,
-      scalingStat:f.stat,
-      compatibleKeywords:f.compatibleKeywords,
-      sellValueGold:Math.max(8,Math.round((12+i*2)*mult*rarity))
-    };
-    if(f.range)item.range=f.range;
-    if(f.magicPower){
-      const mpMin=Math.max(1,Math.round(f.magicPower[0]*mult));
-      const mpMax=Math.max(mpMin,Math.round(f.magicPower[1]*mult));
-      item.baseMagicPower={min:mpMin,max:mpMax};
-      item.magicPower={min:mpMin,max:mpMax};
-    }
-    return item;
-  });
-}
-
+console.log(`Generated ${allItems.length} weapons: ${source.families.length} families × 10 variants × 8 rarities.`);
