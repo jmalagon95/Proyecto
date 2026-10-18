@@ -1,6 +1,12 @@
-import { WEAPON_ENHANCEMENT } from './weapon-config.js';
+import { WEAPON_ENHANCEMENT, WEAPON_LEVEL } from './weapon-config.js';
 
 export const MAX_WEAPON_ENHANCEMENT=WEAPON_ENHANCEMENT.max;
+export const MAX_WEAPON_LEVEL=WEAPON_LEVEL.max;
+
+export function weaponLevelMultiplier(level){
+  const lv=Math.max(WEAPON_LEVEL.min,Math.min(MAX_WEAPON_LEVEL,Number(level)||WEAPON_LEVEL.min));
+  return 1+((lv-1)*WEAPON_LEVEL.damagePerLevelPct/100);
+}
 
 export function enhancementMultiplier(level){
   const lv=Math.max(0,Math.min(MAX_WEAPON_ENHANCEMENT,Number(level)||0));
@@ -12,11 +18,13 @@ export function weaponUpgradeCost(weapon){
   const current=Math.max(0,Number(weapon.enhancement)||0);
   if(current>=MAX_WEAPON_ENHANCEMENT)return 0;
   const base=WEAPON_ENHANCEMENT.goldBaseByRarity[rarity]||100;
-  return Math.round(base*(1+current*WEAPON_ENHANCEMENT.goldLevelFactor));
+  const weaponLevel=Math.max(1,Number(weapon.level)||1);
+  return Math.round(base*(1+current*WEAPON_ENHANCEMENT.goldLevelFactor)*(1+(weaponLevel-1)*WEAPON_ENHANCEMENT.levelCostFactor));
 }
 
 export function recalculateWeapon(weapon){
-  const mult=enhancementMultiplier(weapon.enhancement||0);
+  weapon.level=Math.max(1,Math.min(MAX_WEAPON_LEVEL,Number(weapon.level)||1));
+  const mult=weaponLevelMultiplier(weapon.level)*enhancementMultiplier(weapon.enhancement||0);
   const base=weapon.baseDamage||weapon.damage||{min:0,max:0};
   weapon.damage={
     min:Math.max(0,Math.round(base.min*mult)),
@@ -30,6 +38,11 @@ export function recalculateWeapon(weapon){
     };
   }
   return weapon;
+}
+
+export function setWeaponLevel(weapon,level){
+  weapon.level=Math.max(1,Math.min(MAX_WEAPON_LEVEL,Number(level)||1));
+  return recalculateWeapon(weapon);
 }
 
 export function upgradeWeapon(state,weapon){
