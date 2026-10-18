@@ -1,3 +1,4 @@
+import { allowedClassesForWeaponFamily } from './systems/weapon-classes.js';
 const KEY = 'kami_no_challenge_v04_state';
 
 export const defaultState = {
@@ -85,6 +86,12 @@ export function loadState() {
         ...((saved&&saved.missionTeams)||{})
       }
     };
+    for(const item of state.inventory||[]){
+      if(item?.category==='weapon'&&(!Array.isArray(item.allowedClasses)||!item.allowedClasses.length)){
+        const family=item.familyName||item.family||'';
+        item.allowedClasses=allowedClassesForWeaponFamily(family);
+      }
+    }
     return state;
   } catch {
     return structuredClone(defaultState);
