@@ -86,6 +86,10 @@ export function loadState() {
         ...((saved&&saved.missionTeams)||{})
       }
     };
+    for(const char of state.characters||[]){
+      if(!Number.isFinite(char.missionsSurvived))char.missionsSurvived=0;
+      if(!Number.isFinite(char.totalKills))char.totalKills=0;
+    }
     for(const item of state.inventory||[]){
       if(item?.category==='weapon'&&(!Array.isArray(item.allowedClasses)||!item.allowedClasses.length)){
         const family=item.familyName||item.family||'';
