@@ -2,7 +2,8 @@ const KEY = 'kami_no_challenge_v02_state';
 
 export const defaultState = {
   screen: 'cover',
-  world: null,\n  inhabitantsRemaining: null,
+  world: null,
+  inhabitantsRemaining: null,
   selectedRace: 'kairakh',
   selectedClass: null,
   heroName: '',
@@ -12,12 +13,27 @@ export const defaultState = {
   inventory: [],
   characters: [],
   activeCharacterId: null,
+  summon: {
+    freeMultiUsed: false,
+    history: []
+  }
 };
 
 export function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    return { ...structuredClone(defaultState), ...(saved || {}) };
+    return {
+      ...structuredClone(defaultState),
+      ...(saved || {}),
+      resources: {
+        ...structuredClone(defaultState.resources),
+        ...((saved && saved.resources) || {})
+      },
+      summon: {
+        ...structuredClone(defaultState.summon),
+        ...((saved && saved.summon) || {})
+      }
+    };
   } catch {
     return structuredClone(defaultState);
   }
