@@ -288,39 +288,71 @@ function renderSanctuary(body,state,data,save,rerender,onBack){
 }
 
 function renderStorage(body,state,save,rerender,onBack){
-  const weaponItems=(state.inventory||[]).filter(x=>x.category==='weapon');
-  const items=[
-    ['Oro',state.resources.gold,'●','rare-gold'],
-    ['Madera',state.resources.wood,'▥','rare-green'],
-    ['Piedra',state.resources.stone,'⬢','rare-silver'],
-    ['Inventario',state.inventory.length,'▣','rare-blue']
+  state.ui=state.ui||{};
+  const tab=state.ui.storageTab||'weapons';
+  const all=state.inventory||[];
+  const newIds=new Set(state.ui.newItemIds||[]);
+  const weapons=all.filter(x=>x.category==='weapon');
+  const armor=all.filter(x=>['armor','helmet','legs','hands','feet'].includes(x.category));
+  const accessories=all.filter(x=>['neck','ring'].includes(x.category));
+  const materials=[
+    {name:'Oro',value:state.resources.gold,icon:'●',category:'material'},
+    {name:'Madera',value:state.resources.wood,icon:'▥',category:'material'},
+    {name:'Piedra',value:state.resources.stone,icon:'⬢',category:'material'}
   ];
+  const tabs=[
+    ['weapons','Armas',weapons.length],
+    ['armor','Armaduras',armor.length],
+    ['accessories','Accesorios',accessories.length],
+    ['materials','Materiales',3]
+  ];
+  const renderEquipItem=item=>{
+    const id=item.instanceId||item.id;
+    const equipped=(state.characters||[]).find(ch=>Object.values(ch.equipment||{}).some(eq=>(eq?.instanceId||eq?.id)===id));
+    const isNew=newIds.has(id);
+    return `<article class="inventory-equip-row ${isNew?'is-new':''}">
+      <div>
+        <span class="inventory-rarity">${'★'.repeat(item.rarity||1)}</span>
+        <b>${escapeHtml(item.name||'Objeto')}</b>
+        <small>${item.level?'Nv.'+item.level+' · ':''}${item.enhancement!=null?'+'+item.enhancement+' · ':''}${item.damage?item.damage.min+'–'+item.damage.max+' daño · ':''}${item.hands?item.hands+' mano(s) · ':''}${equipped?'Equipado por '+escapeHtml(equipped.name):'Sin equipar'}</small>
+      </div>
+      <div class="inventory-row-actions">
+        ${isNew?'<em>NUEVO</em>':''}
+        ${item.category==='weapon'? `<button data-upgrade-weapon="${id}" ${(item.enhancement||0)>=15?'disabled':''}>${(item.enhancement||0)>=15?'Máximo +15':'Mejorar · '+weaponUpgradeCost(item)+' oro'}</button>`:''}
+        <button data-mark-seen="${id}">Inspeccionar</button>
+      </div>
+    </article>`;
+  };
+  let panel='';
+  if(tab==='materials'){
+    panel=`<div class="material-cards">${materials.map(m=>`<div><span>${m.icon}</span><b>${m.value.toLocaleString('es-ES')}</b><small>${m.name}</small></div>`).join('')}</div>`;
+  }else{
+    const list=tab==='weapons'?weapons:tab==='armor'?armor:accessories;
+    panel=list.length?list.map(renderEquipItem).join(''):`<p class="empty-equipment">No tienes objetos en esta categoría.</p>`;
+  }
+
   body.innerHTML=`
     <div class="page-scene storage-scene"></div>
     <div class="premium-content storage-content">
-      ${frameTitle('KAMI NO CHALLENGE','Almacén','Objetos y recursos de tu aventura')}
-      <div class="storage-tabs-premium"><button class="active">◇<b>Materiales</b></button><button>⚔<b>Equipo</b></button><button>◉<b>Consumibles</b></button><button>✦<b>Especiales</b></button></div>
-      <div class="storage-toolbar"><button>☷ Ordenar: Rareza</button><button>▽ Todos</button><span>▣ ${state.inventory.length} / 300</span></div>
-      <div class="storage-layout">
-        <div>
-          <div class="storage-grid-premium">${items.map(([n,v,icon,c])=>`<button class="storage-item ${c}"><span>${icon}</span><b>${v}</b><small>${n}</small><i>★★★</i></button>`).join('')}</div>
-          <section class="weapon-inventory">
-            <h2>Armas</h2>
-            ${weaponItems.length?weaponItems.map(w=>`
-              <div class="weapon-inventory-row">
-                <div>
-                  <b>${escapeHtml(w.name)} +${w.enhancement||0}</b>
-                  <small>${'★'.repeat(w.rarity||1)} · ${w.damage?.min||0}–${w.damage?.max||0} daño · ${w.hands||1} mano(s)</small>
-                </div>
-                <button data-upgrade-weapon="${w.instanceId||w.id}" ${(w.enhancement||0)>=15?'disabled':''}>
-                  ${(w.enhancement||0)>=15?'Máximo +15':'Mejorar · '+weaponUpgradeCost(w)+' oro'}
-                </button>
-              </div>`).join(''):'<p class="empty-equipment">Aún no has conseguido armas.</p>'}
-          </section>
-        </div>
-        <aside class="storage-detail"><div class="storage-big-icon">▥</div><h2>Materiales</h2><p>Al inicio solo gestionas oro, madera y piedra. La madera y la piedra se obtienen principalmente en misiones normales.</p><h3>Economía inicial</h3><div>● Oro: invocaciones y mejoras</div><div>▥ Madera: construcción</div><div>⬢ Piedra: construcción</div></aside>
+      ${frameTitle('KAMI NO CHALLENGE','Almacén','Gestiona armas, armaduras, accesorios y materiales por separado.')}
+      <div class="storage-tabs-premium functional-tabs">
+        ${tabs.map(([id,label,count])=>`<button data-storage-tab="${id}" class="${tab===id?'active':''}"><b>${label}</b><small>${count}</small></button>`).join('')}
       </div>
+      <div class="storage-toolbar">
+        <span>▣ ${all.length} / 300</span>
+        <span class="storage-new-count">${newIds.size?newIds.size+' nuevo(s)':'Sin novedades'}</span>
+      </div>
+      <section class="storage-category-panel">${panel}</section>
     </div>`;
+
+  body.querySelectorAll('[data-storage-tab]').forEach(btn=>btn.onclick=()=>{
+    state.ui.storageTab=btn.dataset.storageTab;save();rerender('storage');
+  });
+  body.querySelectorAll('[data-mark-seen]').forEach(btn=>btn.onclick=()=>{
+    const id=btn.dataset.markSeen;
+    state.ui.newItemIds=(state.ui.newItemIds||[]).filter(x=>x!==id);
+    save();rerender('storage');
+  });
   body.querySelectorAll('[data-upgrade-weapon]').forEach(btn=>btn.onclick=()=>{
     const weapon=(state.inventory||[]).find(w=>(w.instanceId||w.id)===btn.dataset.upgradeWeapon);
     if(!weapon)return;
