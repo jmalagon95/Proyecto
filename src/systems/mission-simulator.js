@@ -73,6 +73,12 @@ export function simulateSurvivalMission(team,mission){
 }
 
 export function applyMissionResult(state,result){
+  for(const metric of result.damageMetrics||[]){
+    const char=(state.characters||[]).find(c=>c.id===metric.id);
+    if(!char)continue;
+    char.totalKills=(char.totalKills||0)+(metric.kills||0);
+    if(metric.survived)char.missionsSurvived=(char.missionsSurvived||0)+1;
+  }
   for(const id of result.fallen){const char=(state.characters||[]).find(c=>c.id===id);if(char)char.dead=true;}
   if(result.completed){
     state.resources.gold=(state.resources.gold||0)+result.rewards.gold;
