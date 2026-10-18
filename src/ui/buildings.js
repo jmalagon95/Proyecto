@@ -314,7 +314,7 @@ function renderStorage(body,state,save,rerender,onBack){
       <div>
         <span class="inventory-rarity">${'★'.repeat(item.rarity||1)}</span>
         <b>${escapeHtml(item.name||'Objeto')}</b>
-        <small>${item.level?'Nv.'+item.level+' · ':''}${item.enhancement!=null?'+'+item.enhancement+' · ':''}${item.damage?item.damage.min+'–'+item.damage.max+' daño · ':''}${item.hands?item.hands+' mano(s) · ':''}${equipped?'Equipado por '+escapeHtml(equipped.name):'Sin equipar'}</small>
+        <small>${item.level?'Nv.'+item.level+' · ':''}${item.enhancement!=null?'+'+item.enhancement+' · ':''}${item.damage?item.damage.min+'–'+item.damage.max+' daño · ':''}${item.hands?item.hands+' mano(s) · ':''}${equipped?'Equipado por '+escapeHtml(equipped.name):'Sin equipar'}</small>${item.category==='weapon'?`<small class="weapon-classes"><b>Clases:</b> ${(item.allowedClasses||[]).map(x=>escapeHtml(typeof x==='string'?x:x.name)).join(', ')||'Sin clase asignada'}</small>`:''}
       </div>
       <div class="inventory-row-actions">
         ${isNew?'<em>NUEVO</em>':''}
