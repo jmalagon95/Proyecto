@@ -1,48 +1,47 @@
 import { el, escapeHtml } from './components.js';
 
-export function renderRace({ app, data, state, save, onBack, onNext }) {
-  app.innerHTML = '';
-  const screen = el('section', 'screen race-screen-premium');
-  screen.innerHTML = `
-    <div class="race-ornate-frame">
-      <div class="race-corner tl"></div><div class="race-corner tr"></div><div class="race-corner bl"></div><div class="race-corner br"></div>
-      <header class="race-page-head">
-        <div class="race-brand">KAMI NO CHALLENGE</div>
-        <h1>ESCOGE TU RAZA</h1>
-        <div class="ornament-line"><span>◇</span></div>
-        <p>Cada raza tiene su propia historia y una identidad única.<br>Tú eliges la raza; la rareza, atributos y afinidades se sortearán después.</p>
+export function renderRace({app,data,state,save,onBack,onNext}){
+  app.innerHTML='';
+  if(!data.races.some(r=>r.id===state.selectedRace)) state.selectedRace=data.races[0]?.id||'kairakh';
+  const screen=el('section','screen race-screen-premium');
+  screen.innerHTML=`
+    <div class="race-cathedral-bg"></div>
+    <div class="race-frame">
+      <header class="race-header">
+        <div class="race-logo">KAMI NO CHALLENGE</div>
+        <h1>Escoge tu raza</h1>
+        <div class="race-divider"><i></i><b>◇</b><i></i></div>
+        <p>Cada raza tiene su propia historia e identidad.<br>Tu elección define el origen de tu protagonista.</p>
       </header>
       <div class="race-card-grid"></div>
-      <footer class="race-page-actions">
-        <div class="back-stack"><button class="round-back" type="button">←</button><span>Volver</span></div>
-        <button class="race-confirm-button" type="button"><span>Elegir raza</span><i>›</i></button>
-        <div></div>
+      <footer class="race-actions">
+        <div class="race-back-wrap"><button class="race-back" type="button">←</button><span>Volver</span></div>
+        <button class="race-confirm" type="button"><span>Elegir raza</span><i>›</i></button>
       </footer>
     </div>`;
   app.append(screen);
 
-  const grid = screen.querySelector('.race-card-grid');
-  data.races.forEach(race => {
-    const card = el('button', `race-premium-card ${race.id === state.selectedRace ? 'selected' : ''}`);
-    card.type = 'button';
-    card.innerHTML = `
-      <div class="race-premium-art" style="--race-img:url('${race.image}')">
-        <div class="race-symbol">${race.emblem}</div>
-      </div>
-      <div class="race-premium-body">
-        <h2>${escapeHtml(race.name)}</h2>
-        <div class="race-pill">${escapeHtml(race.tag)}</div>
-        <p>${escapeHtml(race.description)}</p>
+  const grid=screen.querySelector('.race-card-grid');
+  data.races.forEach(race=>{
+    const card=el('button',`race-card ${race.id===state.selectedRace?'selected':''}`);
+    card.type='button';
+    card.dataset.race=race.id;
+    card.innerHTML=`
+      <div class="race-wallpaper" style="background-image:url('${race.image}')"></div>
+      <div class="race-card-shade"></div>
+      <div class="race-card-copy">
+        <div class="race-emblem">${race.emblem}</div>
+        <div class="race-text"><h2>${escapeHtml(race.name)}</h2><p>${escapeHtml(race.description)}</p></div>
       </div>`;
-    card.onclick = () => {
-      state.selectedRace = race.id;
-      state.selectedClass = null;
+    card.onclick=()=>{
+      state.selectedRace=race.id;
+      state.selectedClass=null;
       save();
-      renderRace({ app, data, state, save, onBack, onNext });
+      grid.querySelectorAll('.race-card').forEach(x=>x.classList.toggle('selected',x.dataset.race===race.id));
     };
     grid.append(card);
   });
 
-  screen.querySelector('.round-back').onclick = onBack;
-  screen.querySelector('.race-confirm-button').onclick = onNext;
+  screen.querySelector('.race-back').onclick=onBack;
+  screen.querySelector('.race-confirm').onclick=onNext;
 }
