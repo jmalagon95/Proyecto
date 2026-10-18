@@ -52,7 +52,7 @@ function allowedClassesForFamily(familyId){
   return classEntries
     .filter(cls=>cls.weapons.some(w=>{
       const nw=normalizeText(w);
-      return aliases.some(a=>nw===a || nw.includes(a) || a.includes(nw));
+      return aliases.some(a=>nw===a);
     }))
     .map(cls=>({group:cls.group,name:cls.name}));
 }
