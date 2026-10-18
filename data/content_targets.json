@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "ranks": [
+    "F",
+    "E",
+    "D",
+    "C",
+    "B",
+    "A",
+    "S",
+    "SS",
+    "SSS",
+    "SSS+",
+    "U"
+  ],
+  "passives": {
+    "total": 9000,
+    "rankCounts": {
+      "F": 2250,
+      "E": 1710,
+      "D": 1350,
+      "C": 1080,
+      "B": 855,
+      "A": 630,
+      "S": 450,
+      "SS": 315,
+      "SSS": 203,
+      "SSS+": 112,
+      "U": 45
+    },
+    "scopeCounts": {
+      "universal": 3000,
+      "weapon": 2000,
+      "class": 2000,
+      "racial": 1200,
+      "skillSynergy": 800
+    },
+    "racialMinimumPerRace": 200
+  },
+  "skills": {
+    "minimumPerClass": 2000,
+    "rankCountsPerClass": {
+      "F": 500,
+      "E": 380,
+      "D": 300,
+      "C": 240,
+      "B": 190,
+      "A": 140,
+      "S": 100,
+      "SS": 70,
+      "SSS": 45,
+      "SSS+": 25,
+      "U": 10
+    }
+  }
+}
