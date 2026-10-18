@@ -2,6 +2,7 @@ import { el, button, stars, escapeHtml } from './components.js';
 import { createHero } from './reveal.js';
 import { EQUIPMENT_SLOTS, normalizeEquipment } from '../systems/equipment.js';
 import { ascensionRequirement, levelCap } from '../systems/progression.js';
+import { simulateSurvivalMission, applyMissionResult } from '../systems/mission-simulator.js';
 
 const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
 const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
@@ -203,20 +204,83 @@ function renderStorage(body,state,onBack){
   backButton(onBack,body.querySelector('.premium-content'));
 }
 
-function renderMissions(body,state,onBack){
+function renderMissions(body,state,data,save,onBack){
   const chars=living(state);
+  const mission=data.missions?.survival1;
+  const team=chars.slice(0,5);
   body.innerHTML=`
     <div class="page-scene mission-scene"></div>
     <div class="premium-content">
-      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','Resiste 180 segundos. La muerte permanente está activa.')}
+      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','La batalla se resolverá completamente en código mientras un narrador relata los acontecimientos.')}
       <div class="mission-card">
         <div class="mission-portal-art"><span>✦</span></div>
-        <div><small>TORRE · PISO 1</small><h2>Supervivencia I</h2><p>Goblins ★1 · 3 carriles invisibles · ataques diagonales · sin jefe.</p><p><b>Recompensa fija: 250 de oro</b>. El loot puede añadir oro, madera y piedra.</p></div>
+        <div>
+          <small>TORRE · PISO 1</small>
+          <h2>Supervivencia I</h2>
+          <p>Duración: ${mission?.durationSeconds||180}s · Goblins ★1 · ${mission?.totalEnemies||45} enemigos en 6 oleadas.</p>
+          <p><b>Recompensa fija por victoria: ${mission?.fixedGoldReward||250} de oro.</b> El loot puede añadir oro, madera y piedra. Si fracasas, no recibes ninguna recompensa.</p>
+        </div>
       </div>
-      <div class="team-premium">${[0,1,2,3,4].map(i=>`<div class="${chars[i]?'filled':''}">${chars[i]?`<figure style="background-image:url('${chars[i].wallpaper}')"></figure><b>${escapeHtml(chars[i].name)}</b><span>${stars(chars[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('')}</div>
-      <button class="premium-gold-button wide">Preparar misión</button>
+      <div class="team-premium">${[0,1,2,3,4].map(i=>`<div class="${team[i]?'filled':''}">${team[i]?`<figure style="background-image:url('${team[i].wallpaper}')"></figure><b>${escapeHtml(team[i].name)}</b><span>${stars(team[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('')}</div>
+      <button id="startSurvival" class="premium-gold-button wide" ${team.length?'':'disabled'}>Iniciar Supervivencia I</button>
+      <section class="battle-console hidden" id="battleConsole">
+        <header><b>Narrador de batalla</b><span id="battleClock">00:00</span></header>
+        <div class="battle-log" id="battleLog"></div>
+      </section>
+      <section class="mission-results hidden" id="missionResults"></section>
     </div>`;
   backButton(onBack,body.querySelector('.premium-content'));
+
+  const startBtn=body.querySelector('#startSurvival');
+  if(!startBtn||!mission)return;
+  startBtn.onclick=()=>{
+    startBtn.disabled=true;
+    const result=simulateSurvivalMission(team,mission);
+    const consoleEl=body.querySelector('#battleConsole');
+    const log=body.querySelector('#battleLog');
+    const clock=body.querySelector('#battleClock');
+    const results=body.querySelector('#missionResults');
+    consoleEl.classList.remove('hidden');
+    let i=0;
+    const showNext=()=>{
+      if(i>=result.events.length){
+        applyMissionResult(state,result);save();
+        results.classList.remove('hidden');
+        results.innerHTML=`
+          <div class="mission-result-head ${result.completed?'success':'failure'}">
+            <small>RESULTADO</small>
+            <h2>${result.completed?'MISIÓN COMPLETADA':'MISIÓN FALLIDA'}</h2>
+            <p>${result.completed?'El equipo resistió hasta la apertura del portal.':'El grupo cayó antes de completar la supervivencia.'}</p>
+          </div>
+          <div class="mission-rewards">
+            <h3>Recompensas</h3>
+            ${result.completed?`
+              <div><b>Oro</b><span>+${result.rewards.gold}</span></div>
+              <div><b>Madera</b><span>+${result.rewards.wood}</span></div>
+              <div><b>Piedra</b><span>+${result.rewards.stone}</span></div>
+              ${result.rewards.bonusGold?'<small>Incluye +'+result.rewards.bonusGold+' de oro procedente del loot.</small>':''}
+            `:'<p class="no-rewards">Sin recompensas por derrota.</p>'}
+          </div>
+          <div class="damage-report">
+            <h3>Métrica de daño</h3>
+            ${result.damageMetrics.sort((a,b)=>b.damage-a.damage).map(m=>`
+              <div class="damage-row">
+                <div><b>${escapeHtml(m.name)}</b><small>${m.survived?'Superviviente':'Caído'} · ${m.kills} bajas</small></div>
+                <span>${m.damage} daño</span>
+                <i><u style="width:${m.damagePct}%"></u></i>
+                <em>${m.damagePct}%</em>
+              </div>`).join('')}
+          </div>
+          <div class="mission-summary"><b>Enemigos derrotados:</b> ${result.enemiesDefeated}/${result.totalEnemies}</div>`;
+        return;
+      }
+      const e=result.events[i++];
+      clock.textContent=String(Math.floor(e.t/60)).padStart(2,'0')+':'+String(e.t%60).padStart(2,'0');
+      const p=document.createElement('p');p.className='battle-line '+e.type;p.textContent='['+clock.textContent+'] '+e.text;log.append(p);log.scrollTop=log.scrollHeight;
+      setTimeout(showNext,500);
+    };
+    showNext();
+  };
 }
 
 function renderMenu(body,onBack){
@@ -236,6 +300,6 @@ export function renderBuilding({app,type,state,data,save,activeHero,onBack}){
   else if(type==='upgrade')renderUpgrade(body,state,save,rerender,onBack);
   else if(type==='sanctuary')renderSanctuary(body,state,data,save,rerender,onBack);
   else if(type==='storage')renderStorage(body,state,onBack);
-  else if(type==='missions')renderMissions(body,state,onBack);
+  else if(type==='missions')renderMissions(body,state,data,save,onBack);
   else renderMenu(body,onBack);
 }
