@@ -65,6 +65,10 @@ function variants(f,rarity){
       speed:f.speed,
       scalingStat:f.stat,
       compatibleKeywords:f.compatibleKeywords,
+      bonusStatSlots:Number(progression.weaponRarity.bonusStatSlots?.[String(rarity)]||0),
+      passiveSlots:Number(progression.weaponRarity.passiveSlots?.[String(rarity)]||0),
+      bonusStats:[],
+      passives:[],
       sellValueGold:Math.max(8,Math.round((12+i*2)*mult))
     };
     if(f.range)item.range=f.range;
