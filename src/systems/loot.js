@@ -1,4 +1,5 @@
 import { SURVIVAL1_WEAPON_DROP } from './weapon-config.js';
+import { setWeaponLevel } from './weapon-upgrade.js';
 
 const cache=new Map();
 
@@ -21,12 +22,14 @@ function rollRarity(){
 }
 
 function cloneDrop(template){
-  return {
+  const drop={
     ...structuredClone(template),
     instanceId:crypto.randomUUID(),
     enhancement:0,
+    level:SURVIVAL1_WEAPON_DROP.weaponLevel||1,
     source:'survival1_enemy_drop'
   };
+  return setWeaponLevel(drop,drop.level);
 }
 
 export async function rollSurvival1WeaponDrops(defeatedEnemies){
