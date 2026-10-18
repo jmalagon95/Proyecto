@@ -22,6 +22,7 @@ namespace KamiNoChallenge {
             if(s.weapons==null) s.weapons=new System.Collections.Generic.List<WeaponInstance>();
             if(s.ascensionStones==null) s.ascensionStones=new System.Collections.Generic.List<AscensionStoneStack>();
             if(s.missionTeams==null) s.missionTeams=new MissionTeamPresets();
+            foreach(var w in s.weapons) WeaponService.EnsureCompatibility(w);
         }
 
         public static void Save() {
