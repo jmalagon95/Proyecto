@@ -1,5 +1,6 @@
 import { SURVIVAL1_WEAPON_DROP } from './weapon-config.js';
 import { setWeaponLevel } from './weapon-upgrade.js';
+import { allowedClassesForWeaponFamily } from './weapon-classes.js';
 
 const cache=new Map();
 
@@ -18,7 +19,8 @@ function fallbackCatalog(rarity){
       name:`${name} ${String(i+1).padStart(2,'0')}${rarity>1?' ★'+rarity:''}`,
       rarity,level:1,enhancement:0,category:'weapon',familyName:name,hands,
       baseDamage:{min:Math.max(1,Math.round(min*mult)),max:Math.max(1,Math.round(max*mult))},
-      damage:{min:Math.max(1,Math.round(min*mult)),max:Math.max(1,Math.round(max*mult))}
+      damage:{min:Math.max(1,Math.round(min*mult)),max:Math.max(1,Math.round(max*mult))},
+      allowedClasses:allowedClassesForWeaponFamily(name)
     }))
   );
 }
