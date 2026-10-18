@@ -12,6 +12,12 @@ import { renderBuilding } from './ui/buildings.js';
 export async function startGame(app){
   const data=await loadGameData();
   let state=loadState();
+  let migrated=false;
+  for(const hero of state.characters||[]){
+    const race=data.races.find(r=>r.id===hero.raceId);
+    if(race && hero.wallpaper!==race.image){ hero.wallpaper=race.image; migrated=true; }
+  }
+  if(migrated) saveState(state);
   const save=()=>saveState(state);
   const hasSave=()=>Boolean(state.world||state.characters.length);
   const activeHero=()=>state.characters.find(c=>c.id===state.activeCharacterId&&!c.dead)??state.characters.find(c=>!c.dead)??null;
