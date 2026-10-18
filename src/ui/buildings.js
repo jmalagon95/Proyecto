@@ -446,14 +446,19 @@ function renderMissions(body,state,data,save,onBack){
     state.missionTeams.lastUsed=[...selectedIds];
     save();
     startBtn.disabled=true;
-    const result=simulateSurvivalMission(team,mission);
-    const weaponDrops=result.completed?await rollSurvival1WeaponDrops(result.enemiesDefeated):[];
-    result.weaponDrops=weaponDrops;
     const consoleEl=body.querySelector('#battleConsole');
     const log=body.querySelector('#battleLog');
     const clock=body.querySelector('#battleClock');
     const results=body.querySelector('#missionResults');
     consoleEl.classList.remove('hidden');
+    log.innerHTML='<p class="battle-line system">[00:00] El equipo cruza el portal...</p>';
+    const result=simulateSurvivalMission(team,mission);
+    try{
+      result.weaponDrops=result.completed?await rollSurvival1WeaponDrops(result.enemiesDefeated):[];
+    }catch(err){
+      console.warn('Loot fallback error',err);
+      result.weaponDrops=[];
+    }
     let i=0;
     const showNext=()=>{
       if(i>=result.events.length){
