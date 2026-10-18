@@ -25,35 +25,87 @@ function frameTitle(kicker,title,sub=''){
 function backButton(onBack,body){const b=button('← Volver al Lobby','premium-back-button');b.onclick=onBack;body.append(b)}
 function rarityLegend(){return Object.entries(rarityColors).map(([s,c])=>`<div class="rarity-chip" style="--rarity:${c}"><i></i><b>${'★'.repeat(+s)}</b></div>`).join('')}
 
+function characterPower(char){
+  return Object.values(char.stats||{}).reduce((a,b)=>a+Number(b||0),0)*100+(char.level||1)*25+(char.currentStar||1)*250;
+}
+
 function roomSlot(char,i,selected){
   return `<button class="dorm-card ${char?'occupied':'empty'} ${selected?'selected':''}" type="button" ${char?`data-char="${char.id}"`:''}>
     <div class="dorm-card-art" style="${char?`background-image:url('${char.wallpaper||''}')`:''}"></div>
     <div class="dorm-card-shade"></div>
-    ${char?`<span class="residence-tag">${i===0?'✦ En residencia':'Compañero'}</span>`:''}
-    <div class="dorm-card-copy">${char?`<b>${escapeHtml(char.name)}</b><span style="color:${rarityColors[char.currentStar]}">${stars(char.currentStar)}</span><small>${escapeHtml(char.raceName)} · ${escapeHtml(char.className)}</small>`:`<b class="plus">＋</b><span>Vacío</span>`}</div>
+    ${char&&char.dead?'<span class="residence-tag dead">CAÍDO</span>':char?`<span class="residence-tag">Poder ${characterPower(char).toLocaleString('es-ES')}</span>`:''}
+    <div class="dorm-card-copy">${char?`<b>${escapeHtml(char.name)}</b><span style="color:${rarityColors[char.currentStar]}">${stars(char.currentStar)}</span><small>${escapeHtml(char.raceName)} · ${escapeHtml(char.className)} · Nv.${char.level}</small>`:`<b class="plus">＋</b><span>Vacío</span>`}</div>
   </button>`;
 }
 
 function renderDorms(body,state,save,rerender,onBack){
-  const chars=living(state),cap=capacity(state),active=chars.find(c=>c.id===state.activeCharacterId)||chars[0]||null;
+  state.ui=state.ui||{};
+  state.ui.characterFilter=state.ui.characterFilter||{rarity:'all',race:'all',className:'all',status:'alive'};
+  const filter=state.ui.characterFilter;
+  const all=[...(state.characters||[])];
+  const races=[...new Set(all.map(c=>c.raceName).filter(Boolean))].sort();
+  const classes=[...new Set(all.map(c=>c.className).filter(Boolean))].sort();
+  let chars=all.filter(c=>{
+    if(filter.status==='alive'&&c.dead)return false;
+    if(filter.status==='dead'&&!c.dead)return false;
+    if(filter.rarity!=='all'&&String(c.currentStar)!==String(filter.rarity))return false;
+    if(filter.race!=='all'&&c.raceName!==filter.race)return false;
+    if(filter.className!=='all'&&c.className!==filter.className)return false;
+    return true;
+  });
+  const sort=state.ui.characterSort||'power';
+  chars.sort((a,b)=>{
+    if(sort==='level')return (b.level||1)-(a.level||1);
+    if(sort==='rarity')return (b.currentStar||1)-(a.currentStar||1);
+    if(sort==='name')return String(a.name).localeCompare(String(b.name),'es');
+    return characterPower(b)-characterPower(a);
+  });
+  const cap=capacity(state);
+  const active=all.find(c=>c.id===state.activeCharacterId)||all[0]||null;
   body.innerHTML=`
     <div class="page-scene dorm-scene"></div>
     <div class="premium-content">
-      ${frameTitle('KAMI NO CHALLENGE','Dormitorios','Aquí residen los aliados que te acompañan en tu travesía.')}
+      ${frameTitle('GESTOR DE ROSTER','Personajes','Dormitorios determina la capacidad; aquí gestionas realmente a todos tus personajes.')}
       <div class="dorm-capacity">
-        <div><span>♟</span><b>${chars.length} / ${cap}</b><small>ocupados</small></div>
-        <div><span>▤</span><b>${Math.max(0,cap-chars.length)}</b><small>espacios libres</small></div>
+        <div><span>♟</span><b>${all.filter(c=>!c.dead).length} / ${cap}</b><small>vivos / capacidad</small></div>
+        <div><span>☠</span><b>${all.filter(c=>c.dead).length}</b><small>caídos</small></div>
       </div>
-      <div class="dorm-grid">${Array.from({length:cap},(_,i)=>roomSlot(chars[i],i,chars[i]?.id===active?.id)).join('')}</div>
-      <p class="dorm-note">ⓘ El nombre de un personaje invocado <b>puede cambiarse una vez.</b></p>
-      <div class="dorm-actions">
-        <button id="viewCharacter" class="premium-gold-button" ${active?'':'disabled'}>♙ <span>Ver personaje</span> ›</button>
-        <button class="premium-blue-button">↕ <span>Ordenar</span></button>
-        <button class="premium-blue-button">▤ <span>Gestionar habitaciones</span></button>
+      <div class="character-manager-controls">
+        <select id="charStatus">
+          <option value="alive" ${filter.status==='alive'?'selected':''}>Vivos</option>
+          <option value="all" ${filter.status==='all'?'selected':''}>Todos</option>
+          <option value="dead" ${filter.status==='dead'?'selected':''}>Caídos</option>
+        </select>
+        <select id="charRarity"><option value="all">Todas las ★</option>${[1,2,3,4,5,6,7,8].map(x=>`<option value="${x}" ${String(filter.rarity)===String(x)?'selected':''}>${'★'.repeat(x)}</option>`).join('')}</select>
+        <select id="charRace"><option value="all">Todas las razas</option>${races.map(x=>`<option ${filter.race===x?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select>
+        <select id="charClass"><option value="all">Todas las clases</option>${classes.map(x=>`<option ${filter.className===x?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select>
+        <select id="charSort">
+          <option value="power" ${sort==='power'?'selected':''}>Poder</option>
+          <option value="level" ${sort==='level'?'selected':''}>Nivel</option>
+          <option value="rarity" ${sort==='rarity'?'selected':''}>Rareza</option>
+          <option value="name" ${sort==='name'?'selected':''}>Nombre</option>
+        </select>
       </div>
+      <div class="roster-summary"><b>${chars.length}</b><span>personaje(s) mostrados</span></div>
+      <div class="dorm-grid character-roster-grid">${chars.length?chars.map((char,i)=>roomSlot(char,i,char.id===active?.id)).join(''):'<p class="empty-roster">No hay personajes que coincidan con estos filtros.</p>'}</div>
+      <p class="dorm-note">Pulsa cualquier personaje para abrir directamente su ficha en <b>Equipamiento</b>.</p>
     </div>`;
-  body.querySelectorAll('[data-char]').forEach(x=>x.onclick=()=>{state.activeCharacterId=x.dataset.char;save();rerender('profile')});
-  body.querySelector('#viewCharacter')?.addEventListener('click',()=>rerender('profile'));
+
+  const refresh=()=>{
+    state.ui.characterFilter.status=body.querySelector('#charStatus').value;
+    state.ui.characterFilter.rarity=body.querySelector('#charRarity').value;
+    state.ui.characterFilter.race=body.querySelector('#charRace').value;
+    state.ui.characterFilter.className=body.querySelector('#charClass').value;
+    state.ui.characterSort=body.querySelector('#charSort').value;
+    save();rerender('characters');
+  };
+  body.querySelectorAll('.character-manager-controls select').forEach(x=>x.onchange=refresh);
+  body.querySelectorAll('[data-char]').forEach(x=>x.onclick=()=>{
+    state.activeCharacterId=x.dataset.char;
+    state.ui.profileTab='equipment';
+    save();
+    rerender('profile');
+  });
   backButton(onBack,body.querySelector('.premium-content'));
 }
 
