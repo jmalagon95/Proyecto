@@ -2,7 +2,7 @@ const KEY = 'kami_no_challenge_v02_state';
 
 export const defaultState = {
   screen: 'cover',
-  world: null,
+  world: null,\n  inhabitantsRemaining: null,
   selectedRace: 'kairakh',
   selectedClass: null,
   heroName: '',
