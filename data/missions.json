@@ -1,0 +1,16 @@
+{
+  "survival1": {
+    "id": "survival1",
+    "name": "Supervivencia I",
+    "floor": 1,
+    "durationSeconds": 180,
+    "enemy": "Goblins",
+    "enemyStar": 1,
+    "fixedGoldReward": 250,
+    "materialLoot": [
+      "wood",
+      "stone"
+    ],
+    "description": "Resiste 180 segundos. La recompensa fija por completar la misión es de 250 monedas de oro. El botín adicional puede aumentar el oro total y otorgar madera y piedra."
+  }
+}
