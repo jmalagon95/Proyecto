@@ -40,7 +40,8 @@
       "8": 4000
     },
     "goldLevelFactor": 0.28,
-    "formula": "cost = round(baseByRarity * (1 + currentEnhancement * 0.28)); damage = baseDamage * (1 + enhancement * 0.04)"
+    "formula": "cost = round(baseByRarity * (1 + currentEnhancement * 0.28) * (1 + (weaponLevel - 1) * 0.015)); damage = rarityBaseDamage * levelMultiplier * enhancementMultiplier",
+    "levelCostFactor": 0.015
   },
   "survival1Drop": {
     "weaponDropChancePerDefeatedEnemy": 0.1,
@@ -50,5 +51,12 @@
       "3": 0.01
     },
     "loseAllLootOnMissionFailure": true
+  },
+  "weaponLevel": {
+    "min": 1,
+    "max": 100,
+    "damagePerLevelPct": 1.8,
+    "formula": "levelMultiplier = 1 + (level - 1) * 0.018",
+    "notes": "El nivel del arma multiplica su daño base antes del refuerzo +1..+15. El Piso 1 genera armas de nivel 1."
   }
 }
