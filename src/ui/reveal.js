@@ -1,3 +1,4 @@
+import { emptyEquipment } from '../systems/equipment.js';
 import { el, button } from './components.js';
 
 const RANGES={1:[1,5],2:[2,8],3:[4,13],4:[8,25],5:[18,40],6:[30,65],7:[50,95],8:[80,140]};
@@ -79,6 +80,7 @@ export function createHero(race,cls,name=''){
     id:crypto.randomUUID(),name:name.trim()||'Aspirante',raceId:race.id,raceName:race.name,
     className:cls.name,classDescription:cls.description,role:cls.role,weapons:cls.weapons,weapon:cls.weapons[0],
     birthStar:starLevel,currentStar:starLevel,level:1,stats,skills:[],passives:[],dead:false,
+    equipment:emptyEquipment(),
     wallpaper:race.image,renameRemaining:1,appearance:buildAppearance(race,cls)
   };
   hero.artPrompt=buildPrompt(hero,race,cls);
