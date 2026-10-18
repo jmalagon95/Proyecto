@@ -14,8 +14,9 @@ export function renderLobby({app,state,activeHero,onOpen}){
         <div><strong>${activeHero?.name||state.playerName}</strong><span>Nv. ${activeHero?.level||1}</span></div>
       </div>
       <div class="lobby-resources">
-        <div><i>●</i><b>${state.resources.gold.toLocaleString('es-ES')}</b><button>+</button></div>
-        <div><i>◆</i><b>${state.resources.crystals.toLocaleString('es-ES')}</b><button>+</button></div>
+        <div><i>●</i><b>${state.resources.gold.toLocaleString('es-ES')}</b><small>Oro</small></div>
+        <div><i>▥</i><b>${state.resources.wood.toLocaleString('es-ES')}</b><small>Madera</small></div>
+        <div><i>⬢</i><b>${state.resources.stone.toLocaleString('es-ES')}</b><small>Piedra</small></div>
       </div>
     </header>
 
@@ -38,10 +39,10 @@ export function renderLobby({app,state,activeHero,onOpen}){
         <span class="landmark-icon">▣</span><b>Almacén</b><i></i>
       </button>
 
-      <div class="lobby-hero-strip">
+      <button class="lobby-hero-strip" data-building="profile" type="button">
         <div class="hero-strip-avatar" style="background-image:url('${activeHero?.wallpaper||''}')"></div>
         <div><strong>${activeHero?.name||'Sin protagonista'}</strong><span>${activeHero?stars+' · '+activeHero.raceName+' · '+activeHero.className+' · Nv.'+activeHero.level:'Crea un personaje para comenzar.'}</span></div>
-      </div>
+      </button>
     </main>
 
     <nav class="lobby-bottom-nav">
