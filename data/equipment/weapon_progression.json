@@ -6,21 +6,43 @@
       "2": 1.35,
       "3": 1.75,
       "4": 2.25,
-      "5": 2.9,
-      "6": 3.75,
-      "7": 4.9,
-      "8": 6.5
+      "5": 90,
+      "6": 320,
+      "7": 950,
+      "8": 2700
     },
     "magicPowerMultipliers": {
       "1": 1,
       "2": 1.35,
       "3": 1.75,
       "4": 2.25,
-      "5": 2.9,
-      "6": 3.75,
-      "7": 4.9,
-      "8": 6.5
-    }
+      "5": 90,
+      "6": 320,
+      "7": 950,
+      "8": 2700
+    },
+    "bonusStatSlots": {
+      "1": 0,
+      "2": 1,
+      "3": 1,
+      "4": 2,
+      "5": 3,
+      "6": 4,
+      "7": 5,
+      "8": 6
+    },
+    "passiveSlots": {
+      "1": 0,
+      "2": 0,
+      "3": 1,
+      "4": 1,
+      "5": 2,
+      "6": 3,
+      "7": 4,
+      "8": 5
+    },
+    "highTierRule": "Desde ★5 el salto de daño es deliberadamente extremo. El daño del arma se calcula antes de aplicar estadísticas del personaje y pasivas del arma.",
+    "reference": "Una espada con base media 4, a Nv.100 y +0, ronda ~30.000 de daño en ★8 antes de stats y pasivas."
   },
   "enhancement": {
     "min": 0,
