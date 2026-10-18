@@ -1,93 +1,103 @@
 import { el, escapeHtml } from './components.js';
 
-function poolsFor(data, raceId) {
-  return {
-    generic: (data.classes.generic || []).map(c => ({ ...c, source:'Genérica' })),
-    racial: (data.classes[raceId] || []).map(c => ({ ...c, source:'Racial' }))
+const GLYPHS=['⚔','⬡','✦','◇','✧','✣','◈','☩'];
+const NAME_POOLS={
+  kairakh:['Kael','Varik','Nayra','Rhaz','Seyra'],
+  elfos:['Aerin','Naelis','Sylwen','Elaris','Vael'],
+  kijins:['Akane','Raizen','Shuren','Kaede','Renji'],
+  vampiros:['Veyra','Khael','Serah','Valen','Nyra'],
+  insectoides:['Lirien','Thrya','Irixa','Vekri','Syth'],
+  reptro:['Rhek','Sarka','Thess','Kher','Zaira']
+};
+
+function poolsFor(data,raceId){
+  return{
+    generic:(data.classes.generic||[]).map(c=>({...c,source:'Genérica'})),
+    racial:(data.classes[raceId]||[]).map(c=>({...c,source:'Racial'}))
   };
 }
 
-export function renderClass({ app, data, state, save, onBack, onConfirm }) {
-  app.innerHTML = '';
-  const race = data.races.find(r => r.id === state.selectedRace) ?? data.races[0];
-  const pools = poolsFor(data, race.id);
-  const all = [...pools.generic, ...pools.racial];
-  if (!state.selectedClass || !all.some(c => c.name === state.selectedClass)) state.selectedClass = pools.generic[0]?.name || pools.racial[0]?.name;
-  let activeTab = all.find(c => c.name === state.selectedClass)?.source === 'Racial' ? 'racial' : 'generic';
+export function renderClass({app,data,state,save,onBack,onConfirm}){
+  app.innerHTML='';
+  const race=data.races.find(r=>r.id===state.selectedRace)||data.races[0];
+  const pools=poolsFor(data,race.id);
+  const all=[...pools.generic,...pools.racial];
+  if(!state.selectedClass||!all.some(c=>c.name===state.selectedClass))state.selectedClass=pools.generic[0]?.name||pools.racial[0]?.name;
+  let activeTab=all.find(c=>c.name===state.selectedClass)?.source==='Racial'?'racial':'generic';
 
-  const screen = el('section','screen class-screen-premium');
-  screen.innerHTML = `
-    <div class="class-page-pro">
-      <header class="class-head-pro">
-        <div class="class-brand-pro">KAMI NO CHALLENGE</div>
-        <h1>Selección de clase</h1>
-        <div class="ornament-line"><span>◇</span></div>
-        <p>Tu raza define tu origen. La clase define el camino que recorrerás.</p>
+  const screen=el('section','screen class-screen-premium');
+  screen.innerHTML=`
+    <div class="class-bg"></div>
+    <div class="class-shell">
+      <header class="class-header">
+        <small>KAMI NO CHALLENGE</small>
+        <h1>Escoge tu clase</h1>
+        <div class="class-divider"><i></i><b>◇</b><i></i></div>
+        <p>Tu raza define tu origen. Tu clase define cómo lucharás por sobrevivir.</p>
       </header>
 
-      <div class="class-main-pro">
-        <aside class="class-race-panel">
-          <div class="class-race-art" style="background-image:url('${race.image}')"></div>
-          <div class="class-race-copy"><h2>${escapeHtml(race.name)}</h2><span>${escapeHtml(race.tag)}</span><p>${escapeHtml(race.description)}</p></div>
-          <button type="button" id="backRaceInline" class="class-change-race">↻ Cambiar raza</button>
-        </aside>
+      <section class="chosen-race-banner">
+        <div class="chosen-race-art" style="background-image:url('${race.image}')"></div>
+        <div class="chosen-race-shade"></div>
+        <div class="chosen-race-copy"><small>RAZA ELEGIDA</small><h2>${escapeHtml(race.name)}</h2><p>${escapeHtml(race.description)}</p></div>
+        <button id="changeRace" type="button">Cambiar raza</button>
+      </section>
 
-        <section class="class-browser-pro">
-          <div class="class-tabs-pro">
-            <button type="button" data-class-tab="generic">Clases genéricas<small>Disponibles para todas las razas</small></button>
-            <button type="button" data-class-tab="racial">Clases raciales<small>Exclusivas de ${escapeHtml(race.name)}</small></button>
-          </div>
-          <div class="class-card-grid-pro" id="classCardGrid"></div>
-          <div class="class-detail-pro" id="classDetail"></div>
-          <div class="class-name-row-pro">
-            <label>Nombre del protagonista</label>
-            <div><input id="heroName" maxlength="28" value="${escapeHtml(state.heroName)}" placeholder="Nombre del protagonista"><button id="randomName" type="button">⚄</button></div>
-          </div>
-          <div class="class-info-note">La rareza ★1–★8, estadísticas, afinidades, sexo, edad, profesión, skills y pasivas se resolverán después mediante el gacha inicial.</div>
-          <div class="class-copydesc-pro"><small>DESCRIPCIÓN PARA PASÁRMELA</small><textarea id="selectionDesc" readonly></textarea><button type="button" id="copyDesc" class="game-button dark">Copiar descripción</button></div>
-        </section>
+      <div class="class-tabs">
+        <button type="button" data-tab="generic"><b>Clases genéricas</b><small>Disponibles para todas las razas</small></button>
+        <button type="button" data-tab="racial"><b>Clases raciales</b><small>Exclusivas de ${escapeHtml(race.name)}</small></button>
       </div>
 
-      <footer class="class-footer-pro">
-        <button id="classBack" type="button" class="world-back-pro">← <span>Volver</span></button>
-        <button id="confirmClass" type="button" class="world-confirm-pro"><span>Confirmar clase</span><i>›</i></button>
+      <div class="class-grid" id="classGrid"></div>
+
+      <section class="class-detail" id="classDetail"></section>
+
+      <section class="hero-name-box">
+        <div><small>NOMBRE DEL PROTAGONISTA</small><p>Podrás cambiarlo una vez más desde los Dormitorios.</p></div>
+        <div class="hero-name-control"><input id="heroName" maxlength="28" value="${escapeHtml(state.heroName||'')}" placeholder="Escribe un nombre"><button id="randomName" type="button">⚄</button></div>
+      </section>
+
+      <footer class="class-actions">
+        <button class="class-back" id="classBack" type="button">←</button>
+        <button class="class-confirm" id="classConfirm" type="button"><span>CONFIRMAR CLASE</span><i>›</i></button>
       </footer>
     </div>`;
   app.append(screen);
 
-  const grid = screen.querySelector('#classCardGrid');
-  const detail = screen.querySelector('#classDetail');
-  const desc = screen.querySelector('#selectionDesc');
-  const nameInput = screen.querySelector('#heroName');
+  const grid=screen.querySelector('#classGrid');
+  const detail=screen.querySelector('#classDetail');
+  const nameInput=screen.querySelector('#heroName');
 
-  const current = () => all.find(c => c.name === state.selectedClass) || all[0];
+  function current(){return all.find(c=>c.name===state.selectedClass)||all[0]}
 
   function renderTab(){
-    screen.querySelectorAll('[data-class-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.classTab === activeTab));
-    const list = pools[activeTab];
-    if (!list.some(c => c.name === state.selectedClass)) state.selectedClass = list[0]?.name || state.selectedClass;
-    grid.innerHTML = list.map((cls,i)=>`<button type="button" class="class-card-pro ${cls.name===state.selectedClass?'selected':''}" data-class-name="${escapeHtml(cls.name)}"><div class="class-glyph">${['✦','◆','✧','✥','◈','✣','✠','◉'][i%8]}</div><h3>${escapeHtml(cls.name)}</h3><span>${escapeHtml(cls.role)}</span></button>`).join('');
-    grid.querySelectorAll('[data-class-name]').forEach(btn=>btn.onclick=()=>{state.selectedClass=btn.dataset.className;save();renderTab();});
+    const list=pools[activeTab];
+    if(!list.some(c=>c.name===state.selectedClass))state.selectedClass=list[0]?.name||state.selectedClass;
+    screen.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===activeTab));
+    grid.innerHTML=list.map((cls,i)=>`
+      <button class="class-card ${cls.name===state.selectedClass?'selected':''}" type="button" data-name="${escapeHtml(cls.name)}">
+        <div class="class-card-art" style="--class-race:url('${race.image}');--pos:${18+i*13}%"></div>
+        <div class="class-card-overlay"></div>
+        <div class="class-card-glyph">${GLYPHS[i%GLYPHS.length]}</div>
+        <div class="class-card-copy"><h3>${escapeHtml(cls.name)}</h3><span>${escapeHtml(cls.role)}</span></div>
+      </button>`).join('');
+    grid.querySelectorAll('[data-name]').forEach(btn=>btn.onclick=()=>{state.selectedClass=btn.dataset.name;save();renderTab()});
     renderDetail();
   }
 
   function renderDetail(){
     const cls=current();
-    detail.innerHTML=`<div><small>${cls.source==='Racial'?'CLASE RACIAL':'CLASE GENÉRICA'}</small><h2>${escapeHtml(cls.name)}</h2><span class="detail-role">${escapeHtml(cls.role)}</span><p>${escapeHtml(cls.description)}</p></div><div class="detail-weapons"><small>ARMAS COMPATIBLES</small><b>${cls.weapons.map(escapeHtml).join(' · ')}</b></div>`;
-    updateDescription();
+    detail.innerHTML=`
+      <div class="class-detail-main"><small>${cls.source==='Racial'?'CLASE RACIAL':'CLASE GENÉRICA'}</small><h2>${escapeHtml(cls.name)}</h2><span>${escapeHtml(cls.role)}</span><p>${escapeHtml(cls.description)}</p></div>
+      <div class="class-weapons"><small>ARMAS COMPATIBLES</small>${cls.weapons.map(w=>`<b>◆ ${escapeHtml(w)}</b>`).join('')}</div>
+      <div class="class-gacha-note"><strong>El destino aún no está decidido</strong><p>Al confirmar se sortearán la rareza ★1–★8 y los seis atributos iniciales. Aquí no se muestran habilidades porque solo existirán si el personaje realmente las obtiene.</p></div>`;
   }
 
-  function updateDescription(){
-    const cls=current();
-    desc.value=`KAMI NO CHALLENGE — SELECCIÓN INICIAL\nNombre provisional: ${state.heroName || 'Sin nombre'}\nRaza: ${race.name}\nIdentidad racial: ${race.description}\nHistoria racial: ${race.history}\nOrigen: ${race.origin}\nClase elegida: ${cls.name}\nTipo de clase: ${cls.source}\nRol: ${cls.role}\nDescripción de clase: ${cls.description}\nArmas permitidas: ${cls.weapons.join(', ')}\nLa rareza ★1–★8, FUE, AGI, CON, DEF, INT, VOL, sexo, edad, profesión, afinidades, skills y pasivas se tirarán con el gacha al confirmar.`;
-  }
-
-  screen.querySelectorAll('[data-class-tab]').forEach(btn=>btn.onclick=()=>{activeTab=btn.dataset.classTab;renderTab();});
-  nameInput.oninput=e=>{state.heroName=e.target.value;save();updateDescription();};
-  screen.querySelector('#randomName').onclick=()=>{const pool={kairakh:['Kael','Varik','Nayra'],humanos:['Kai','Aren','Mira'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],bestias:['Fenra','Rogar','Lyka'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],huecos:['Astra','Nohr','Eidra']}[race.id];state.heroName=pool[Math.floor(Math.random()*pool.length)];nameInput.value=state.heroName;save();updateDescription();};
-  screen.querySelector('#copyDesc').onclick=()=>navigator.clipboard?.writeText(desc.value);
+  screen.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{activeTab=btn.dataset.tab;renderTab()});
+  nameInput.oninput=e=>{state.heroName=e.target.value.trimStart();save()};
+  screen.querySelector('#randomName').onclick=()=>{const p=NAME_POOLS[race.id]||['Aspirante'];state.heroName=p[Math.floor(Math.random()*p.length)];nameInput.value=state.heroName;save()};
+  screen.querySelector('#changeRace').onclick=onBack;
   screen.querySelector('#classBack').onclick=onBack;
-  screen.querySelector('#backRaceInline').onclick=onBack;
-  screen.querySelector('#confirmClass').onclick=()=>onConfirm(current());
+  screen.querySelector('#classConfirm').onclick=()=>onConfirm(current());
   renderTab();
 }
