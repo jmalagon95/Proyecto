@@ -1,9 +1,10 @@
-const KEY = 'kami_no_challenge_v02_state';
+const KEY = 'kami_no_challenge_v03_state';
 
 export const defaultState = {
   screen: 'cover',
   world: null,
   inhabitantsRemaining: null,
+  permadeathAccepted: false,
   selectedRace: 'kairakh',
   selectedClass: null,
   heroName: '',
@@ -13,10 +14,7 @@ export const defaultState = {
   inventory: [],
   characters: [],
   activeCharacterId: null,
-  summon: {
-    freeMultiUsed: false,
-    history: []
-  }
+  summon: { freeMultiUsed: false, history: [] }
 };
 
 export function loadState() {
@@ -25,25 +23,13 @@ export function loadState() {
     return {
       ...structuredClone(defaultState),
       ...(saved || {}),
-      resources: {
-        ...structuredClone(defaultState.resources),
-        ...((saved && saved.resources) || {})
-      },
-      summon: {
-        ...structuredClone(defaultState.summon),
-        ...((saved && saved.summon) || {})
-      }
+      resources:{...structuredClone(defaultState.resources),...((saved&&saved.resources)||{})},
+      summon:{...structuredClone(defaultState.summon),...((saved&&saved.summon)||{})}
     };
   } catch {
     return structuredClone(defaultState);
   }
 }
 
-export function saveState(state) {
-  localStorage.setItem(KEY, JSON.stringify(state));
-}
-
-export function resetState() {
-  localStorage.removeItem(KEY);
-  return structuredClone(defaultState);
-}
+export function saveState(state){ localStorage.setItem(KEY, JSON.stringify(state)); }
+export function resetState(){ localStorage.removeItem(KEY); return structuredClone(defaultState); }
