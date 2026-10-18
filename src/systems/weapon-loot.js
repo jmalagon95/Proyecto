@@ -1,21 +1,28 @@
+import { SURVIVAL1_WEAPON_DROP } from './weapon-config.js';
+
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
-export function rollFloor1WeaponDrops(kills,catalogs,config){
+export function rollFloor1WeaponDrops(kills,catalogs){
   const drops=[];
-  const dropChance=config?.rollPerDefeatedEnemy??0.10;
-  const rarityWeights=config?.rarityWithinSuccessfulWeaponDrop||{1:.94,2:.05,3:.01};
+  const dropChance=SURVIVAL1_WEAPON_DROP.chancePerDefeatedEnemy;
+  const weights=SURVIVAL1_WEAPON_DROP.rarityWeights;
+
   for(let i=0;i<kills;i++){
     if(Math.random()>=dropChance)continue;
-    const r=Math.random();
+
+    const roll=Math.random();
     let rarity=1;
-    if(r<rarityWeights[3])rarity=3;
-    else if(r<rarityWeights[3]+rarityWeights[2])rarity=2;
+    if(roll<weights[3])rarity=3;
+    else if(roll<weights[3]+weights[2])rarity=2;
+
     const catalog=catalogs?.[rarity]||[];
     if(!catalog.length)continue;
-    const template=structuredClone(pick(catalog));
-    template.instanceId=crypto.randomUUID();
-    template.enhancement=0;
-    drops.push(template);
+
+    const weapon=structuredClone(pick(catalog));
+    weapon.instanceId=crypto.randomUUID();
+    weapon.enhancement=0;
+    drops.push(weapon);
   }
+
   return drops;
 }
