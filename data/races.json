@@ -1,0 +1,50 @@
+[
+  {
+    "id":"kairakh","name":"Kairakh","tag":"Sangre y energía","image":"/assets/races/kairakh.png",
+    "description":"Atléticos y feroces, canalizan su instinto a través de venas energéticas visibles, colmillos y un único cuerno frontal ancestral.",
+    "history":"Linajes nómadas y orgullosos, marcados por una cultura de supervivencia, voluntad y dominio de la energía corporal.",
+    "origin":"Rhaz’Kel · Reino de Varkh","emblem":"✦"
+  },
+  {
+    "id":"humanos","name":"Humanos","tag":"Voluntad y equilibrio","image":"/assets/races/humanos.png",
+    "description":"Adaptables y ambiciosos, construyen su destino mediante disciplina, ingenio y una enorme variedad cultural.",
+    "history":"No existe una única cultura humana: reinos medievales, potencias industriales, órdenes arcanas, clanes y ciudades mercantes compiten y cooperan.",
+    "origin":"Hoflip · Reino de Kergelian","emblem":"✠"
+  },
+  {
+    "id":"elfos","name":"Elfos","tag":"Armonía natural","image":"/assets/races/elfos.png",
+    "description":"Refinados y longevos, combinan sensibilidad espiritual, precisión técnica y una fuerte conexión con tradiciones antiguas.",
+    "history":"Sus civilizaciones pueden ser naturales, lunares, cristalinas, nobles o espirituales. No están limitados al arco ni a la magia.",
+    "origin":"Sylvaris · Reino de Elenor","emblem":"❋"
+  },
+  {
+    "id":"kijins","name":"Kijins","tag":"Poder interior","image":"/assets/races/kijins.png",
+    "description":"Humanoides elegantes de presencia demoníaca y noble. Uno o dos cuernos, marcas rituales opcionales y gran variedad estética.",
+    "history":"Clanes guerreros y cortes refinadas donde la fuerza, el honor, la disciplina y la expresión del poder interior ocupan un lugar central.",
+    "origin":"Kozan · Reino de Hokuren","emblem":"☯"
+  },
+  {
+    "id":"bestias","name":"Hombres Bestia","tag":"Instinto y libertad","image":"/assets/races/bestias.png",
+    "description":"Humanoides completamente bestiales de linajes lobo, zorro, león, tigre, toro o pantera. Rostro animal, pelaje, garras y silueta propia.",
+    "history":"Tribus, clanes y manadas con culturas muy distintas, unidas por una relación intensa con territorio, instinto, familia y caza.",
+    "origin":"Garoum · Territorio de Vaelra","emblem":"♞"
+  },
+  {
+    "id":"vampiros","name":"Vampiros","tag":"Elegancia y dominio","image":"/assets/races/vampiros.png",
+    "description":"Humanoides refinados con colmillos visibles, mirada sobrenatural y culturas organizadas en casas, cortes, clanes y órdenes.",
+    "history":"La sangre es parte de su cultura y fisiología, pero la hemomancia no es automática: depende de skills, clases o pasivas concretas.",
+    "origin":"Nocthera · Reino de Valdrenn","emblem":"◆"
+  },
+  {
+    "id":"insectoides","name":"Insectoides","tag":"Evolución y orden","image":"/assets/races/insectoides.png",
+    "description":"Humanoides insecto con quitina visible, antenas y adaptaciones biológicas. Mantis, escarabajo, polilla, avispa, hormiga, libélula y especies originales.",
+    "history":"Colmenas, castas y metamorfosis definen muchas de sus sociedades, aunque cada individuo puede desviarse radicalmente de su función de origen.",
+    "origin":"Thryx · Colmena de Irix","emblem":"🜲"
+  },
+  {
+    "id":"huecos","name":"Huecos","tag":"Vacío y trascendencia","image":"/assets/races/huecos.png",
+    "description":"Exopiel blanca, líneas anatómicas negras, máscara orgánica parcial y un agujero físico real que atraviesa el torso de delante a atrás.",
+    "history":"Entidades que materializan cuerpos a partir de otras formas de vida. Su morfología puede variar enormemente sin perder sus rasgos canónicos.",
+    "origin":"Abyr · Ruinas del Eco","emblem":"◉"
+  }
+]

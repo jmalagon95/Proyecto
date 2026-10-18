@@ -1,0 +1,58 @@
+{
+  "kairakh":[
+    {"name":"Proyector de Venas","role":"DPS / distancia","weapons":["Guanteletes de canalización","Cañones de antebrazo","Catalizadores de energía"],"description":"Convierte sus venas energéticas en una red de proyección. Puede especializarse en ráfagas rápidas, disparos concentrados o canales sostenidos según sus atributos."},
+    {"name":"Lancero del Cuerno Primordial","role":"DPS / alcance","weapons":["Lanza larga a dos manos","Alabarda","Lanza ritual"],"description":"Combina el alcance de la lanza con el uso agresivo del cuerno frontal. Controla líneas, penetración y cargas de media distancia."},
+    {"name":"Resonador Kairakh","role":"Mágico / apoyo","weapons":["Bastón de resonancia","Tótem catalizador"],"description":"Manipula resonancias de energía corporal para amplificar aliados, alterar el entorno y lanzar técnicas de pulso."},
+    {"name":"Depredador de las Cumbres","role":"Asesino / móvil","weapons":["Garras gemelas","Dagas curvas","Armas de puño"],"description":"Cazador extremadamente móvil que explota altura, flancos y objetivos aislados con ataques rápidos y precisos."},
+    {"name":"Guardián del Cuerno Ancestral","role":"Defensor","weapons":["Lanza de una mano","Escudo tótem","Maza y escudo"],"description":"Defensor frontal que convierte el cuerno y la energía Kairakh en estabilidad, intercepción y protección de aliados."}
+  ],
+  "humanos":[
+    {"name":"Artífice Imperial","role":"DPS técnico","weapons":["Ballesta mecánica de precisión","Rifle arcano","Pistolas mecánicas"],"description":"Combate mediante tecnología, mecanismos y precisión. Su fuerza depende de preparación, herramientas y lectura táctica."},
+    {"name":"Maestro de Armas","role":"DPS versátil","weapons":["Espada larga","Mandoble","Lanza","Hacha","Maza"],"description":"Especialista humano en dominio marcial. Puede explotar distintas familias de armas sin depender de poderes raciales."},
+    {"name":"Ingeniero de Guerra","role":"DPS / asedio","weapons":["Cañón portátil","Lanzagranadas","Ballesta pesada"],"description":"Usa armamento pesado, dispositivos y munición especializada para romper grupos y posiciones enemigas."},
+    {"name":"Estratega de Batalla","role":"Apoyo táctico","weapons":["Espada de mando","Estandarte","Lanza corta","Bastón de mando"],"description":"Manipula formación, prioridades y ritmo del combate mediante órdenes, marcas y control táctico."},
+    {"name":"Alquimista de Guerra","role":"Control / apoyo","weapons":["Lanzador alquímico","Bombas","Frascos"],"description":"Combina preparados, reacciones y sustancias para crear daño, control y apoyo situacional."}
+  ],
+  "elfos":[
+    {"name":"Arquero de la Arboleda Primigenia","role":"Ranger","weapons":["Arco largo viviente","Arco espiritual"],"description":"Arquero de altísima precisión cuya relación con el entorno potencia el alcance, la lectura del terreno y la caza."},
+    {"name":"Cantor de Raíces","role":"Apoyo / naturaleza","weapons":["Bastón de madera viva","Bastón druídico"],"description":"Canaliza raíces, crecimiento y pulsos naturales para sostener aliados y modificar el campo."},
+    {"name":"Danzante de la Luna","role":"DPS móvil","weapons":["Espadas curvas gemelas","Chakrams","Dagas"],"description":"Duelista móvil que encadena pasos, cortes y cambios de posición con una cadencia elegante y letal."},
+    {"name":"Guardián Silvano","role":"Defensor","weapons":["Lanza viviente","Escudo","Espada élfica y escudo"],"description":"Protector de bosques y santuarios. Controla zonas y castiga a quien intenta romper la línea defensiva."},
+    {"name":"Tejedor de Espíritus","role":"Mago / invocación","weapons":["Varita espiritual","Tomo","Bastón espiritual"],"description":"Interactúa con entidades y ecos espirituales para apoyar, controlar o atacar mediante vínculos sobrenaturales."}
+  ],
+  "kijins":[
+    {"name":"Lanzador de Calamidades","role":"DPS / media distancia","weapons":["Jabalinas gigantes","Hachas arrojadizas"],"description":"Desata proyectiles de gran impacto para iniciar el caos antes del choque frontal."},
+    {"name":"Destructor Kijin","role":"DPS pesado","weapons":["Kanabō a dos manos","Gran martillo","Maza pesada"],"description":"Especialista en ruptura frontal y presión brutal. Cada golpe busca quebrar defensa, formación y terreno."},
+    {"name":"Devorador de Maldiciones","role":"Bruiser / maldiciones","weapons":["Guanteletes malditos","Maza ritual","Escudo maldito"],"description":"Absorbe, contiene o transforma maldiciones en fuerza ofensiva. Su estilo recompensa el riesgo y la exposición."},
+    {"name":"Monje de los Cuernos","role":"DPS / control","weapons":["Guanteletes rituales","Bastón"],"description":"Disciplina cuerpo y espíritu para luchar mediante técnicas físicas, sellos y control preciso de energía."},
+    {"name":"Señor de los Cien Demonios","role":"Invocador / mágico","weapons":["Bastón de invocación","Abanico ritual","Tomo de sellos"],"description":"Especialización superior en pactos, sellos y entidades demoníacas vinculadas. Su poder depende tanto del maestro como de sus invocaciones."}
+  ],
+  "bestias":[
+    {"name":"Cazador de la Luna Salvaje","role":"Ranger","weapons":["Arco de caza reforzado","Ballesta","Jabalinas"],"description":"Cazador de largo alcance que combina sentidos bestiales, rastreo y ataques desde posiciones seguras."},
+    {"name":"Depredador Alfa","role":"Asesino","weapons":["Garras de combate","Dagas gemelas","Armas de puño"],"description":"Explota velocidad, instinto y presión para aislar presas y terminar combates rápidamente."},
+    {"name":"Guardián de la Manada","role":"Defensor","weapons":["Hacha de una mano y escudo","Maza y escudo"],"description":"Protector de la manada que prioriza interceptar, cubrir y responder con fuerza a cualquier amenaza cercana."},
+    {"name":"Chamán de los Ancestros","role":"Apoyo / mágico","weapons":["Bastón tótem","Tótem espiritual"],"description":"Canaliza memoria ancestral, espíritus y rituales tribales para fortalecer o controlar el campo."},
+    {"name":"Avatar de la Bestia Primordial","role":"DPS / transformación","weapons":["Guanteletes bestiales","Garras naturales potenciadas"],"description":"Línea extrema que lleva la naturaleza animal del linaje hacia formas de combate cada vez más primitivas y poderosas."}
+  ],
+  "vampiros":[
+    {"name":"Hemolancero","role":"DPS / alcance","weapons":["Lanzas de sangre proyectadas","Lanza física","Jabalinas de sangre"],"description":"Especialista en proyectiles perforantes y control lineal mediante técnicas de sangre cuando dispone de ellas."},
+    {"name":"Sanguinario Noble","role":"Duelista","weapons":["Estoque","Espadas gemelas","Sable"],"description":"Combina refinamiento aristocrático con un estilo ofensivo preciso y agresivo."},
+    {"name":"Señor de los Murciélagos","role":"Invocador","weapons":["Bastón de invocación","Tomo de sangre","Cetro"],"description":"Controla enjambres, familiares y criaturas vinculadas, usando al maestro como centro de mando y potenciación."},
+    {"name":"Tejedor Carmesí","role":"Mago / control","weapons":["Guanteletes hemománticos","Varita","Tomo"],"description":"Especialista en patrones de sangre, sellos y control sobrenatural. La hemomancia depende de skills reales, no de la raza por sí sola."},
+    {"name":"Caballero de la Sed Eterna","role":"Defensor / DPS","weapons":["Espada larga y escudo","Mandoble","Espada bastarda"],"description":"Caballero resistente que combina armadura, presión frontal y técnicas vampíricas cuando las ha aprendido."}
+  ],
+  "insectoides":[
+    {"name":"Artillero Quitinoso","role":"DPS / distancia","weapons":["Cañón biológico de antebrazo","Lanzador de espinas","Cañón de quitina"],"description":"Convierte estructuras biológicas en armamento de proyectiles. Su morfología influye en munición, cadencia y alcance."},
+    {"name":"Emperador de la Colmena","role":"Apoyo / invocador","weapons":["Bastón de colmena","Tótem orgánico","Catalizador de feromonas"],"description":"Coordina criaturas y aliados mediante señales de colmena, control territorial y órdenes biológicas."},
+    {"name":"Segador Mantídeo","role":"DPS / barrido","weapons":["Guadaña larga","Guadañas gemelas","Cuchillas de antebrazo"],"description":"Especialización de cortes amplios, alcance medio y movilidad depredadora inspirada en morfologías mantídeas."},
+    {"name":"Bastión Escarabajo","role":"Defensor","weapons":["Gran escudo de quitina","Maza y escudo","Escudo a dos manos"],"description":"Tanque biológico centrado en coraza, bloqueo y resistencia prolongada."},
+    {"name":"Maestro de la Metamorfosis","role":"Adaptativo","weapons":["Armas biológicas mutables","Garras","Pinzas","Lanzadores orgánicos"],"description":"Cambia estructuras corporales para adaptar su estilo de combate a nuevas amenazas y ramas evolutivas."}
+  ],
+  "huecos":[
+    {"name":"Cañón del Vacío Torácico","role":"DPS / distancia","weapons":["Canal torácico natural","Guanteletes amplificadores"],"description":"Utiliza el hueco físico del torso como canal de energía o proyección. El agujero siempre atraviesa realmente el cuerpo."},
+    {"name":"Devorador de Esencias","role":"DPS / móvil","weapons":["Garras orgánicas gemelas","Guadaña","Armas de puño"],"description":"Especialista en absorción, presión y combate cercano con anatomía orgánica del Hueco."},
+    {"name":"Portador de la Máscara Rota","role":"DPS versátil","weapons":["Espada orgánica","Dagas","Mandoble"],"description":"Canaliza el desarrollo de su máscara parcial y su exopiel en técnicas de combate variables."},
+    {"name":"Guardián de la Ausencia","role":"Defensor","weapons":["Escudo de exopiel","Lanza y escudo","Gran escudo"],"description":"Convierte exopiel y vacío en defensa, intercepción y control de zonas."},
+    {"name":"Arquitecto de Exopiel","role":"Mago / control","weapons":["Bastón orgánico","Guanteletes de modelado","Látigo orgánico"],"description":"Moldea su exopiel y estructuras orgánicas para crear herramientas, defensas y técnicas de control."}
+  ]
+}
