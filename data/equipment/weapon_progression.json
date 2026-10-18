@@ -3,22 +3,22 @@
   "weaponRarity": {
     "damageMultipliers": {
       "1": 1,
-      "2": 1.35,
-      "3": 1.75,
-      "4": 2.25,
-      "5": 90,
-      "6": 320,
-      "7": 950,
+      "2": 5,
+      "3": 15,
+      "4": 50,
+      "5": 150,
+      "6": 450,
+      "7": 1100,
       "8": 2700
     },
     "magicPowerMultipliers": {
       "1": 1,
-      "2": 1.35,
-      "3": 1.75,
-      "4": 2.25,
-      "5": 90,
-      "6": 320,
-      "7": 950,
+      "2": 5,
+      "3": 15,
+      "4": 50,
+      "5": 150,
+      "6": 450,
+      "7": 1100,
       "8": 2700
     },
     "bonusStatSlots": {
@@ -41,8 +41,8 @@
       "7": 4,
       "8": 5
     },
-    "highTierRule": "Desde ★5 el salto de daño es deliberadamente extremo. El daño del arma se calcula antes de aplicar estadísticas del personaje y pasivas del arma.",
-    "reference": "Una espada con base media 4, a Nv.100 y +0, ronda ~30.000 de daño en ★8 antes de stats y pasivas."
+    "highTierRule": "La progresión aumenta con fuerza desde ★2. El salto ★4→★5 mantiene una proporción similar a los anteriores, y ★5+ entra en una escala de poder extrema pero continua.",
+    "reference": "Con una espada de daño base medio 4 a Nv.100 +0: ★1≈11, ★2≈56, ★3≈167, ★4≈556, ★5≈1.669, ★6≈5.008, ★7≈12.241 y ★8≈30.046 antes de stats y pasivas."
   },
   "enhancement": {
     "min": 0,
