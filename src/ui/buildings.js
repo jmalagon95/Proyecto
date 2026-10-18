@@ -1,11 +1,11 @@
 import { el, button, stars, escapeHtml } from './components.js';
 import { createHero } from './reveal.js';
 
-const rarityColors={1:'#aab2c2',2:'#67c86f',3:'#5aa4ff',4:'#a777ff',5:'#f1c965',6:'#ff855e',7:'#ff56cf',8:'#f7f7ff'};
+const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
 const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
 
-function living(state){return state.characters.filter(c=>!c.dead)}
-function capacity(state){return 11+Math.max(0,state.lobbyLevel-1)*2}
+function living(state){return (state.characters||[]).filter(c=>!c.dead)}
+function capacity(state){return 11+Math.max(0,(state.lobbyLevel||1)-1)*2}
 function combinedClasses(data,raceId){return [...(data.classes.generic||[]),...(data.classes[raceId]||[])]}
 function random(arr){return arr[Math.floor(Math.random()*arr.length)]}
 function summonOne(data){
@@ -14,89 +14,193 @@ function summonOne(data){
   hero.wallpaper=race.image; hero.renameRemaining=1; return hero;
 }
 
-function rarityLegend(){
-  return Object.entries(rarityColors).map(([s,c])=>`<div class="rarity-key"><i style="--r:${c}"></i><b style="color:${c}">${'★'.repeat(Number(s))}</b></div>`).join('');
+function frameTitle(kicker,title,sub=''){
+  return `<header class="premium-page-title"><small>${kicker}</small><h1>${title}</h1><div><i></i><b>✦</b><i></i></div>${sub?`<p>${sub}</p>`:''}</header>`;
 }
+function backButton(onBack,body){const b=button('← Volver al Lobby','premium-back-button');b.onclick=onBack;body.append(b)}
+function rarityLegend(){return Object.entries(rarityColors).map(([s,c])=>`<div class="rarity-chip" style="--rarity:${c}"><i></i><b>${'★'.repeat(+s)}</b></div>`).join('')}
 
-function slotHtml(char,i){
-  return `<button type="button" class="room-slot-pro ${char?'occupied':'free'}" ${char?`data-char="${char.id}"`:''}>
-    <div class="room-bg" style="${char?`background-image:url('${char.wallpaper||''}')`:''}"></div>
-    <div class="room-shade"></div>
-    <span class="room-index">${String(i+1).padStart(2,'0')}</span>
-    <div class="room-copy">${char?`<b>${escapeHtml(char.name)}</b><span style="color:${rarityColors[char.currentStar]}">${stars(char.currentStar)}</span><small>${escapeHtml(char.className)}</small>`:`<b>+</b><small>Espacio libre</small>`}</div>
+function roomSlot(char,i,selected){
+  return `<button class="dorm-card ${char?'occupied':'empty'} ${selected?'selected':''}" type="button" ${char?`data-char="${char.id}"`:''}>
+    <div class="dorm-card-art" style="${char?`background-image:url('${char.wallpaper||''}')`:''}"></div>
+    <div class="dorm-card-shade"></div>
+    ${char?`<span class="residence-tag">${i===0?'✦ En residencia':'Compañero'}</span>`:''}
+    <div class="dorm-card-copy">${char?`<b>${escapeHtml(char.name)}</b><span style="color:${rarityColors[char.currentStar]}">${stars(char.currentStar)}</span><small>${escapeHtml(char.raceName)} · ${escapeHtml(char.className)}</small>`:`<b class="plus">＋</b><span>Vacío</span>`}</div>
   </button>`;
 }
 
-function equipment(label,value='Vacío'){return `<div class="equip-slot-pro"><small>${label}</small><b>${escapeHtml(value)}</b></div>`}
-
-function renderDorms(body,state,save,rerender){
+function renderDorms(body,state,save,rerender,onBack){
   const chars=living(state),cap=capacity(state),active=chars.find(c=>c.id===state.activeCharacterId)||chars[0]||null;
   body.innerHTML=`
-    <div class="dorms-pro">
-      <div class="dorms-banner"><div><small>DORMITORIOS</small><h2>Habitaciones y gestión</h2><p>Aquí descansan tus compañeros. Las imágenes de cada plaza son los wallpapers de los personajes.</p></div><div class="capacity-box"><b>${chars.length}/${cap}</b><span>ocupadas</span></div></div>
-      <div class="rooms-grid-pro">${Array.from({length:cap},(_,i)=>slotHtml(chars[i],i)).join('')}</div>
-      ${active?`
-      <div class="character-sheet-pro">
-        <div class="character-wallpaper" style="background-image:url('${active.wallpaper||''}')"><div class="wallpaper-fade"></div><div class="wallpaper-name"><h2>${escapeHtml(active.name)}</h2><span style="color:${rarityColors[active.currentStar]}">${stars(active.currentStar)}</span><small>${escapeHtml(active.raceName)} · ${escapeHtml(active.className)} · Nv.${active.level}</small></div></div>
-        <div class="character-data-pro">
-          <div class="char-toolbar">
-            <div><h2>${escapeHtml(active.name)}</h2><p>${escapeHtml(active.raceName)} · ${escapeHtml(active.className)}</p></div>
-            <div class="rename-once"><input id="renameInput" maxlength="28" value="${escapeHtml(active.name)}" ${(active.renameRemaining??1)<1?'disabled':''}><button id="renameBtn" class="game-button dark" ${(active.renameRemaining??1)<1?'disabled':''}>Renombrar</button><small>${(active.renameRemaining??1)>0?'Puedes cambiar el nombre una vez.':'Nombre definitivo.'}</small></div>
-          </div>
-          <section class="sheet-section"><h3>Estadísticas</h3><div class="stat-grid">${Object.entries(active.stats).map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div></section>
-          <section class="sheet-section"><h3>Equipamiento</h3><div class="equipment-grid-pro">${equipment('Arma principal',active.weapon)}${equipment('Cabeza')}${equipment('Pecho')}${equipment('Brazos')}${equipment('Piernas')}${equipment('Botas')}${equipment('Accesorio I')}${equipment('Accesorio II')}</div></section>
-          <section class="sheet-double"><div class="info-card"><b>Skills</b><p>${active.skills.length?active.skills.map(s=>s.name).join(', '):'Sin skills aprendidas: usa ataque básico.'}</p></div><div class="info-card"><b>Pasivas</b><p>${active.passives.length?active.passives.map(p=>p.name).join(', '):'Sin pasivas.'}</p></div></section>
-        </div>
-      </div>`:''}
+    <div class="page-scene dorm-scene"></div>
+    <div class="premium-content">
+      ${frameTitle('KAMI NO CHALLENGE','Dormitorios','Aquí residen los aliados que te acompañan en tu travesía.')}
+      <div class="dorm-capacity">
+        <div><span>♟</span><b>${chars.length} / ${cap}</b><small>ocupados</small></div>
+        <div><span>▤</span><b>${Math.max(0,cap-chars.length)}</b><small>espacios libres</small></div>
+      </div>
+      <div class="dorm-grid">${Array.from({length:cap},(_,i)=>roomSlot(chars[i],i,chars[i]?.id===active?.id)).join('')}</div>
+      <p class="dorm-note">ⓘ El nombre de un personaje invocado <b>puede cambiarse una vez.</b></p>
+      <div class="dorm-actions">
+        <button id="viewCharacter" class="premium-gold-button" ${active?'':'disabled'}>♙ <span>Ver personaje</span> ›</button>
+        <button class="premium-blue-button">↕ <span>Ordenar</span></button>
+        <button class="premium-blue-button">▤ <span>Gestionar habitaciones</span></button>
+      </div>
     </div>`;
-  body.querySelectorAll('[data-char]').forEach(x=>x.onclick=()=>{state.activeCharacterId=x.dataset.char;save();rerender()});
-  const rename=body.querySelector('#renameBtn');
-  if(rename&&active)rename.onclick=()=>{const v=body.querySelector('#renameInput').value.trim();if(!v||(active.renameRemaining??1)<1)return;active.name=v;active.renameRemaining=0;save();rerender()};
+  body.querySelectorAll('[data-char]').forEach(x=>x.onclick=()=>{state.activeCharacterId=x.dataset.char;save();rerender('dorms')});
+  body.querySelector('#viewCharacter')?.addEventListener('click',()=>rerender('profile'));
+  backButton(onBack,body.querySelector('.premium-content'));
 }
 
-function renderSanctuary(body,state,data,save,rerender){
+function equipSlot(label,value='Vacío'){return `<div class="profile-equip"><span>✦</span><b>${escapeHtml(value)}</b><small>${label}</small></div>`}
+
+function renderProfile(body,state,save,rerender,onBack){
+  const chars=living(state),hero=chars.find(c=>c.id===state.activeCharacterId)||chars[0];
+  if(!hero){renderDorms(body,state,save,rerender,onBack);return}
+  const color=rarityColors[hero.currentStar];
+  body.innerHTML=`
+    <div class="profile-scene" style="background-image:url('${hero.wallpaper||''}')"></div>
+    <div class="profile-layout" style="--rarity:${color}">
+      <section class="profile-art" style="background-image:url('${hero.wallpaper||''}')">
+        <div class="profile-art-fade"></div>
+        <div class="profile-power"><small>⚔ PODER DE COMBATE</small><b>${Object.values(hero.stats||{}).reduce((a,b)=>a+b,0)*100}</b></div>
+      </section>
+      <section class="profile-panel">
+        <div class="profile-topline"><button id="profileBack">←</button><div>◆ ${state.resources.crystals}</div><div>● ${state.resources.gold}</div></div>
+        <h1>${escapeHtml(hero.name)}</h1>
+        <div class="profile-stars">${stars(hero.currentStar)}</div>
+        <p class="profile-meta">${escapeHtml(hero.raceName)} · ${escapeHtml(hero.className)} · DPS / Rol</p>
+        <div class="profile-level"><b>Nv. ${hero.level}</b><span>de ${hero.currentStar*10}</span><i><u style="width:${Math.min(100,hero.level/(hero.currentStar*10)*100)}%"></u></i></div>
+        <h2>Atributos principales</h2>
+        <div class="profile-stats">${Object.entries(hero.stats).map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('')}</div>
+        <h2>Equipamiento</h2>
+        <div class="profile-equipment">
+          ${equipSlot('Arma',hero.weapon)}${equipSlot('Cabeza')}${equipSlot('Pecho')}${equipSlot('Brazos')}${equipSlot('Piernas')}${equipSlot('Botas')}${equipSlot('Accesorio I')}${equipSlot('Accesorio II')}
+        </div>
+        <h2>Descripción</h2>
+        <p class="profile-description">${escapeHtml(hero.classDescription||'Un aventurero cuyo destino aún está por escribirse.')}</p>
+        <div class="profile-rename">
+          <input id="renameInput" maxlength="28" value="${escapeHtml(hero.name)}" ${(hero.renameRemaining??1)<1?'disabled':''}>
+          <button id="renameBtn" ${(hero.renameRemaining??1)<1?'disabled':''}>Renombrar</button>
+        </div>
+        <div class="profile-actions"><button>Mejorar</button><button>Ascender</button></div>
+      </section>
+    </div>`;
+  body.querySelector('#profileBack').onclick=()=>rerender('dorms');
+  body.querySelector('#renameBtn')?.addEventListener('click',()=>{
+    const v=body.querySelector('#renameInput').value.trim();
+    if(!v||(hero.renameRemaining??1)<1)return;
+    hero.name=v;hero.renameRemaining=0;save();rerender('profile');
+  });
+}
+
+function renderSanctuary(body,state,data,save,rerender,onBack){
   const chars=living(state),cap=capacity(state),free=Math.max(0,cap-chars.length),remaining=state.inhabitantsRemaining??state.world?.population??0;
   body.innerHTML=`
-    <div class="sanctuary-pro">
-      <div class="sanctuary-banner"><div><small>SANTUARIO DE INVOCACIÓN</small><h2>Aquí convergen los destinos</h2><p>Invoca nuevos aliados, asciende personajes o sacrifica los que ya no necesites.</p></div><div class="inhabitants-box"><small>Habitantes restantes</small><b>${remaining.toLocaleString('es-ES')}</b></div></div>
-      <div class="sanctuary-tabs-pro"><button class="active" data-tab="summon">Invocar</button><button data-tab="ascend">Ascender</button><button data-tab="sacrifice">Sacrificar</button></div>
-      <div class="sanctuary-panel active" data-panel="summon">
-        <div class="summon-chamber-pro"><div class="summon-rings"></div><div class="summon-core"></div><span>Cámara de invocación</span></div>
-        <div class="summon-info-row"><div><small>ESPACIOS LIBRES</small><b>${free}</b></div><div><small>PRIMERA MULTI x10</small><b>${state.summon?.freeMultiUsed?'Usada':'GRATIS'}</b></div></div>
-        <div class="rarity-legend-pro"><span>Índice de rareza</span><div>${rarityLegend()}</div></div>
-        <div class="summon-actions-pro"><button id="summon1" class="game-button dark" ${free<1||remaining<1?'disabled':''}>Invocar x1 · 1 cristal</button><button id="summon10" class="game-button gold" ${free<1||remaining<1?'disabled':''}>${state.summon?.freeMultiUsed?'Invocar x10 · 10 cristales':'Primera multi x10 GRATIS'}</button></div>
-        <div id="summonResult" class="summon-result-pro"></div>
-      </div>
-      <div class="sanctuary-panel" data-panel="ascend"><div class="info-card"><b>Ascensión</b><p>Consume 10 personajes del mismo rango para crear una Piedra de Ascensión de ese rango. Al ascender, el personaje sube una estrella y vuelve a Nv.1.</p></div></div>
-      <div class="sanctuary-panel" data-panel="sacrifice"><div class="info-card"><b>Sacrificio</b><p>El sacrificio es irreversible. Los personajes consumidos no regresan a la población del planeta.</p></div></div>
+    <div class="page-scene sanctuary-scene"></div>
+    <div class="premium-content sanctuary-content">
+      <div class="sanctuary-brand">KAMI NO CHALLENGE</div>
+      <div class="sanctuary-tabs"><button class="active" data-tab="summon">◉<b>Invocar</b></button><button data-tab="ascend">⇈<b>Ascender</b></button><button data-tab="sacrifice">♨<b>Sacrificar</b></button></div>
+      <section class="sanctuary-panel active" data-panel="summon">
+        <div class="sanctuary-chamber"><div class="celestial-ring r1"></div><div class="celestial-ring r2"></div><div class="celestial-core">✦</div></div>
+        <div class="sanctuary-info">
+          <div><span>♟</span><small>Espacios libres</small><b>${free} / ${cap}</b></div>
+          <div><span>◉</span><small>Habitantes restantes</small><b>${remaining.toLocaleString('es-ES')}</b></div>
+        </div>
+        <div class="rarity-row">${rarityLegend()}</div>
+        <div class="sanctuary-actions">
+          <button id="summon1" class="summon-one" ${free<1||remaining<1?'disabled':''}><b>Invocar x1</b><span>◆ 1</span></button>
+          <button id="summon10" class="summon-ten" ${free<1||remaining<1?'disabled':''}><small>PRIMERA MULTI x10</small><b>${state.summon?.freeMultiUsed?'Invocar x10':'GRATIS'}</b><span>${state.summon?.freeMultiUsed?'◆ 10':'◆ 0'}</span></button>
+        </div>
+        <div id="summonResult" class="summon-results"></div>
+      </section>
+      <section class="sanctuary-panel" data-panel="ascend">
+        ${frameTitle('ASCENSIÓN','Eleva su destino','Consume 10 personajes del mismo rango para crear una Piedra de Ascensión. El personaje sube una estrella y regresa a Nv.1.')}
+        <div class="ritual-placeholder">⇈</div>
+      </section>
+      <section class="sanctuary-panel" data-panel="sacrifice">
+        ${frameTitle('SACRIFICIO','Nada regresa','El sacrificio es irreversible y nunca devuelve habitantes a la población del mundo.')}
+        <div class="ritual-placeholder danger">♨</div>
+      </section>
     </div>`;
-  body.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{body.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));body.querySelectorAll('[data-panel]').forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab))});
-  const summon=(wanted)=>{
-    const current=living(state),slots=Math.max(0,capacity(state)-current.length),rem=state.inhabitantsRemaining??state.world?.population??0;
-    const count=Math.min(wanted,slots,rem); if(count<1)return;
-    const freeMulti=wanted===10&&!state.summon?.freeMultiUsed;
-    const cost=freeMulti?0:(wanted===10?10:1);
-    if(state.resources.crystals<cost){body.querySelector('#summonResult').innerHTML='<p>No tienes suficientes cristales.</p>';return}
-    state.resources.crystals-=cost;
+  body.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{
+    body.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+    body.querySelectorAll('[data-panel]').forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab));
+  });
+  const summon=wanted=>{
+    const slots=Math.max(0,capacity(state)-living(state).length),rem=state.inhabitantsRemaining??0;
+    const count=Math.min(wanted,slots,rem);if(count<1)return;
     state.summon=state.summon||{freeMultiUsed:false,history:[]};
-    if(freeMulti)state.summon.freeMultiUsed=true;
+    const freeMulti=wanted===10&&!state.summon.freeMultiUsed;
+    const cost=freeMulti?0:(wanted===10?10:1);
+    if((state.resources.crystals||0)<cost){body.querySelector('#summonResult').innerHTML='<p class="summon-message">No tienes suficientes cristales.</p>';return}
+    state.resources.crystals-=cost;if(freeMulti)state.summon.freeMultiUsed=true;
     const results=Array.from({length:count},()=>summonOne(data));
-    state.characters.push(...results);state.inhabitantsRemaining=Math.max(0,rem-count);state.summon.history=results.map(r=>({id:r.id,star:r.currentStar}));
-    save();
-    body.querySelector('#summonResult').innerHTML=`<div class="summon-cards-pro">${results.map(r=>`<div class="summon-card-pro" style="--rarity:${rarityColors[r.currentStar]}"><div style="background-image:url('${r.wallpaper||''}')"></div><span style="color:${rarityColors[r.currentStar]}">${stars(r.currentStar)}</span></div>`).join('')}</div><p>${count} invocado(s). Habitantes restantes: ${state.inhabitantsRemaining.toLocaleString('es-ES')}</p>`;
-    setTimeout(rerender,1400);
+    state.characters.push(...results);state.inhabitantsRemaining=Math.max(0,rem-count);
+    state.summon.history=results.map(x=>({id:x.id,star:x.currentStar}));save();
+    body.querySelector('#summonResult').innerHTML=`<div class="summon-result-grid">${results.map(x=>`<div style="--rarity:${rarityColors[x.currentStar]}"><figure style="background-image:url('${x.wallpaper}')"></figure><b>${stars(x.currentStar)}</b><small>${escapeHtml(x.name)}</small></div>`).join('')}</div>`;
+    setTimeout(()=>rerender('sanctuary'),1800);
   };
   body.querySelector('#summon1')?.addEventListener('click',()=>summon(1));
   body.querySelector('#summon10')?.addEventListener('click',()=>summon(10));
+  backButton(onBack,body.querySelector('.premium-content'));
 }
 
-function renderMissions(body,state){const chars=living(state);body.innerHTML=`<div class="mission-premium"><h2>Supervivencia I</h2><p>Resiste 3 minutos contra Goblins ★1. Muerte permanente. Campo rectangular con 3 carriles invisibles y ataques diagonales.</p><div class="team-slots">${[0,1,2,3,4].map(i=>`<div>${chars[i]?`<b>${escapeHtml(chars[i].name)}</b><span style="color:${rarityColors[chars[i].currentStar]}">${stars(chars[i].currentStar)}</span>`:'<b>Vacío</b><span>Añadir</span>'}</div>`).join('')}</div><button class="game-button gold wide">Preparar misión</button></div>`}
-function renderStorage(body,state){body.innerHTML=`<div class="storage-tabs"><button class="active">Materiales</button><button>Equipo</button><button>Consumibles</button><button>Especiales</button></div><div class="inventory-grid"><div><b>Madera</b><span>x${state.resources.wood}</span></div><div><b>Piedra</b><span>x${state.resources.stone}</span></div><div><b>Espacios</b><span>${state.inventory.length}/50</span></div></div>`}
-function renderMenu(body){body.innerHTML='<div class="info-card"><b>Versión UI</b><p>Interfaz premium integrada.</p></div>'}
+function renderStorage(body,state,onBack){
+  const items=[
+    ['Cristales',state.resources.crystals,'◆','rare-blue'],
+    ['Oro',state.resources.gold,'●','rare-gold'],
+    ['Esencia',state.resources.essence,'✦','rare-purple'],
+    ['Madera',state.resources.wood,'▥','rare-green'],
+    ['Piedra',state.resources.stone,'⬢','rare-silver'],
+    ['Inventario',state.inventory.length,'▣','rare-blue']
+  ];
+  body.innerHTML=`
+    <div class="page-scene storage-scene"></div>
+    <div class="premium-content storage-content">
+      ${frameTitle('KAMI NO CHALLENGE','Almacén','Objetos y recursos de tu aventura')}
+      <div class="storage-tabs-premium"><button class="active">◇<b>Materiales</b></button><button>⚔<b>Equipo</b></button><button>◉<b>Consumibles</b></button><button>✦<b>Especiales</b></button></div>
+      <div class="storage-toolbar"><button>☷ Ordenar: Rareza</button><button>▽ Todos</button><span>▣ ${state.inventory.length} / 300</span></div>
+      <div class="storage-layout">
+        <div class="storage-grid-premium">${items.map(([n,v,icon,c])=>`<button class="storage-item ${c}"><span>${icon}</span><b>${v}</b><small>${n}</small><i>★★★</i></button>`).join('')}</div>
+        <aside class="storage-detail"><div class="storage-big-icon">◆</div><h2>Cristales</h2><div class="storage-rarity">★★★★★</div><p>Recurso precioso utilizado por los sistemas de invocación y progresión. Los objetos reales obtenidos durante la aventura aparecerán aquí.</p><h3>Usos principales</h3><div>✦ Invocación</div><div>⚒ Mejora de equipo</div><div>⚖ Intercambio</div></aside>
+      </div>
+    </div>`;
+  backButton(onBack,body.querySelector('.premium-content'));
+}
+
+function renderMissions(body,state,onBack){
+  const chars=living(state);
+  body.innerHTML=`
+    <div class="page-scene mission-scene"></div>
+    <div class="premium-content">
+      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','Resiste 180 segundos. La muerte permanente está activa.')}
+      <div class="mission-card">
+        <div class="mission-portal-art"><span>✦</span></div>
+        <div><small>TORRE · PISO 1</small><h2>Supervivencia I</h2><p>Goblins ★1 · 3 carriles invisibles · ataques diagonales · sin jefe.</p></div>
+      </div>
+      <div class="team-premium">${[0,1,2,3,4].map(i=>`<div class="${chars[i]?'filled':''}">${chars[i]?`<figure style="background-image:url('${chars[i].wallpaper}')"></figure><b>${escapeHtml(chars[i].name)}</b><span>${stars(chars[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('')}</div>
+      <button class="premium-gold-button wide">Preparar misión</button>
+    </div>`;
+  backButton(onBack,body.querySelector('.premium-content'));
+}
+
+function renderMenu(body,onBack){
+  body.innerHTML=`<div class="page-scene menu-scene"></div><div class="premium-content">${frameTitle('KAMI NO CHALLENGE','Menú','Opciones del juego')}<div class="menu-grid-premium"><button>⚙ Ajustes</button><button>♢ Cuenta</button><button>♬ Audio</button><button>⌁ Ayuda</button></div></div>`;
+  backButton(onBack,body.querySelector('.premium-content'));
+}
 
 export function renderBuilding({app,type,state,data,save,activeHero,onBack}){
-  app.innerHTML='';const titles={dorms:['Dormitorios','Habitaciones, estadísticas y equipamiento.'],sanctuary:['Santuario de Invocación','Invocar · Ascender · Sacrificar'],missions:['Portal de Misiones','Forma un equipo y entra en la Torre.'],storage:['Almacén','Objetos y recursos.'],menu:['Menú','Opciones generales.']};const [title,sub]=titles[type]||titles.menu;
-  const screen=el('section','screen building-screen');screen.innerHTML=`<div class="building-shell"><header><small>KAMI NO CHALLENGE</small><h1>${title}</h1><p>${sub}</p></header><div class="building-body"></div></div>`;const body=screen.querySelector('.building-body');const rerender=()=>renderBuilding({app,type,state,data,save,activeHero:state.characters.find(c=>c.id===state.activeCharacterId)||activeHero,onBack});
-  if(type==='dorms')renderDorms(body,state,save,rerender);else if(type==='sanctuary')renderSanctuary(body,state,data,save,rerender);else if(type==='missions')renderMissions(body,state);else if(type==='storage')renderStorage(body,state);else renderMenu(body);
-  const back=button('Volver al Lobby','game-button dark');back.onclick=onBack;body.append(back);app.append(screen);
+  app.innerHTML='';
+  const screen=el('section','screen premium-building-screen');
+  screen.innerHTML='<div class="premium-building-body"></div>';
+  const body=screen.querySelector('.premium-building-body');
+  app.append(screen);
+  const rerender=next=>renderBuilding({app,type:next||type,state,data,save,activeHero:state.characters.find(c=>c.id===state.activeCharacterId)||activeHero,onBack});
+  if(type==='dorms')renderDorms(body,state,save,rerender,onBack);
+  else if(type==='profile')renderProfile(body,state,save,rerender,onBack);
+  else if(type==='sanctuary')renderSanctuary(body,state,data,save,rerender,onBack);
+  else if(type==='storage')renderStorage(body,state,onBack);
+  else if(type==='missions')renderMissions(body,state,onBack);
+  else renderMenu(body,onBack);
 }
