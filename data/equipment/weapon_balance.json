@@ -1,41 +1,22 @@
 {
   "schemaVersion": 1,
+  "note": "Mirror of the canonical weapon progression values. Canonical source: data/equipment/weapon_progression.json",
   "rarityDamageMultipliers": {
     "1": 1,
-    "2": 1.2,
-    "3": 1.45,
-    "4": 1.75,
-    "5": 2.1,
-    "6": 2.55,
-    "7": 3.1,
-    "8": 3.8
+    "2": 1.35,
+    "3": 1.75,
+    "4": 2.25,
+    "5": 2.9,
+    "6": 3.75,
+    "7": 4.9,
+    "8": 6.5
   },
   "enhancement": {
     "maxLevel": 15,
-    "successRate": 1,
-    "failurePenalty": "none",
-    "damageBonusPct": {
-      "0": 0,
-      "1": 3,
-      "2": 6,
-      "3": 9,
-      "4": 12,
-      "5": 18,
-      "6": 21,
-      "7": 24,
-      "8": 27,
-      "9": 30,
-      "10": 38,
-      "11": 41,
-      "12": 44,
-      "13": 47,
-      "14": 50,
-      "15": 60
-    },
-    "costFormula": {
-      "gold": "50 * rarity * targetEnhancementLevel",
-      "stone": "ceil(targetEnhancementLevel / 3) * ceil(rarity / 2)"
-    }
+    "damagePerLevelPct": 4,
+    "successRatePct": 100,
+    "canBreak": false,
+    "canDowngrade": false
   },
   "floor1WeaponDrop": {
     "rollPerDefeatedEnemy": 0.1,
