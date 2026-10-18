@@ -29,3 +29,17 @@
 .damage-row{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff0d}
 .damage-row div b,.damage-row div small{display:block}.damage-row div small{color:#8f9db1;font-size:9px}.damage-row>span{color:#e8d7b5}.damage-row>i{grid-column:1/2;height:7px;background:#ffffff0d}.damage-row>i u{display:block;height:100%;background:linear-gradient(90deg,#5daeff,#e4bd68);text-decoration:none}.damage-row>em{font-style:normal;color:#d8bd83;font-size:11px}
 .mission-summary{margin-top:10px;padding:9px;border-left:2px solid #d4ae62;background:#ffffff05}
+
+.weapon-inventory{margin-top:10px;border:1px solid #947a4c;background:#07101de8;padding:10px}
+.weapon-inventory h2{font:24px Georgia,serif;color:#e5c173;margin:0 0 8px}
+.weapon-inventory-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:9px;border-top:1px solid #ffffff0d}
+.weapon-inventory-row:first-of-type{border-top:0}
+.weapon-inventory-row b,.weapon-inventory-row small{display:block}
+.weapon-inventory-row small{color:#aeb8c7;font-size:10px;margin-top:3px}
+.weapon-inventory-row button{min-height:40px;padding:0 10px;border:1px solid #c9a054;background:#14233b;color:#efd497}
+.weapon-inventory-row button:disabled{opacity:.45}
+.empty-equipment{color:#9faabc}
+.weapon-drop-summary,.weapon-drop-line{grid-column:1/-1!important}
+.weapon-drop-line{display:flex!important;justify-content:space-between!important;gap:10px!important}
+.weapon-drop-line span{color:#e5c577}
+@media(max-width:600px){.weapon-inventory-row{grid-template-columns:1fr}.weapon-drop-line{flex-direction:column}}
