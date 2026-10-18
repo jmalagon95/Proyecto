@@ -31,6 +31,20 @@ export const defaultState = {
 
   missionProgress: {
     survival1Completions: 0
+  },
+
+  ui: {
+    newItemIds: [],
+    seenCharacterIds: [],
+    characterFilter: { rarity:'all', race:'all', className:'all', status:'alive' },
+    characterSort: 'power',
+    storageTab: 'weapons',
+    profileTab: 'equipment'
+  },
+
+  missionTeams: {
+    lastUsed: [],
+    presets: [[],[],[]]
   }
 };
 
@@ -57,7 +71,19 @@ export function loadState() {
           ...((saved&&saved.summon&&saved.summon.costs)||{})
         }
       },
-      missionProgress:{...structuredClone(defaultState.missionProgress),...((saved&&saved.missionProgress)||{})}
+      missionProgress:{...structuredClone(defaultState.missionProgress),...((saved&&saved.missionProgress)||{})},
+      ui:{
+        ...structuredClone(defaultState.ui),
+        ...((saved&&saved.ui)||{}),
+        characterFilter:{
+          ...structuredClone(defaultState.ui.characterFilter),
+          ...((saved&&saved.ui&&saved.ui.characterFilter)||{})
+        }
+      },
+      missionTeams:{
+        ...structuredClone(defaultState.missionTeams),
+        ...((saved&&saved.missionTeams)||{})
+      }
     };
     return state;
   } catch {
