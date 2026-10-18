@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 1,
+  "rarity": 1,
+  "rules": {
+    "note": "Catálogo base ★1. Los valores están equilibrados para personajes ★1 con atributos iniciales 1–5.",
+    "damagePhilosophy": "Las armas rápidas tienen daño base menor; las armas lentas y de dos manos tienen daño mayor. Ningún arma ★1 debe dominar el daño por sí sola.",
+    "naturalWeapons": "Rasgos anatómicos como cola eléctrica natural, garras retráctiles o pinzas no se generan como objetos de botín."
+  },
+  "families": [
+    {
+      "id": "sword_1h",
+      "name": "Espada",
+      "hands": 1,
+      "damage": [
+        3,
+        5
+      ],
+      "speed": "media",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Espada larga",
+        "Espadas cortas",
+        "Espadas gemelas",
+        "Espada élfica",
+        "Espada"
+      ]
+    },
+    {
+      "id": "greatsword_2h",
+      "name": "Mandoble",
+      "hands": 2,
+      "damage": [
+        5,
+        8
+      ],
+      "speed": "lenta",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Mandoble",
+        "Espada bastarda"
+      ]
+    },
+    {
+      "id": "rapier_1h",
+      "name": "Estoque",
+      "hands": 1,
+      "damage": [
+        2,
+        5
+      ],
+      "speed": "rápida",
+      "stat": "AGI",
+      "compatibleKeywords": [
+        "Estoque",
+        "Sable"
+      ]
+    },
+    {
+      "id": "dagger_1h",
+      "name": "Daga",
+      "hands": 1,
+      "damage": [
+        2,
+        4
+      ],
+      "speed": "muy rápida",
+      "stat": "AGI",
+      "compatibleKeywords": [
+        "Dagas",
+        "Dagas curvas",
+        "Dagas gemelas"
+      ]
+    },
+    {
+      "id": "axe_1h",
+      "name": "Hacha",
+      "hands": 1,
+      "damage": [
+        3,
+        6
+      ],
+      "speed": "media-lenta",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Hacha"
+      ]
+    },
+    {
+      "id": "throwing_axe",
+      "name": "Hacha arrojadiza",
+      "hands": 1,
+      "damage": [
+        2,
+        5
+      ],
+      "speed": "media",
+      "stat": "AGI",
+      "range": "media",
+      "compatibleKeywords": [
+        "Hachas arrojadizas"
+      ]
+    },
+    {
+      "id": "mace_1h",
+      "name": "Maza",
+      "hands": 1,
+      "damage": [
+        3,
+        6
+      ],
+      "speed": "media-lenta",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Maza",
+        "Maza ritual"
+      ]
+    },
+    {
+      "id": "heavy_club_2h",
+      "name": "Kanabō",
+      "hands": 2,
+      "damage": [
+        6,
+        9
+      ],
+      "speed": "muy lenta",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Kanabō a dos manos",
+        "Maza pesada"
+      ]
+    },
+    {
+      "id": "hammer_2h",
+      "name": "Gran martillo",
+      "hands": 2,
+      "damage": [
+        6,
+        9
+      ],
+      "speed": "muy lenta",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Gran martillo"
+      ]
+    },
+    {
+      "id": "spear_1h",
+      "name": "Lanza",
+      "hands": 1,
+      "damage": [
+        3,
+        6
+      ],
+      "speed": "media",
+      "stat": "FUE",
+      "range": "media",
+      "compatibleKeywords": [
+        "Lanza de una mano",
+        "Lanza física",
+        "Lanza viviente",
+        "Lanza ritual"
+      ]
+    },
+    {
+      "id": "spear_2h",
+      "name": "Lanza larga",
+      "hands": 2,
+      "damage": [
+        4,
+        7
+      ],
+      "speed": "media-lenta",
+      "stat": "FUE",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Lanza larga a dos manos"
+      ]
+    },
+    {
+      "id": "halberd_2h",
+      "name": "Alabarda",
+      "hands": 2,
+      "damage": [
+        5,
+        8
+      ],
+      "speed": "lenta",
+      "stat": "FUE",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Alabarda"
+      ]
+    },
+    {
+      "id": "javelin",
+      "name": "Jabalina",
+      "hands": 1,
+      "damage": [
+        3,
+        5
+      ],
+      "speed": "media",
+      "stat": "AGI",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Jabalinas",
+        "Jabalinas gigantes"
+      ]
+    },
+    {
+      "id": "scythe_2h",
+      "name": "Guadaña",
+      "hands": 2,
+      "damage": [
+        4,
+        7
+      ],
+      "speed": "media-lenta",
+      "stat": "FUE",
+      "range": "media",
+      "compatibleKeywords": [
+        "Guadaña larga",
+        "Guadañas gemelas"
+      ]
+    },
+    {
+      "id": "bow_2h",
+      "name": "Arco",
+      "hands": 2,
+      "damage": [
+        3,
+        6
+      ],
+      "speed": "media",
+      "stat": "AGI",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Arco",
+        "Arco corto",
+        "Arco espiritual",
+        "Arco largo viviente"
+      ]
+    },
+    {
+      "id": "crossbow_2h",
+      "name": "Ballesta",
+      "hands": 2,
+      "damage": [
+        4,
+        7
+      ],
+      "speed": "lenta",
+      "stat": "AGI",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Ballesta",
+        "Ballesta ligera"
+      ]
+    },
+    {
+      "id": "staff_2h",
+      "name": "Bastón",
+      "hands": 2,
+      "damage": [
+        2,
+        4
+      ],
+      "magicPower": [
+        3,
+        6
+      ],
+      "speed": "media",
+      "stat": "INT",
+      "compatibleKeywords": [
+        "Bastón",
+        "Báculo",
+        "Bastón ritual",
+        "Bastón conductor",
+        "Bastón de invocación",
+        "Bastón espiritual",
+        "Bastón druídico",
+        "Bastón de madera viva",
+        "Bastón de resonancia",
+        "Bastón de colmena"
+      ]
+    },
+    {
+      "id": "wand_1h",
+      "name": "Varita",
+      "hands": 1,
+      "damage": [
+        1,
+        3
+      ],
+      "magicPower": [
+        3,
+        5
+      ],
+      "speed": "rápida",
+      "stat": "INT",
+      "compatibleKeywords": [
+        "Varita",
+        "Varita espiritual"
+      ]
+    },
+    {
+      "id": "tome_1h",
+      "name": "Tomo",
+      "hands": 1,
+      "damage": [
+        1,
+        2
+      ],
+      "magicPower": [
+        4,
+        6
+      ],
+      "speed": "media",
+      "stat": "INT",
+      "compatibleKeywords": [
+        "Tomo",
+        "Tomo de apoyo",
+        "Tomo de pactos",
+        "Tomo de sangre",
+        "Tomo de sellos"
+      ]
+    },
+    {
+      "id": "scepter_1h",
+      "name": "Cetro",
+      "hands": 1,
+      "damage": [
+        2,
+        4
+      ],
+      "magicPower": [
+        3,
+        5
+      ],
+      "speed": "media",
+      "stat": "INT",
+      "compatibleKeywords": [
+        "Cetro"
+      ]
+    },
+    {
+      "id": "catalyst_1h",
+      "name": "Catalizador",
+      "hands": 1,
+      "damage": [
+        1,
+        2
+      ],
+      "magicPower": [
+        4,
+        6
+      ],
+      "speed": "media",
+      "stat": "INT",
+      "compatibleKeywords": [
+        "Catalizador",
+        "Catalizador hemático",
+        "Catalizador solar",
+        "Catalizadores de descarga",
+        "Catalizadores de energía",
+        "Catalizador de feromonas",
+        "Tótem catalizador",
+        "Tótem orgánico"
+      ]
+    },
+    {
+      "id": "gauntlets_pair",
+      "name": "Guanteletes",
+      "hands": 2,
+      "damage": [
+        2,
+        5
+      ],
+      "speed": "rápida",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Guanteletes",
+        "Armas de puño"
+      ]
+    },
+    {
+      "id": "chakrams_pair",
+      "name": "Chakrams",
+      "hands": 2,
+      "damage": [
+        2,
+        5
+      ],
+      "speed": "rápida",
+      "stat": "AGI",
+      "range": "media",
+      "compatibleKeywords": [
+        "Chakrams"
+      ]
+    },
+    {
+      "id": "cannon_2h",
+      "name": "Cañón",
+      "hands": 2,
+      "damage": [
+        5,
+        8
+      ],
+      "speed": "lenta",
+      "stat": "FUE",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Cañones de antebrazo",
+        "Cañón biológico de antebrazo",
+        "Cañón de quitina"
+      ]
+    },
+    {
+      "id": "fan_1h",
+      "name": "Abanico ritual",
+      "hands": 1,
+      "damage": [
+        1,
+        3
+      ],
+      "magicPower": [
+        3,
+        5
+      ],
+      "speed": "rápida",
+      "stat": "INT",
+      "compatibleKeywords": [
+        "Abanico ritual"
+      ]
+    },
+    {
+      "id": "spike_launcher",
+      "name": "Lanzador orgánico",
+      "hands": 2,
+      "damage": [
+        3,
+        6
+      ],
+      "speed": "media",
+      "stat": "AGI",
+      "range": "larga",
+      "compatibleKeywords": [
+        "Lanzador de espinas",
+        "Lanzadores orgánicos"
+      ]
+    },
+    {
+      "id": "arm_blades_pair",
+      "name": "Cuchillas de antebrazo",
+      "hands": 2,
+      "damage": [
+        3,
+        5
+      ],
+      "speed": "rápida",
+      "stat": "AGI",
+      "compatibleKeywords": [
+        "Cuchillas de antebrazo"
+      ]
+    },
+    {
+      "id": "bio_weapon_pair",
+      "name": "Arma biológica mutable",
+      "hands": 2,
+      "damage": [
+        3,
+        6
+      ],
+      "speed": "media",
+      "stat": "FUE",
+      "compatibleKeywords": [
+        "Armas biológicas mutables"
+      ]
+    }
+  ],
+  "variantsPerFamily": 10
+}
