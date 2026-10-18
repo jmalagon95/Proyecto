@@ -55,6 +55,7 @@ function variants(f,rarity){
       name,
       rarity,
       enhancement:0,
+      level:1,
       category:'weapon',
       familyId:f.id,
       familyName:f.name,
