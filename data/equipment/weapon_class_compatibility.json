@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "rule": "Una clase solo puede equipar una familia de arma si figura explícitamente en allowedClasses. Las variantes y rarezas de una misma familia comparten compatibilidad.",
+  "families": {
+    "sword_1h": [
+      "Guerrero",
+      "Defensor",
+      "Pícaro",
+      "Danzante de la Luna",
+      "Guardián Silvano",
+      "Sanguinario Noble",
+      "Caballero de la Sed Eterna"
+    ],
+    "greatsword_2h": [
+      "Caballero de la Sed Eterna"
+    ],
+    "rapier_1h": [
+      "Sanguinario Noble"
+    ],
+    "dagger_1h": [
+      "Pícaro",
+      "Depredador de las Cumbres",
+      "Danzante de la Luna"
+    ],
+    "axe_1h": [
+      "Guerrero"
+    ],
+    "throwing_axe": [
+      "Lanzador de Calamidades"
+    ],
+    "mace_1h": [
+      "Guerrero",
+      "Defensor",
+      "Guardián del Cuerno Ancestral",
+      "Devorador de Maldiciones",
+      "Bastión Escarabajo",
+      "Bastión de Escama Seca"
+    ],
+    "heavy_club_2h": [
+      "Destructor Kijin"
+    ],
+    "hammer_2h": [
+      "Destructor Kijin"
+    ],
+    "spear_1h": [
+      "Defensor",
+      "Lancero del Cuerno Primordial",
+      "Guardián del Cuerno Ancestral",
+      "Guardián Silvano",
+      "Hemolancero",
+      "Bastión de Escama Seca"
+    ],
+    "spear_2h": [
+      "Lancero del Cuerno Primordial"
+    ],
+    "halberd_2h": [
+      "Lancero del Cuerno Primordial"
+    ],
+    "javelin": [
+      "Lanzador de Calamidades",
+      "Hemolancero",
+      "Ojo del Pedregal"
+    ],
+    "scythe_2h": [
+      "Segador",
+      "Segador Mantídeo"
+    ],
+    "bow_2h": [
+      "Ranger",
+      "Arquero de la Arboleda Primigenia",
+      "Ojo del Pedregal"
+    ],
+    "crossbow_2h": [
+      "Ranger",
+      "Ojo del Pedregal"
+    ],
+    "staff_2h": [
+      "Mago",
+      "Invocador",
+      "Apoyo",
+      "Resonador Kairakh",
+      "Cantor de Raíces",
+      "Tejedor de Espíritus",
+      "Monje de los Cuernos",
+      "Señor de los Cien Demonios",
+      "Señor de los Murciélagos",
+      "Emperador de la Colmena",
+      "Conductor del Sol Árido"
+    ],
+    "wand_1h": [
+      "Mago",
+      "Tejedor de Espíritus",
+      "Tejedor Carmesí"
+    ],
+    "tome_1h": [
+      "Mago",
+      "Invocador",
+      "Apoyo",
+      "Tejedor de Espíritus",
+      "Señor de los Cien Demonios",
+      "Señor de los Murciélagos",
+      "Tejedor Carmesí"
+    ],
+    "scepter_1h": [
+      "Apoyo",
+      "Señor de los Murciélagos"
+    ],
+    "catalyst_1h": [
+      "Invocador",
+      "Proyector de Venas",
+      "Resonador Kairakh",
+      "Hemolancero",
+      "Emperador de la Colmena",
+      "Azote de Cola Eléctrica",
+      "Conductor del Sol Árido"
+    ],
+    "gauntlets_pair": [
+      "Pícaro",
+      "Proyector de Venas",
+      "Depredador de las Cumbres",
+      "Devorador de Maldiciones",
+      "Monje de los Cuernos",
+      "Tejedor Carmesí",
+      "Garra Fulminante",
+      "Conductor del Sol Árido"
+    ],
+    "chakrams_pair": [
+      "Danzante de la Luna"
+    ],
+    "cannon_2h": [
+      "Proyector de Venas",
+      "Artillero Quitinoso"
+    ],
+    "fan_1h": [
+      "Señor de los Cien Demonios"
+    ],
+    "spike_launcher": [
+      "Artillero Quitinoso",
+      "Maestro de la Metamorfosis"
+    ],
+    "arm_blades_pair": [
+      "Segador Mantídeo"
+    ],
+    "bio_weapon_pair": [
+      "Maestro de la Metamorfosis"
+    ]
+  }
+}
