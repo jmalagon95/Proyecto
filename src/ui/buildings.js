@@ -366,22 +366,41 @@ function renderStorage(body,state,save,rerender,onBack){
 function renderMissions(body,state,data,save,onBack){
   const chars=living(state);
   const mission=data.missions?.survival1;
-  const team=chars.slice(0,5);
+  state.missionTeams=state.missionTeams||{lastUsed:[],presets:[[],[],[]]};
+  const validIds=new Set(chars.map(c=>c.id));
+  let selectedIds=(state.missionTeams.lastUsed||[]).filter(id=>validIds.has(id)).slice(0,5);
+  if(!selectedIds.length)selectedIds=chars.slice(0,5).map(c=>c.id);
+  const getTeam=()=>selectedIds.map(id=>chars.find(c=>c.id===id)).filter(Boolean);
+
   body.innerHTML=`
     <div class="page-scene mission-scene"></div>
     <div class="premium-content">
-      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','La batalla se resolverá completamente en código mientras un narrador relata los acontecimientos.')}
+      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','Selecciona hasta 5 personajes. La batalla se resuelve en código mientras el narrador relata lo ocurrido.')}
       <div class="mission-card">
         <div class="mission-portal-art"><span>✦</span></div>
         <div>
           <small>TORRE · PISO 1</small>
           <h2>Supervivencia I</h2>
           <p>Duración: ${mission?.durationSeconds||180}s · Goblins ★1 · ${mission?.totalEnemies||45} enemigos en 6 oleadas.</p>
-          <p><b>Recompensa fija por victoria: ${mission?.fixedGoldReward||250} de oro.</b> El loot puede añadir oro, madera y piedra. Si fracasas, no recibes ninguna recompensa.</p>
+          <p><b>Victoria: ${mission?.fixedGoldReward||250} de oro fijo + loot.</b> Derrota: 0 recompensas.</p>
         </div>
       </div>
-      <div class="team-premium">${[0,1,2,3,4].map(i=>`<div class="${team[i]?'filled':''}">${team[i]?`<figure style="background-image:url('${team[i].wallpaper}')"></figure><b>${escapeHtml(team[i].name)}</b><span>${stars(team[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('')}</div>
-      <button id="startSurvival" class="premium-gold-button wide" ${team.length?'':'disabled'}>Iniciar Supervivencia I</button>
+
+      <section class="team-builder">
+        <header><b>Equipo</b><span id="teamCount"></span></header>
+        <div class="team-preset-actions">
+          <button data-load-team="last">Último equipo</button>
+          ${[0,1,2].map(i=>`<button data-load-team="${i}">Equipo ${i+1}</button>`).join('')}
+          ${[0,1,2].map(i=>`<button data-save-team="${i}">Guardar E${i+1}</button>`).join('')}
+        </div>
+        <div class="team-premium" id="missionTeamSlots"></div>
+        <h3>Personajes disponibles</h3>
+        <div class="mission-character-picker">
+          ${chars.map(ch=>`<button data-mission-char="${ch.id}"><b>${escapeHtml(ch.name)}</b><span>${stars(ch.currentStar)} · Nv.${ch.level}</span><small>${escapeHtml(ch.className)}</small></button>`).join('')}
+        </div>
+      </section>
+
+      <button id="startSurvival" class="premium-gold-button wide">Enviar equipo</button>
       <section class="battle-console hidden" id="battleConsole">
         <header><b>Narrador de batalla</b><span id="battleClock">00:00</span></header>
         <div class="battle-log" id="battleLog"></div>
@@ -390,9 +409,42 @@ function renderMissions(body,state,data,save,onBack){
     </div>`;
   backButton(onBack,body.querySelector('.premium-content'));
 
+  const renderTeam=()=>{
+    const team=getTeam();
+    body.querySelector('#teamCount').textContent=team.length+'/5';
+    body.querySelector('#missionTeamSlots').innerHTML=[0,1,2,3,4].map(i=>`<div class="${team[i]?'filled':''}">${team[i]?`<figure style="background-image:url('${team[i].wallpaper}')"></figure><b>${escapeHtml(team[i].name)}</b><span>${stars(team[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('');
+    body.querySelectorAll('[data-mission-char]').forEach(btn=>btn.classList.toggle('selected',selectedIds.includes(btn.dataset.missionChar)));
+    body.querySelector('#startSurvival').disabled=team.length===0;
+  };
+  renderTeam();
+
+  body.querySelectorAll('[data-mission-char]').forEach(btn=>btn.onclick=()=>{
+    const id=btn.dataset.missionChar;
+    if(selectedIds.includes(id))selectedIds=selectedIds.filter(x=>x!==id);
+    else if(selectedIds.length<5)selectedIds.push(id);
+    renderTeam();
+  });
+  body.querySelectorAll('[data-load-team]').forEach(btn=>btn.onclick=()=>{
+    const key=btn.dataset.loadTeam;
+    const source=key==='last'?state.missionTeams.lastUsed:(state.missionTeams.presets?.[Number(key)]||[]);
+    selectedIds=source.filter(id=>validIds.has(id)).slice(0,5);
+    renderTeam();
+  });
+  body.querySelectorAll('[data-save-team]').forEach(btn=>btn.onclick=()=>{
+    const i=Number(btn.dataset.saveTeam);
+    state.missionTeams.presets=state.missionTeams.presets||[[],[],[]];
+    state.missionTeams.presets[i]=[...selectedIds];
+    save();
+    btn.textContent='Guardado ✓';
+  });
+
   const startBtn=body.querySelector('#startSurvival');
   if(!startBtn||!mission)return;
   startBtn.onclick=async()=>{
+    const team=getTeam();
+    if(!team.length)return;
+    state.missionTeams.lastUsed=[...selectedIds];
+    save();
     startBtn.disabled=true;
     const result=simulateSurvivalMission(team,mission);
     const weaponDrops=result.completed?await rollSurvival1WeaponDrops(result.enemiesDefeated):[];
