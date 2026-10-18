@@ -16,6 +16,8 @@ namespace KamiNoChallenge {
         public int currentStar = 1;
         public int level = 1;
         public int experience = 0;
+        public int missionsSurvived = 0;
+        public int totalKills = 0;
         public bool dead = false;
         public Stats stats = new Stats();
         public List<string> passiveIds = new List<string>();
