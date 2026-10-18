@@ -18,5 +18,5 @@ export function escapeHtml(value = '') {
 }
 
 export function stars(n) {
-  return '★'.repeat(n) + '☆'.repeat(Math.max(0, 8 - n));
+  return '★'.repeat(Math.max(0, Number(n) || 0));
 }
