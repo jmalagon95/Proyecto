@@ -1,4 +1,4 @@
-import progression from '../../data/equipment/weapon_progression.json' with { type: 'json' };
+import { SURVIVAL1_WEAPON_DROP } from './weapon-config.js';
 
 const cache=new Map();
 
@@ -14,9 +14,9 @@ async function loadCatalog(rarity){
 
 function rollRarity(){
   const r=Math.random();
-  const p=progression.survival1Drop.rarityWithinWeaponDrop;
-  if(r<(p['3']||0))return 3;
-  if(r<(p['3']||0)+(p['2']||0))return 2;
+  const p=SURVIVAL1_WEAPON_DROP.rarityWeights;
+  if(r<(p[3]||0))return 3;
+  if(r<(p[3]||0)+(p[2]||0))return 2;
   return 1;
 }
 
@@ -30,10 +30,9 @@ function cloneDrop(template){
 }
 
 export async function rollSurvival1WeaponDrops(defeatedEnemies){
-  const chance=progression.survival1Drop.weaponDropChancePerDefeatedEnemy;
   const rarities=[];
   for(let i=0;i<defeatedEnemies;i++){
-    if(Math.random()<chance)rarities.push(rollRarity());
+    if(Math.random()<SURVIVAL1_WEAPON_DROP.chancePerDefeatedEnemy)rarities.push(rollRarity());
   }
   const results=[];
   for(const rarity of rarities){
