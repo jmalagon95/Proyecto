@@ -460,7 +460,7 @@ export function renderBuilding({app,type,state,data,save,activeHero,onBack}){
   const body=screen.querySelector('.premium-building-body');
   app.append(screen);
   const rerender=next=>renderBuilding({app,type:next||type,state,data,save,activeHero:state.characters.find(c=>c.id===state.activeCharacterId)||activeHero,onBack});
-  if(type==='dorms')renderDorms(body,state,save,rerender,onBack);
+  if(type==='dorms'||type==='characters')renderDorms(body,state,save,rerender,onBack);
   else if(type==='profile')renderProfile(body,state,save,rerender,onBack);
   else if(type==='upgrade')renderUpgrade(body,state,save,rerender,onBack);
   else if(type==='sanctuary')renderSanctuary(body,state,data,save,rerender,onBack);
