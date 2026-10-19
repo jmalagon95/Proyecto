@@ -77,3 +77,18 @@
 .equipment-choice b,.equipment-choice span,.equipment-choice small{display:block}.equipment-choice b{font:16px Georgia,serif;color:#f0d7a5}.equipment-choice span{color:#ddbd72;font-size:11px;margin-top:3px}.equipment-choice small{color:#aab6c6;font-size:9px;margin-top:2px}.equipment-choice strong{color:#f0cc7e}
 .equipment-picker-empty{padding:22px;text-align:center;border:1px dashed #66563b;color:#aeb8c7}.equipment-picker-empty b,.equipment-picker-empty small{display:block}.equipment-picker-empty b{color:#e1c993;margin-bottom:5px}.equipment-picker-empty.error{border-color:#8f3d43;color:#ffb8bc}
 @media(max-width:600px){.equipment-picker-overlay{padding:0}.equipment-picker{max-height:88dvh;border-left:0;border-right:0;border-bottom:0}.equipment-choice{grid-template-columns:1fr}.equipment-choice strong{text-align:right}}
+
+.rooms-content{max-width:1180px}
+.rooms-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+.rooms-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px;border:1px solid #8f7448;background:#07101de8}
+.rooms-grid .dorm-card{min-height:210px}
+.room-preview{border:1px solid #9f814b;background:#081321ed;padding:10px;align-self:start}
+.room-preview-art{aspect-ratio:4/3;background-size:cover;background-position:center top;border:1px solid #6e5b3b}
+.room-preview h2{font:32px Georgia,serif;color:#efd290;text-align:center;margin:10px 0 3px}
+.room-preview p{text-align:center;color:#b9c3d0;font-size:11px}
+.room-preview-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin:10px 0}
+.room-preview-stats span{padding:8px;border:1px solid #ffffff10;background:#ffffff05;color:#d9c38f;font-size:10px;text-align:center}
+.room-preview-empty{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#9da9b8}
+.room-preview-empty b{font:24px Georgia,serif;color:#d8bf88}.room-preview-empty small{margin-top:5px}
+@media(max-width:800px){.rooms-layout{grid-template-columns:1fr}.room-preview{order:-1}.rooms-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.rooms-grid{grid-template-columns:1fr}.rooms-grid .dorm-card{min-height:180px}}
