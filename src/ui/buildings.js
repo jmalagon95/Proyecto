@@ -5,6 +5,7 @@ import { ascensionRequirement, levelCap } from '../systems/progression.js';
 import { simulateSurvivalMission, applyMissionResult } from '../systems/mission-simulator.js';
 import { rollSurvival1WeaponDrops, applyWeaponDrops } from '../systems/loot.js';
 import { upgradeWeapon, weaponUpgradeCost } from '../systems/weapon-upgrade.js';
+import { estimatedDps, characterMaxHp } from '../systems/combat-stats.js';
 import { generateUniqueName } from '../systems/name-generator.js';
 
 const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
@@ -35,7 +36,7 @@ function roomSlot(char,i,selected){
     <div class="dorm-card-art" style="${char?`background-image:url('${char.wallpaper||''}')`:''}"></div>
     <div class="dorm-card-shade"></div>
     ${char&&char.dead?'<span class="residence-tag dead">CAÍDO</span>':char?`<span class="residence-tag">Poder ${characterPower(char).toLocaleString('es-ES')}</span>`:''}
-    <div class="dorm-card-copy">${char?`<b>${escapeHtml(char.name)}</b><span style="color:${rarityColors[char.currentStar]}">${stars(char.currentStar)}</span><small>${escapeHtml(char.raceName)} · ${escapeHtml(char.className)} · Nv.${char.level}</small><small>🛡 ${char.missionsSurvived||0} misiones sobrevividas · ⚔ ${char.totalKills||0} bajas</small>`:`<b class="plus">＋</b><span>Vacío</span>`}</div>
+    <div class="dorm-card-copy">${char?`<b>${escapeHtml(char.name)}</b><span style="color:${rarityColors[char.currentStar]}">${stars(char.currentStar)}</span><small>${escapeHtml(char.raceName)} · ${escapeHtml(char.className)} · Nv.${char.level}</small><small>⚔ DPS ${estimatedDps(char)} · ❤ HP ${characterMaxHp(char)}</small><small>🛡 ${char.missionsSurvived||0} misiones sobrevividas · ☠ ${char.totalKills||0} bajas</small>`:`<b class="plus">＋</b><span>Vacío</span>`}</div>
   </button>`;
 }
 
@@ -231,6 +232,8 @@ function renderProfile(body,state,save,rerender,onBack){
         <div><small>Estado</small><b>${hero.dead?'Caído':'Activo'}</b></div>
         <div><small>Misiones sobrevividas</small><b>${hero.missionsSurvived||0}</b></div>
         <div><small>Enemigos eliminados</small><b>${hero.totalKills||0}</b></div>
+        <div><small>DPS estimado</small><b>${estimatedDps(hero)}</b></div>
+        <div><small>HP máximo</small><b>${characterMaxHp(hero)}</b></div>
       </div>
     </section>`;
   const equipmentPanel=`
@@ -588,7 +591,7 @@ function renderMissions(body,state,data,save,onBack){
             ${result.damageMetrics.sort((a,b)=>b.damage-a.damage).map(m=>`
               <div class="damage-row">
                 <div><b>${escapeHtml(m.name)}</b><small>${m.survived?'Superviviente':'Caído'} · ${m.kills} bajas</small></div>
-                <span>${m.damage} daño</span>
+                <span>${m.damage} daño · DPS ${m.dps??estimatedDps((state.characters||[]).find(c=>c.id===m.id)||{})}</span>
                 <i><u style="width:${m.damagePct}%"></u></i>
                 <em>${m.damagePct}%</em>
               </div>`).join('')}
