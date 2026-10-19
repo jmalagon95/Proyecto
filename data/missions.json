@@ -25,11 +25,11 @@
     "enemyLevel": 1,
     "baseXpPerKill": 2,
     "xpOnlyOnSuccess": true,
-    "enemyHp": 28,
+    "enemyHp": 36,
     "enemyDefense": 1,
-    "enemyAttackMin": 5,
-    "enemyAttackMax": 9,
-    "enemyPressure": 0.38,
-    "difficultyNote": "La presión enemiga se acumula si el equipo no elimina goblins con suficiente rapidez."
+    "enemyAttackMin": 7,
+    "enemyAttackMax": 11,
+    "enemyPressure": 0.47,
+    "difficultyNote": "Piso 1 calibrado para ser peligroso para grupos ★1 Nv.1. Los enemigos acumulan presión si el grupo no limpia las oleadas."
   }
 }
