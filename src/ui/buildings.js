@@ -459,14 +459,15 @@ function renderMissions(body,state,data,save,onBack){
   body.innerHTML=`
     <div class="page-scene mission-scene"></div>
     <div class="premium-content">
-      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','Selecciona hasta 5 personajes. La batalla se resuelve en código mientras el narrador relata lo ocurrido.')}
+      ${frameTitle('PORTAL DE MISIONES','Supervivencia I','Selecciona hasta 5 personajes. La expedición dura 3 minutos reales y el narrador informa segundo a segundo.')}
       <div class="mission-card">
         <div class="mission-portal-art"><span>✦</span></div>
         <div>
           <small>TORRE · PISO 1</small>
           <h2>Supervivencia I</h2>
           <p>Duración: ${mission?.durationSeconds||180}s · Goblins ★1 · ${mission?.totalEnemies||45} enemigos en 6 oleadas.</p>
-          <p><b>Victoria: ${mission?.fixedGoldReward||250} de oro fijo + loot.</b> Derrota: 0 recompensas.</p>
+          <p><b>Victoria: ${mission?.fixedGoldReward||250} de oro fijo + loot.</b> Derrota: 0 recompensas y 0 XP.</p>
+          <p><b>Dificultad:</b> alta para equipos ★1 Nv.1.</p>
         </div>
       </div>
 
@@ -480,11 +481,11 @@ function renderMissions(body,state,data,save,onBack){
         <div class="team-premium" id="missionTeamSlots"></div>
         <h3>Personajes disponibles</h3>
         <div class="mission-character-picker">
-          ${chars.map(ch=>`<button data-mission-char="${ch.id}"><b>${escapeHtml(ch.name)}</b><span>${stars(ch.currentStar)} · Nv.${ch.level}</span><small>${escapeHtml(ch.className)}</small></button>`).join('')}
+          ${chars.map(ch=>`<button data-mission-char="${ch.id}"><b>${escapeHtml(ch.name)}</b><span>${stars(ch.currentStar)} · Nv.${ch.level}</span><small>${escapeHtml(ch.className)} · DPS ${estimatedDps(ch)}</small></button>`).join('')}
         </div>
       </section>
 
-      <button id="startSurvival" class="premium-gold-button wide">Enviar equipo</button>
+      <button id="startSurvival" class="premium-gold-button wide">Comenzar expedición</button>
       <section class="battle-console hidden" id="battleConsole">
         <header><b>Narrador de batalla</b><span id="battleClock">00:00</span></header>
         <div class="battle-log" id="battleLog"></div>
@@ -496,7 +497,7 @@ function renderMissions(body,state,data,save,onBack){
   const renderTeam=()=>{
     const team=getTeam();
     body.querySelector('#teamCount').textContent=team.length+'/5';
-    body.querySelector('#missionTeamSlots').innerHTML=[0,1,2,3,4].map(i=>`<div class="${team[i]?'filled':''}">${team[i]?`<figure style="background-image:url('${team[i].wallpaper}')"></figure><b>${escapeHtml(team[i].name)}</b><span>${stars(team[i].currentStar)}</span>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('');
+    body.querySelector('#missionTeamSlots').innerHTML=[0,1,2,3,4].map(i=>`<div class="${team[i]?'filled':''}">${team[i]?`<figure style="background-image:url('${team[i].wallpaper}')"></figure><b>${escapeHtml(team[i].name)}</b><span>${stars(team[i].currentStar)}</span><small>DPS ${estimatedDps(team[i])}</small>`:'<b>＋</b><small>Vacío</small>'}</div>`).join('');
     body.querySelectorAll('[data-mission-char]').forEach(btn=>btn.classList.toggle('selected',selectedIds.includes(btn.dataset.missionChar)));
     body.querySelector('#startSurvival').disabled=team.length===0;
   };
@@ -524,69 +525,104 @@ function renderMissions(body,state,data,save,onBack){
 
   const startBtn=body.querySelector('#startSurvival');
   if(!startBtn||!mission)return;
-  startBtn.onclick=async()=>{
+
+  startBtn.onclick=()=>{
     const team=getTeam();
-    if(!team.length)return;
+    if(!team.length){
+      startBtn.textContent='Selecciona al menos un personaje';
+      setTimeout(()=>startBtn.textContent='Comenzar expedición',1200);
+      return;
+    }
+
+    let result;
+    try{
+      result=simulateSurvivalMission(team,mission);
+    }catch(err){
+      console.error('Mission simulation error',err);
+      startBtn.disabled=false;
+      startBtn.textContent='Error al iniciar · Reintentar';
+      return;
+    }
+
     state.missionTeams.lastUsed=[...selectedIds];
     save();
     startBtn.disabled=true;
+    startBtn.textContent='Expedición en curso...';
+
     const consoleEl=body.querySelector('#battleConsole');
     const log=body.querySelector('#battleLog');
     const clock=body.querySelector('#battleClock');
     const results=body.querySelector('#missionResults');
     consoleEl.classList.remove('hidden');
-    log.innerHTML='<p class="battle-line system">[00:00] El equipo cruza el portal...</p>';
-    const result=simulateSurvivalMission(team,mission);
-    try{
-      result.weaponDrops=result.completed?await rollSurvival1WeaponDrops(result.enemiesDefeated):[];
-    }catch(err){
-      console.warn('Loot fallback error',err);
-      result.weaponDrops=[];
-    }
+    results.classList.add('hidden');
+    log.innerHTML='';
+    clock.textContent='00:00';
+
     let i=0;
+    const finish=async()=>{
+      try{
+        result.weaponDrops=result.completed?await rollSurvival1WeaponDrops(result.enemiesDefeated):[];
+      }catch(err){
+        console.warn('Loot error; mission result preserved',err);
+        result.weaponDrops=[];
+      }
+
+      applyMissionResult(state,result);
+      applyWeaponDrops(state,result.weaponDrops||[],result.completed);
+      save();
+
+      results.classList.remove('hidden');
+      results.innerHTML=`
+        <div class="mission-result-head ${result.completed?'success':'failure'}">
+          <small>RESULTADO</small>
+          <h2>${result.completed?'MISIÓN COMPLETADA':'MISIÓN FALLIDA'}</h2>
+          <p>${result.completed?'El equipo resistió hasta la apertura del portal.':'El grupo cayó antes de completar la supervivencia.'}</p>
+        </div>
+        <div class="mission-rewards">
+          <h3>Recompensas</h3>
+          ${result.completed?`
+            <div><b>Oro</b><span>+${result.rewards.gold}</span></div>
+            <div><b>Madera</b><span>+${result.rewards.wood}</span></div>
+            <div><b>Piedra</b><span>+${result.rewards.stone}</span></div>
+            ${result.rewards.bonusGold?'<small>Incluye +'+result.rewards.bonusGold+' de oro procedente del loot.</small>':''}
+            <div class="weapon-drop-summary"><b>Armas encontradas</b><span>${(result.weaponDrops||[]).length}</span></div>
+            ${(result.weaponDrops||[]).map(w=>'<div class="weapon-drop-line"><b>'+escapeHtml(w.name)+'</b><span>'+'★'.repeat(w.rarity)+' · Nv.'+(w.level||1)+' · '+w.damage.min+'–'+w.damage.max+' daño · +'+(w.enhancement||0)+'</span><small>Clases: '+((w.allowedClasses||[]).map(x=>escapeHtml(typeof x==='string'?x:x.name)).join(', ')||'Sin clase asignada')+'</small></div>').join('')}
+          `:'<p class="no-rewards">Sin recompensas por derrota.</p>'}
+        </div>
+        <div class="damage-report">
+          <h3>Experiencia</h3>
+          ${(result.xpMetrics||[]).map(x=>`<div class="damage-row"><div><b>${escapeHtml(x.name)}</b><small>${x.kills} bajas</small></div><span>+${x.xp} XP</span></div>`).join('')}
+          <h3>Métrica de daño</h3>
+          ${result.damageMetrics.sort((a,b)=>b.damage-a.damage).map(m=>`
+            <div class="damage-row">
+              <div><b>${escapeHtml(m.name)}</b><small>${m.survived?'Superviviente':'Caído'} · ${m.kills} bajas</small></div>
+              <span>${m.damage} daño · DPS real ${m.dps}</span>
+              <i><u style="width:${m.damagePct}%"></u></i>
+              <em>${m.damagePct}%</em>
+            </div>`).join('')}
+        </div>
+        <div class="mission-summary"><b>Enemigos derrotados:</b> ${result.enemiesDefeated}/${result.totalEnemies}</div>`;
+
+      startBtn.disabled=false;
+      startBtn.textContent='Comenzar expedición';
+    };
+
     const showNext=()=>{
+      if(!body.isConnected)return;
       if(i>=result.events.length){
-        applyMissionResult(state,result);
-        applyWeaponDrops(state,result.weaponDrops||[],result.completed);
-        save();
-        results.classList.remove('hidden');
-        results.innerHTML=`
-          <div class="mission-result-head ${result.completed?'success':'failure'}">
-            <small>RESULTADO</small>
-            <h2>${result.completed?'MISIÓN COMPLETADA':'MISIÓN FALLIDA'}</h2>
-            <p>${result.completed?'El equipo resistió hasta la apertura del portal.':'El grupo cayó antes de completar la supervivencia.'}</p>
-          </div>
-          <div class="mission-rewards">
-            <h3>Recompensas</h3>
-            ${result.completed?`
-              <div><b>Oro</b><span>+${result.rewards.gold}</span></div>
-              <div><b>Madera</b><span>+${result.rewards.wood}</span></div>
-              <div><b>Piedra</b><span>+${result.rewards.stone}</span></div>
-              ${result.rewards.bonusGold?'<small>Incluye +'+result.rewards.bonusGold+' de oro procedente del loot.</small>':''}
-              <div class="weapon-drop-summary"><b>Armas encontradas</b><span>${(result.weaponDrops||[]).length}</span></div>
-              ${(result.weaponDrops||[]).map(w=>'<div class="weapon-drop-line"><b>'+escapeHtml(w.name)+'</b><span>'+'★'.repeat(w.rarity)+' · Nv.'+(w.level||1)+' · '+w.damage.min+'–'+w.damage.max+' daño · +'+(w.enhancement||0)+'</span><small>Clases: '+((w.allowedClasses||[]).map(x=>escapeHtml(typeof x==='string'?x:x.name)).join(', ')||'Sin clase asignada')+'</small></div>').join('')}
-            `:'<p class="no-rewards">Sin recompensas por derrota.</p>'}
-          </div>
-          <div class="damage-report">
-            <h3>Experiencia</h3>
-            ${(result.xpMetrics||[]).map(x=>`<div class="damage-row"><div><b>${escapeHtml(x.name)}</b><small>${x.kills} bajas</small></div><span>+${x.xp} XP</span></div>`).join('')}
-            <h3>Métrica de daño</h3>
-            ${result.damageMetrics.sort((a,b)=>b.damage-a.damage).map(m=>`
-              <div class="damage-row">
-                <div><b>${escapeHtml(m.name)}</b><small>${m.survived?'Superviviente':'Caído'} · ${m.kills} bajas</small></div>
-                <span>${m.damage} daño · DPS ${m.dps??estimatedDps((state.characters||[]).find(c=>c.id===m.id)||{})}</span>
-                <i><u style="width:${m.damagePct}%"></u></i>
-                <em>${m.damagePct}%</em>
-              </div>`).join('')}
-          </div>
-          <div class="mission-summary"><b>Enemigos derrotados:</b> ${result.enemiesDefeated}/${result.totalEnemies}</div>`;
+        finish();
         return;
       }
       const e=result.events[i++];
       clock.textContent=String(Math.floor(e.t/60)).padStart(2,'0')+':'+String(e.t%60).padStart(2,'0');
-      const p=document.createElement('p');p.className='battle-line '+e.type;p.textContent='['+clock.textContent+'] '+e.text;log.append(p);log.scrollTop=log.scrollHeight;
-      setTimeout(showNext,500);
+      const p=document.createElement('p');
+      p.className='battle-line '+e.type;
+      p.textContent='['+clock.textContent+'] '+e.text;
+      log.append(p);
+      log.scrollTop=log.scrollHeight;
+      setTimeout(showNext,1000);
     };
+
     showNext();
   };
 }
