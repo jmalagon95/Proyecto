@@ -51,7 +51,8 @@ export function nameFromIndex(raceId,index){
   const c=n&31;n>>=5;
   const d=n&31;
   // Four base-32 choices = 1,048,576 deterministic combinations per race.
-  const raw=segments[a]+segments[b]+segments[c]+endings[d%endings.length];
+  const end=endings[d%endings.length]+(RACE_PHONEMES[raceId]?.vowel||RACE_PHONEMES.kairakh.vowel)[Math.floor(d/endings.length)%4];
+  const raw=segments[a]+segments[b]+segments[c]+end;
   return capitalize(raw.replace(/(.)\1{2,}/g,'$1$1'));
 }
 
