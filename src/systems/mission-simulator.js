@@ -1,5 +1,6 @@
 import { killXpForLevels, grantExperience } from './experience.js';
 import { levelCap } from './progression.js';
+import { attackProfile, characterMaxHp } from './combat-stats.js';
 function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
 function roleBias(c){
   const role=(c.role||'').toLowerCase();
@@ -9,45 +10,59 @@ function roleBias(c){
     support:/apoyo|sanación|invocador/.test(role)?1.18:1
   };
 }
-function actorPower(c){
-  const s=c.stats||{};
-  const base=(s.FUE||0)*1.15+(s.AGI||0)*1.05+(s.INT||0)*1.15+(s.VOL||0)*.7+(s.CON||0)*.9+(s.DEF||0)*.85;
-  return Math.max(4,base*(1+(c.level-1)*.035)*(1+(c.currentStar-1)*.08));
-}
-function maxHp(c){const s=c.stats||{};return Math.max(35,55+(s.CON||0)*7+(s.DEF||0)*3+(c.level-1)*5)}
 function ev(t,text,type='normal'){return {t,text,type}}
 
 export function simulateSurvivalMission(team,mission){
   const duration=mission.durationSeconds||180;
   const waves=mission.waves||[5,6,7,8,9,10];
-  const chars=team.map(c=>({ref:c,id:c.id,name:c.name,hp:maxHp(c),maxHp:maxHp(c),damage:0,kills:0,alive:true,bias:roleBias(c),power:actorPower(c)}));
+  const chars=team.map(c=>{
+    const profile=attackProfile(c),hp=characterMaxHp(c);
+    return {ref:c,id:c.id,name:c.name,hp,maxHp:hp,damage:0,kills:0,alive:true,bias:roleBias(c),attack:profile};
+  });
   const events=[ev(0,'El grupo cruza el portal. El aire cambia y los primeros chillidos goblin resuenan en la distancia.','system')];
   let enemyRemaining=0,enemiesDefeated=0,time=0;
+  const enemyHp=Number(mission.enemyHp||28);
+  const enemyDefense=Number(mission.enemyDefense||1);
+  const enemyAttackMin=Number(mission.enemyAttackMin||5);
+  const enemyAttackMax=Number(mission.enemyAttackMax||9);
+  const enemyPressure=Number(mission.enemyPressure||.38);
+  const activeEnemies=[];
   const totalEnemies=waves.reduce((a,b)=>a+b,0);
   for(let wi=0;wi<waves.length;wi++){
     time=wi*30;enemyRemaining+=waves[wi];
-    events.push(ev(time,'Oleada '+(wi+1)+': aparecen '+waves[wi]+' goblins ★1. Enemigos activos: '+enemyRemaining+'.','wave'));
+    for(let e=0;e<waves[wi];e++)activeEnemies.push({hp:enemyHp});
+    events.push(ev(time,'Oleada '+(wi+1)+': aparecen '+waves[wi]+' goblins Nv.'+(mission.enemyLevel||1)+'. Enemigos activos: '+enemyRemaining+'.','wave'));
     for(let tick=0;tick<6&&time<duration;tick++){
       const now=time+tick*5;
       const living=chars.filter(x=>x.alive);
       if(!living.length)break;
       for(const a of living){
-        if(enemyRemaining<=0)break;
-        const variance=.82+Math.random()*.36;
-        const dmg=Math.max(1,Math.round(a.power*a.bias.damage*variance));
-        a.damage+=dmg;
-        const killChance=clamp(dmg/45,.05,.72);
-        if(Math.random()<killChance){enemyRemaining--;enemiesDefeated++;a.kills++;if(Math.random()<.34)events.push(ev(now,a.name+' derriba a un goblin tras abrirse paso entre la formación enemiga.','combat'));}
-        else if(Math.random()<.24)events.push(ev(now,a.name+' golpea con fuerza, pero el enemigo consigue mantenerse en pie.','combat'));
+        if(enemyRemaining<=0||!activeEnemies.length)break;
+        let attacks=Math.max(1,Math.floor(a.attack.attacksPerFiveSeconds));
+        if(Math.random()<(a.attack.attacksPerFiveSeconds-attacks))attacks++;
+        for(let hit=0;hit<attacks&&activeEnemies.length;hit++){
+          const variance=.88+Math.random()*.24;
+          const raw=a.attack.averageHit*variance;
+          const dmg=Math.max(1,Math.round(raw-enemyDefense*.7));
+          const target=activeEnemies[0];
+          target.hp-=dmg;
+          a.damage+=dmg;
+          if(target.hp<=0){
+            activeEnemies.shift();enemyRemaining--;enemiesDefeated++;a.kills++;
+            if(Math.random()<.55)events.push(ev(now,a.name+' elimina a un goblin con '+dmg+' de daño.','combat'));
+          }else if(Math.random()<.18){
+            events.push(ev(now,a.name+' hiere a un goblin por '+dmg+' de daño.','combat'));
+          }
+        }
       }
       if(enemyRemaining>0){
         const targets=chars.filter(x=>x.alive);
-        const attacks=Math.min(enemyRemaining,Math.max(1,Math.ceil(enemyRemaining*.45)));
+        const attacks=Math.min(enemyRemaining,Math.max(1,Math.ceil(enemyRemaining*enemyPressure)));
         for(let i=0;i<attacks&&targets.length;i++){
           const target=targets[Math.floor(Math.random()*targets.length)];
           const s=target.ref.stats||{};
           const mitigation=1+((s.DEF||0)*.025)+((s.CON||0)*.012);
-          const incoming=Math.max(1,Math.round((4+Math.random()*8)/mitigation/target.bias.defense));
+          const incoming=Math.max(1,Math.round((enemyAttackMin+Math.random()*(enemyAttackMax-enemyAttackMin))/mitigation/target.bias.defense));
           target.hp-=incoming;
           if(target.hp<=0&&target.alive){target.alive=false;target.hp=0;events.push(ev(now,target.name+' cae en combate. La expedición continúa sin '+target.name+'.','death'));}
         }
@@ -63,7 +78,7 @@ export function simulateSurvivalMission(team,mission){
   const survivors=chars.filter(x=>x.alive);
   const completed=survivors.length>0;
   events.push(ev(completed?duration:Math.min(duration,time+30),completed?'El contador alcanza 180 segundos. El portal de extracción se abre: misión completada.':'La formación ha sido destruida antes de completar el tiempo de supervivencia. Misión fallida.',completed?'success':'failure'));
-  const damageMetrics=chars.map(x=>({id:x.id,name:x.name,damage:x.damage,kills:x.kills,survived:x.alive,damagePct:0}));
+  const damageMetrics=chars.map(x=>({id:x.id,name:x.name,damage:x.damage,kills:x.kills,survived:x.alive,dps:Math.round(x.attack.dps*10)/10,damagePct:0}));
   const xpMetrics=chars.map(x=>({id:x.id,name:x.name,kills:x.kills,xp:completed?x.kills*killXpForLevels(x.ref.level,mission.enemyLevel||1,mission.baseXpPerKill||0):0}));
   const totalDamage=damageMetrics.reduce((a,b)=>a+b.damage,0)||1;
   damageMetrics.forEach(x=>x.damagePct=Math.round(x.damage/totalDamage*1000)/10);
