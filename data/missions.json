@@ -24,6 +24,12 @@
     "noRewardsOnFailure": true,
     "enemyLevel": 1,
     "baseXpPerKill": 2,
-    "xpOnlyOnSuccess": true
+    "xpOnlyOnSuccess": true,
+    "enemyHp": 28,
+    "enemyDefense": 1,
+    "enemyAttackMin": 5,
+    "enemyAttackMax": 9,
+    "enemyPressure": 0.38,
+    "difficultyNote": "La presión enemiga se acumula si el equipo no elimina goblins con suficiente rapidez."
   }
 }
