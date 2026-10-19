@@ -5,17 +5,18 @@ import { ascensionRequirement, levelCap } from '../systems/progression.js';
 import { simulateSurvivalMission, applyMissionResult } from '../systems/mission-simulator.js';
 import { rollSurvival1WeaponDrops, applyWeaponDrops } from '../systems/loot.js';
 import { upgradeWeapon, weaponUpgradeCost } from '../systems/weapon-upgrade.js';
+import { generateUniqueName } from '../systems/name-generator.js';
 
 const rarityColors={1:'#b9c0ca',2:'#69d173',3:'#62aaff',4:'#a875ff',5:'#f2ca65',6:'#ff8056',7:'#ff57cf',8:'#ffffff'};
-const namePools={kairakh:['Kael','Varik','Nayra'],elfos:['Aerin','Naelis','Sylwen'],kijins:['Akane','Raizen','Shuren'],vampiros:['Veyra','Khael','Serah'],insectoides:['Lirien','Thrya','Irixa'],reptro:['Rhek','Sarka','Thess']};
 
 function living(state){return (state.characters||[]).filter(c=>!c.dead)}
 function capacity(state){return 11+Math.max(0,(state.lobbyLevel||1)-1)*2}
 function combinedClasses(data,raceId){return [...(data.classes.generic||[]),...(data.classes[raceId]||[])]}
 function random(arr){return arr[Math.floor(Math.random()*arr.length)]}
-function summonOne(data){
+function summonOne(data,state){
   const race=random(data.races),cls=random(combinedClasses(data,race.id));
-  const hero=createHero(race,cls,random(namePools[race.id]||['Aspirante']));
+  const used=(state.characters||[]).map(c=>c.name);
+  const hero=createHero(race,cls,generateUniqueName(race.id,used));
   hero.wallpaper=race.image; hero.renameRemaining=1; return hero;
 }
 
@@ -372,7 +373,8 @@ function renderSanctuary(body,state,data,save,rerender,onBack){
     const cost=freeMulti?0:(wanted===10?(state.summon?.costs?.multiGold||10000):(state.summon?.costs?.singleGold||1000));
     if((state.resources.gold||0)<cost){body.querySelector('#summonResult').innerHTML='<p class="summon-message">No tienes suficiente oro.</p>';return}
     state.resources.gold-=cost;if(freeMulti)state.summon.freeMultiUsed=true;
-    const results=Array.from({length:count},()=>summonOne(data));
+    const results=[];
+    for(let i=0;i<count;i++)results.push(summonOne(data,{...state,characters:[...(state.characters||[]),...results]}));
     state.characters.push(...results);state.inhabitantsRemaining=Math.max(0,rem-count);
     state.summon.history=results.map(x=>({id:x.id,star:x.currentStar}));save();
     body.querySelector('#summonResult').innerHTML=`<div class="summon-result-grid">${results.map(x=>`<div style="--rarity:${rarityColors[x.currentStar]}"><figure style="background-image:url('${x.wallpaper}')"></figure><b>${stars(x.currentStar)}</b><small>${escapeHtml(x.name)}</small></div>`).join('')}</div>`;
