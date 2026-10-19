@@ -41,7 +41,8 @@ namespace KamiNoChallenge {
             if(!Endings.ContainsKey(race))race="kairakh";
             int n=((index%NamesPerRace)+NamesPerRace)%NamesPerRace;
             int a=n&31;n>>=5;int b=n&31;n>>=5;int c=n&31;n>>=5;int d=n&31;
-            string raw=seg[a]+seg[b]+seg[c]+Endings[race][d%Endings[race].Length];
+            string ending=Endings[race][d%Endings[race].Length]+Vowels[race][(d/Endings[race].Length)%4];
+            string raw=seg[a]+seg[b]+seg[c]+ending;
             if(raw.Length==0)return "Aspirante";
             return char.ToUpperInvariant(raw[0])+raw.Substring(1);
         }
