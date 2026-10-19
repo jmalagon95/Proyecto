@@ -25,11 +25,11 @@
     "enemyLevel": 1,
     "baseXpPerKill": 2,
     "xpOnlyOnSuccess": true,
-    "enemyHp": 36,
+    "enemyHp": 21,
     "enemyDefense": 1,
-    "enemyAttackMin": 7,
-    "enemyAttackMax": 11,
-    "enemyPressure": 0.47,
-    "difficultyNote": "Piso 1 calibrado para ser peligroso para grupos ★1 Nv.1. Los enemigos acumulan presión si el grupo no limpia las oleadas."
+    "enemyAttackMin": 6,
+    "enemyAttackMax": 10,
+    "enemyPressure": 0.4,
+    "difficultyNote": "Piso 1 calibrado para ser muy difícil para un equipo completo de ★1 Nv.1 sin buen equipo, pero no matemáticamente imposible. El narrador y la simulación avanzan segundo a segundo durante 180 s."
   }
 }
