@@ -59,18 +59,19 @@ export function simulateSurvivalMission(team,mission){
         const variance=.88+Math.random()*.24;
         const dmg=Math.max(1,Math.round(a.attack.averageHit*a.bias.damage*variance-enemyDefense*.7));
         const target=activeEnemies[0];
+        const applied=Math.min(dmg,target.hp);
         target.hp-=dmg;
-        a.damage+=dmg;
-        damageThisSecond+=dmg;
+        a.damage+=applied;
+        damageThisSecond+=applied;
         if(target.hp<=0){
           activeEnemies.shift();
           enemiesDefeated++;
           killsThisSecond++;
           a.kills++;
-          lines.push(a.name+' elimina a un goblin ('+dmg+' daño).');
+          lines.push(a.name+' elimina a un goblin ('+applied+' daño).');
           type='combat';
         }else if(Math.random()<.10){
-          lines.push(a.name+' hiere a un goblin ('+dmg+' daño).');
+          lines.push(a.name+' hiere a un goblin ('+applied+' daño).');
           type='combat';
         }
       }
