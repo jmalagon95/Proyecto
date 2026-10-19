@@ -52,9 +52,7 @@ export function attackProfile(character){
     }
   }
 
-  const role=String(character?.role||'').toLowerCase();
-  const roleDamage=/dps|daño|ranger|asesino|duelista|segador|mago/.test(role)?1.10:/defensor|tanque/.test(role)?.88:1;
-  const averageHit=Math.max(1,(primary*1.25+weaponDamage+level*.7+star*.5)*roleDamage);
+  const averageHit=Math.max(1,(primary*1.25+weaponDamage+level*.7+star*.5));
   const attacksPerFiveSeconds=speed;
   const dps=averageHit*attacksPerFiveSeconds/5;
   return {averageHit,attacksPerFiveSeconds,dps,weaponDamage,primary};
