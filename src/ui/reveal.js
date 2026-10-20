@@ -17,8 +17,8 @@ function weightedStar(){
 }
 function stat(star){const[a,b]=RANGES[star];return Math.floor(a+Math.random()*(b-a+1))}
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
-function buildAppearance(race,cls){
-  const sex=Math.random()<.5?'masculino':'femenino';
+function buildAppearance(race,cls,chosenSex){
+  const sex=chosenSex==='femenino'?'femenino':chosenSex==='masculino'?'masculino':Math.random()<.5?'masculino':'femenino';
   const physique=/Defensor|pesado|Bastión/i.test(cls.role+' '+cls.name)?'atlético y robusto':/móvil|Asesino|Ranger|cazador/i.test(cls.role+' '+cls.name)?'atlético, esbelto y ágil':'atlético y proporcionado';
   return{
     sex,apparentAge:Math.floor(20+Math.random()*15),physique,
@@ -73,7 +73,7 @@ ESTILO FINAL
 Debe sentirse como arte oficial de un RPG anime/manga oscuro premium, no como concept art sin terminar, render 3D ni pintura fotorealista.`;
 }
 
-export function createHero(race,cls,name=''){
+export function createHero(race,cls,name='',chosenSex=null){
   const starLevel=weightedStar();
   const stats=Object.fromEntries(['FUE','AGI','CON','DEF','INT','VOL'].map(k=>[k,stat(starLevel)]));
   const hero={
@@ -81,7 +81,7 @@ export function createHero(race,cls,name=''){
     className:cls.name,classDescription:cls.description,role:cls.role,weapons:cls.weapons,weapon:cls.weapons[0],
     birthStar:starLevel,currentStar:starLevel,level:1,experience:0,missionsSurvived:0,totalKills:0,stats,skills:[],passives:[],dead:false,
     equipment:emptyEquipment(),
-    wallpaper:race.image,renameRemaining:1,appearance:buildAppearance(race,cls)
+    wallpaper:race.image,renameRemaining:1,appearance:buildAppearance(race,cls,chosenSex)
   };
   hero.artPrompt=buildPrompt(hero,race,cls);
   return hero;
