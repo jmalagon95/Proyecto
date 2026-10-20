@@ -92,3 +92,20 @@
 .room-preview-empty b{font:24px Georgia,serif;color:#d8bf88}.room-preview-empty small{margin-top:5px}
 @media(max-width:800px){.rooms-layout{grid-template-columns:1fr}.room-preview{order:-1}.rooms-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.rooms-grid{grid-template-columns:1fr}.rooms-grid .dorm-card{min-height:180px}}
+
+/* Simulación visual vinculada a los eventos de Supervivencia I */
+.combat-visual{margin:12px 0;border:1px solid #b59961;border-radius:12px;overflow:hidden;background:#07101beF;color:#f3dba5;box-shadow:0 14px 30px #0008}
+.combat-visual>header,.combat-visual>footer{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:#0c1e34}
+.combat-visual>header button{border:1px solid #c6a461;background:#1b3150;color:#ffe0a1;border-radius:6px;min-width:45px;min-height:34px}
+.combat-stage{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);gap:8px;align-items:center;padding:14px;background:radial-gradient(ellipse at 50% 90%,#324e4655,transparent 68%),linear-gradient(160deg,#12233c,#08101c 70%,#303c2b);min-height:345px}
+.visual-team{display:grid;gap:6px;min-width:0}.versus{text-align:center;font-size:29px;color:#ffd06b;text-shadow:0 0 15px #ffe1a6}
+.visual-fighter,.visual-goblin{display:flex;align-items:center;gap:8px;background:#081626db;border:1px solid #8c7956;border-radius:8px;padding:5px;min-height:54px}
+.visual-fighter.fallen{filter:grayscale(1);opacity:.5}
+.visual-portrait{flex:0 0 44px;width:44px;height:48px;background-size:cover;background-position:center top;border-radius:4px;background-color:#203248}
+.visual-fighter-info,.visual-goblin>div{min-width:0;flex:1}.visual-fighter b,.visual-goblin b{display:block;font-size:11px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.visual-fighter small{font-size:9px;color:#c3c9d5;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.visual-hp{height:6px;background:#30212b;overflow:hidden;border-radius:4px;margin-top:5px}
+.visual-hp i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#3caf70,#83e1ab);transition:width .2s ease}
+.visual-goblin{border-color:#804e48}.visual-goblin>span{font-size:27px}.visual-goblin .visual-hp i{background:linear-gradient(90deg,#a43c44,#f4776b)}
+.combat-track{height:7px;background:#1c2b3b;border-radius:5px;overflow:hidden;flex:1;max-width:280px}.combat-track i{display:block;width:0;height:100%;background:linear-gradient(90deg,#518cdd,#ebc374);transition:width .3s linear}
+@media(max-width:560px){.combat-stage{grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);gap:4px;padding:7px;min-height:300px}.visual-fighter,.visual-goblin{gap:4px;padding:3px;min-height:48px}.visual-portrait{flex-basis:28px;width:28px;height:42px}.visual-fighter b,.visual-goblin b{font-size:9px}.visual-fighter small{font-size:8px}.versus{font-size:18px}.visual-goblin>span{font-size:20px}.combat-visual>header{font-size:10px}}
