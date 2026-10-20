@@ -480,7 +480,7 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
       chooser.className='character-sex-chooser';
       chooser.innerHTML='<legend>Sexo del personaje</legend><div class="sex-options"><label><input type="radio" name="characterSex" value="Hombre"> Hombre</label><label><input type="radio" name="characterSex" value="Mujer"> Mujer</label></div>';
       const nameField=$('heroName');
-      nameField?.parentNode?.insertBefore(chooser,nameField.nextSibling);
+      nameField?.closest('.namebar')?.insertAdjacentElement('afterend',chooser);
       chooser.addEventListener('change',e=>{
         if(e.target.name!=='characterSex')return;
         state.sex=e.target.value;
