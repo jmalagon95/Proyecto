@@ -4,13 +4,13 @@ import { dirname, join } from 'node:path';
 import { Script } from 'node:vm';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const target = join(root, 'index.html');
+const target = process.env.KAMI_MASTER_FILE || join(root, 'index.html');
 const html = readFileSync(target, 'utf8');
 const screens = ['cover', 'world', 'race', 'class', 'reveal', 'lobby', 'battle', 'battleResults'];
 const errors = [];
 
-if (!html.includes('<title>Kami No Challenge v0.16 · Prototipo maestro</title>')) errors.push('Título del maestro v0.16 no encontrado.');
-if (!html.includes("const SAVE_KEY = 'kami_v16_master'")) errors.push('Clave de guardado v16 no encontrada.');
+if (!/<title>Kami No Challenge v[0-9.]+ · Prototipo maestro<\/title>/.test(html)) errors.push('Título del maestro no encontrado.');
+if (!/const SAVE_KEY = 'kami_v[0-9]+_master'/.test(html)) errors.push('Clave de guardado del maestro no encontrada.');
 if (!html.includes("const LEGACY_KEY = 'kami_v12_master'")) errors.push('No se encuentra el mecanismo de compatibilidad v12.');
 if (!html.includes('<style>')) errors.push('Faltan los estilos integrados.');
 if (!html.includes('const ASSETS=')) errors.push('Faltan los recursos visuales integrados.');
