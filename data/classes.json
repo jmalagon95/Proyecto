@@ -8,7 +8,11 @@
         "Hacha",
         "Maza"
       ],
-      "description": "Combatiente frontal equilibrado que combina fuerza, presión constante y dominio de armas de una mano."
+      "description": "Combatiente frontal equilibrado que combina fuerza, presión constante y dominio de armas de una mano.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Defensor",
@@ -18,7 +22,11 @@
         "Lanza y escudo",
         "Maza y escudo"
       ],
-      "description": "Especialista en resistir, interceptar y proteger, manteniendo estable la primera línea."
+      "description": "Especialista en resistir, interceptar y proteger, manteniendo estable la primera línea.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Ranger",
@@ -28,7 +36,11 @@
         "Ballesta",
         "Arma de proyectiles compatible"
       ],
-      "description": "Atacante de retaguardia centrado en precisión, distancia y selección de objetivos."
+      "description": "Atacante de retaguardia centrado en precisión, distancia y selección de objetivos.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Pícaro",
@@ -38,7 +50,11 @@
         "Espadas cortas",
         "Armas de puño"
       ],
-      "description": "Combatiente veloz que busca flancos, huecos defensivos y objetivos aislados."
+      "description": "Combatiente veloz que busca flancos, huecos defensivos y objetivos aislados.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Segador",
@@ -47,7 +63,11 @@
         "Guadaña larga",
         "Guadañas gemelas"
       ],
-      "description": "Especialista en amplios barridos, presión de media distancia y control de grupos."
+      "description": "Especialista en amplios barridos, presión de media distancia y control de grupos.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Mago",
@@ -57,7 +77,11 @@
         "Varita",
         "Tomo"
       ],
-      "description": "Canalizador de magia ofensiva y control cuya evolución depende de atributos, afinidades y skills reales."
+      "description": "Canalizador de magia ofensiva y control cuya evolución depende de atributos, afinidades y skills reales.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Invocador",
@@ -67,7 +91,11 @@
         "Tomo de pactos",
         "Catalizador"
       ],
-      "description": "Combate junto a una invocación vinculada permanente que evoluciona junto al maestro."
+      "description": "Combate junto a una invocación vinculada permanente que evoluciona junto al maestro.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Apoyo",
@@ -77,7 +105,11 @@
         "Báculo",
         "Tomo de apoyo"
       ],
-      "description": "Sostiene al grupo mediante curación, mejoras y utilidades obtenidas durante su progresión."
+      "description": "Sostiene al grupo mediante curación, mejoras y utilidades obtenidas durante su progresión.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ],
   "kairakh": [
@@ -89,7 +121,11 @@
         "Cañones de antebrazo",
         "Catalizadores de energía"
       ],
-      "description": "Convierte sus venas energéticas en una red de proyección para ráfagas, disparos concentrados y canales sostenidos."
+      "description": "Convierte sus venas energéticas en una red de proyección para ráfagas, disparos concentrados y canales sostenidos.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Lancero del Cuerno Primordial",
@@ -99,7 +135,11 @@
         "Alabarda",
         "Lanza ritual"
       ],
-      "description": "Combina el alcance de la lanza con cargas y penetración apoyadas por el cuerno frontal Kairakh."
+      "description": "Combina el alcance de la lanza con cargas y penetración apoyadas por el cuerno frontal Kairakh.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Resonador Kairakh",
@@ -108,7 +148,11 @@
         "Bastón de resonancia",
         "Tótem catalizador"
       ],
-      "description": "Manipula resonancias de energía corporal para amplificar aliados y lanzar pulsos de energía."
+      "description": "Manipula resonancias de energía corporal para amplificar aliados y lanzar pulsos de energía.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Depredador de las Cumbres",
@@ -118,7 +162,11 @@
         "Dagas curvas",
         "Armas de puño"
       ],
-      "description": "Cazador extremadamente móvil que explota altura, flancos y objetivos aislados."
+      "description": "Cazador extremadamente móvil que explota altura, flancos y objetivos aislados.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Guardián del Cuerno Ancestral",
@@ -128,7 +176,11 @@
         "Escudo tótem",
         "Maza y escudo"
       ],
-      "description": "Defensor frontal que utiliza energía Kairakh para estabilizar, interceptar y proteger."
+      "description": "Defensor frontal que utiliza energía Kairakh para estabilizar, interceptar y proteger.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ],
   "elfos": [
@@ -139,7 +191,11 @@
         "Arco largo viviente",
         "Arco espiritual"
       ],
-      "description": "Arquero de altísima precisión, lectura del terreno y dominio de largas distancias."
+      "description": "Arquero de altísima precisión, lectura del terreno y dominio de largas distancias.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Cantor de Raíces",
@@ -148,7 +204,11 @@
         "Bastón de madera viva",
         "Bastón druídico"
       ],
-      "description": "Canaliza raíces y crecimiento para sostener aliados y modificar el campo."
+      "description": "Canaliza raíces y crecimiento para sostener aliados y modificar el campo.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Danzante de la Luna",
@@ -158,7 +218,11 @@
         "Chakrams",
         "Dagas"
       ],
-      "description": "Duelista móvil que encadena pasos, cortes y cambios de posición con cadencia elegante."
+      "description": "Duelista móvil que encadena pasos, cortes y cambios de posición con cadencia elegante.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Guardián Silvano",
@@ -168,7 +232,11 @@
         "Escudo",
         "Espada élfica y escudo"
       ],
-      "description": "Protector que controla zonas y castiga a quien intenta romper su línea."
+      "description": "Protector que controla zonas y castiga a quien intenta romper su línea.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Tejedor de Espíritus",
@@ -178,7 +246,11 @@
         "Tomo",
         "Bastón espiritual"
       ],
-      "description": "Interactúa con ecos espirituales mediante vínculos sobrenaturales de apoyo y control."
+      "description": "Interactúa con ecos espirituales mediante vínculos sobrenaturales de apoyo y control.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ],
   "kijins": [
@@ -189,7 +261,11 @@
         "Jabalinas gigantes",
         "Hachas arrojadizas"
       ],
-      "description": "Desata proyectiles de gran impacto para quebrar la formación enemiga antes del choque."
+      "description": "Desata proyectiles de gran impacto para quebrar la formación enemiga antes del choque.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Destructor Kijin",
@@ -199,7 +275,11 @@
         "Gran martillo",
         "Maza pesada"
       ],
-      "description": "Especialista en ruptura frontal, golpes demoledores y presión física."
+      "description": "Especialista en ruptura frontal, golpes demoledores y presión física.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Devorador de Maldiciones",
@@ -209,7 +289,11 @@
         "Maza ritual",
         "Escudo maldito"
       ],
-      "description": "Absorbe, contiene y transforma maldiciones en herramientas de combate."
+      "description": "Absorbe, contiene y transforma maldiciones en herramientas de combate.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Monje de los Cuernos",
@@ -218,7 +302,11 @@
         "Guanteletes rituales",
         "Bastón"
       ],
-      "description": "Une disciplina física, sellos y control preciso de energía Kijin."
+      "description": "Une disciplina física, sellos y control preciso de energía Kijin.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Señor de los Cien Demonios",
@@ -228,7 +316,11 @@
         "Abanico ritual",
         "Tomo de sellos"
       ],
-      "description": "Especialista en pactos, sellos y entidades demoníacas vinculadas."
+      "description": "Especialista en pactos, sellos y entidades demoníacas vinculadas.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ],
   "vampiros": [
@@ -240,7 +332,11 @@
         "Jabalinas",
         "Catalizador hemático"
       ],
-      "description": "Especialista en ataques perforantes y control lineal, capaz de desarrollar técnicas de sangre."
+      "description": "Especialista en ataques perforantes y control lineal, capaz de desarrollar técnicas de sangre.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Sanguinario Noble",
@@ -250,7 +346,11 @@
         "Espadas gemelas",
         "Sable"
       ],
-      "description": "Combina refinamiento aristocrático con un estilo ofensivo preciso y agresivo."
+      "description": "Combina refinamiento aristocrático con un estilo ofensivo preciso y agresivo.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Señor de los Murciélagos",
@@ -260,7 +360,11 @@
         "Tomo de sangre",
         "Cetro"
       ],
-      "description": "Dirige familiares y enjambres vinculados desde el centro de la formación."
+      "description": "Dirige familiares y enjambres vinculados desde el centro de la formación.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Tejedor Carmesí",
@@ -270,7 +374,11 @@
         "Varita",
         "Tomo"
       ],
-      "description": "Especialista en sellos, patrones y técnicas de sangre cuando las aprende."
+      "description": "Especialista en sellos, patrones y técnicas de sangre cuando las aprende.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Caballero de la Sed Eterna",
@@ -280,7 +388,11 @@
         "Mandoble",
         "Espada bastarda"
       ],
-      "description": "Caballero resistente que combina armadura, presión frontal y técnicas vampíricas."
+      "description": "Caballero resistente que combina armadura, presión frontal y técnicas vampíricas.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ],
   "insectoides": [
@@ -292,7 +404,11 @@
         "Lanzador de espinas",
         "Cañón de quitina"
       ],
-      "description": "Convierte estructuras biológicas en armamento de proyectiles."
+      "description": "Convierte estructuras biológicas en armamento de proyectiles.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Emperador de la Colmena",
@@ -302,7 +418,11 @@
         "Tótem orgánico",
         "Catalizador de feromonas"
       ],
-      "description": "Coordina aliados y criaturas mediante señales de colmena y control territorial."
+      "description": "Coordina aliados y criaturas mediante señales de colmena y control territorial.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Segador Mantídeo",
@@ -312,7 +432,11 @@
         "Guadañas gemelas",
         "Cuchillas de antebrazo"
       ],
-      "description": "Especialización de cortes amplios, alcance medio y movilidad depredadora."
+      "description": "Especialización de cortes amplios, alcance medio y movilidad depredadora.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Bastión Escarabajo",
@@ -322,7 +446,11 @@
         "Maza y escudo",
         "Escudo a dos manos"
       ],
-      "description": "Tanque biológico centrado en coraza, bloqueo y resistencia prolongada."
+      "description": "Tanque biológico centrado en coraza, bloqueo y resistencia prolongada.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Maestro de la Metamorfosis",
@@ -333,7 +461,11 @@
         "Pinzas",
         "Lanzadores orgánicos"
       ],
-      "description": "Adapta estructuras corporales para responder a amenazas y ramas evolutivas distintas."
+      "description": "Adapta estructuras corporales para responder a amenazas y ramas evolutivas distintas.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ],
   "reptro": [
@@ -344,7 +476,11 @@
         "Garras retráctiles",
         "Guanteletes ligeros"
       ],
-      "description": "Explota velocidad, garras retráctiles y descargas instantáneas al entrar y salir del combate."
+      "description": "Explota velocidad, garras retráctiles y descargas instantáneas al entrar y salir del combate.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Azote de Cola Eléctrica",
@@ -353,7 +489,11 @@
         "Cola eléctrica natural",
         "Catalizadores de descarga"
       ],
-      "description": "Moldea la cola formada únicamente por electricidad como un látigo flexible capaz de atacar desde ángulos difíciles."
+      "description": "Moldea la cola formada únicamente por electricidad como un látigo flexible capaz de atacar desde ángulos difíciles.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Ojo del Pedregal",
@@ -363,7 +503,11 @@
         "Jabalinas",
         "Ballesta ligera"
       ],
-      "description": "Aprovecha su visión reptiliana, el camuflaje rocoso y las posiciones elevadas para cazar objetivos."
+      "description": "Aprovecha su visión reptiliana, el camuflaje rocoso y las posiciones elevadas para cazar objetivos.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Bastión de Escama Seca",
@@ -373,7 +517,11 @@
         "Lanza y escudo",
         "Maza y escudo"
       ],
-      "description": "Endurece sus escamas y convierte el terreno seco y rocoso en ventaja defensiva."
+      "description": "Endurece sus escamas y convierte el terreno seco y rocoso en ventaja defensiva.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     },
     {
       "name": "Conductor del Sol Árido",
@@ -383,7 +531,11 @@
         "Catalizador solar",
         "Guanteletes conductores"
       ],
-      "description": "Acumula energía bajo el sol intenso y la transforma en descargas eléctricas devastadoras."
+      "description": "Acumula energía bajo el sol intenso y la transforma en descargas eléctricas devastadoras.",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
     }
   ]
 }
