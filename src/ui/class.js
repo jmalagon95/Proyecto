@@ -52,6 +52,13 @@ export function renderClass({app,data,state,save,onBack,onConfirm}){
 
       <section class="class-detail" id="classDetail"></section>
 
+      <section class="hero-sex-box" aria-label="Sexo del protagonista">
+        <div><small>SEXO DEL PROTAGONISTA</small><p>Elige cómo será tu personaje. No altera su rareza ni sus atributos.</p></div>
+        <div class="hero-sex-options" role="group" aria-label="Sexo">
+          <button type="button" data-hero-sex="masculino" aria-pressed="${state.heroSex!=='femenino'}">Hombre</button>
+          <button type="button" data-hero-sex="femenino" aria-pressed="${state.heroSex==='femenino'}">Mujer</button>
+        </div>
+      </section>
       <section class="hero-name-box">
         <div><small>NOMBRE DEL PROTAGONISTA</small><p>Podrás cambiarlo una vez más desde los Dormitorios.</p></div>
         <div class="hero-name-control"><input id="heroName" maxlength="28" value="${escapeHtml(state.heroName||'')}" placeholder="Escribe un nombre"><button id="randomName" type="button">⚄</button></div>
@@ -94,6 +101,11 @@ export function renderClass({app,data,state,save,onBack,onConfirm}){
   }
 
   screen.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{activeTab=btn.dataset.tab;renderTab()});
+  screen.querySelectorAll('[data-hero-sex]').forEach(btn=>btn.onclick=()=>{
+    state.heroSex=btn.dataset.heroSex;
+    screen.querySelectorAll('[data-hero-sex]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+    save();
+  });
   nameInput.oninput=e=>{state.heroName=e.target.value.trimStart();save()};
   screen.querySelector('#randomName').onclick=()=>{const p=NAME_POOLS[race.id]||['Aspirante'];state.heroName=p[Math.floor(Math.random()*p.length)];nameInput.value=state.heroName;save()};
   screen.querySelector('#changeRace').onclick=onBack;
