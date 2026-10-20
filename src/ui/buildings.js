@@ -486,6 +486,11 @@ function renderMissions(body,state,data,save,onBack){
       </section>
 
       <button id="startSurvival" class="premium-gold-button wide">Comenzar expedición</button>
+      <section class="combat-visual hidden" id="combatVisual">
+        <header><b>⚔ BATALLA EN DIRECTO</b><span id="visualWave">Oleada 1 / 6</span><button id="visualSpeed">×1</button></header>
+        <div class="combat-stage"><div id="visualHeroes" class="visual-team"></div><div class="versus">⚡</div><div id="visualEnemies" class="visual-team"></div></div>
+        <footer><span id="visualEnemyCount">Enemigos: 0</span><div class="combat-track"><i id="visualProgress"></i></div></footer>
+      </section>
       <section class="battle-console hidden" id="battleConsole">
         <header><b>Narrador de batalla</b><span id="battleClock">00:00</span></header>
         <div class="battle-log" id="battleLog"></div>
@@ -553,6 +558,25 @@ function renderMissions(body,state,data,save,onBack){
     const log=body.querySelector('#battleLog');
     const clock=body.querySelector('#battleClock');
     const results=body.querySelector('#missionResults');
+    const visual=body.querySelector('#combatVisual');
+    const heroesPanel=body.querySelector('#visualHeroes');
+    const enemiesPanel=body.querySelector('#visualEnemies');
+    const waves=mission.waves||[5,6,7,8,9,10];
+    let speed=1,waveIndex=0,enemyCount=0;
+    const durationSeconds=Math.max(1,Number(mission.durationSeconds||180));
+    const waveStarts=waves.map((_,n)=>Math.floor(n*durationSeconds/waves.length));
+    const health=new Map(team.map(hero=>[hero.id,characterMaxHp(hero)]));
+    const redraw=()=>{
+      heroesPanel.innerHTML=team.map(hero=>{
+        const max=characterMaxHp(hero),hp=health.get(hero.id)||0;
+        return `<div class="visual-fighter ${hp===0?'fallen':''}"><div class="visual-portrait" style="background-image:url('${hero.wallpaper||''}')"></div><div class="visual-fighter-info"><b>${escapeHtml(hero.name)}</b><small>${escapeHtml(hero.className)} · ★${hero.currentStar}</small><div class="visual-hp"><i style="width:${hp/max*100}%"></i></div></div></div>`;
+      }).join('');
+      enemiesPanel.innerHTML=Array.from({length:Math.min(6,enemyCount)},()=>`<div class="visual-goblin"><span>👹</span><div><b>Goblin</b><div class="visual-hp"><i></i></div></div></div>`).join('')+(enemyCount>6?'<small>+'+(enemyCount-6)+' enemigos</small>':'');
+      body.querySelector('#visualEnemyCount').textContent='Enemigos: '+enemyCount;
+    };
+    body.querySelector('#visualSpeed').onclick=()=>{speed=speed===1?2:speed===2?4:1;body.querySelector('#visualSpeed').textContent='×'+speed;};
+    visual.classList.remove('hidden');
+    redraw();
     consoleEl.classList.remove('hidden');
     results.classList.add('hidden');
     log.innerHTML='';
@@ -614,13 +638,20 @@ function renderMissions(body,state,data,save,onBack){
         return;
       }
       const e=result.events[i++];
+      while(waveIndex<waves.length&&e.t>=waveStarts[waveIndex])enemyCount+=waves[waveIndex++];
+      enemyCount=Math.max(0,enemyCount-(e.text.match(/elimina a un goblin/g)||[]).length);
+      for(const hero of team)if(e.text.includes(hero.name+' cae en combate.'))health.set(hero.id,0);
+      body.querySelector('#visualWave').textContent='Oleada '+Math.max(1,waveIndex)+' / '+waves.length;
+      body.querySelector('#visualProgress').style.width=Math.min(100,100*e.t/durationSeconds)+'%';
+      redraw();
+
       clock.textContent=String(Math.floor(e.t/60)).padStart(2,'0')+':'+String(e.t%60).padStart(2,'0');
       const p=document.createElement('p');
       p.className='battle-line '+e.type;
       p.textContent='['+clock.textContent+'] '+e.text;
       log.append(p);
       log.scrollTop=log.scrollHeight;
-      setTimeout(showNext,1000);
+      setTimeout(showNext,1000/speed);
     };
 
     showNext();
