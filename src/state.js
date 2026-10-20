@@ -9,6 +9,7 @@ export const defaultState = {
   selectedRace: 'kairakh',
   selectedClass: null,
   heroName: '',
+  heroSex: 'masculino',
   playerName: 'Jugador',
   lobbyLevel: 1,
 
