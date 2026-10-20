@@ -713,7 +713,7 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
   renderBattle=function(){
     stopBattle();field.querySelectorAll('.fighter,.battle-effect,.battle-damage').forEach(x=>x.remove());
     const m=missionFor(state.selectedMission);
-    battle={mission:m,elapsed:0,timeLeft:m.duration,auto:true,speed:state.settings.battleSpeed||1,enemies:[],allies:[],kills:0,nextGoblin:9,healAt:25,ended:false,lastManual:0};
+    battle={mission:m,elapsed:0,timeLeft:m.duration,auto:true,speed:state.settings.battleSpeed||1,enemies:[],allies:[],kills:0,nextGoblin:9,healAt:25,ended:false,lastManual:0,events:[]};
     const team=state.team.map(id=>state.characters.find(c=>c.id===id)).filter(c=>c&&!c.dead).slice(0,5);
     team.forEach((c,index)=>{
       let u={id:c.id,name:c.name,character:c,enemy:false,hp:Math.max(1,c.hp||Math.ceil(maxHP(c)*.2)),maxHp:maxHP(c),attack:11+(c.stats.FUE||1)*1.55+(c.stats.INT||1)*.18,defense:(c.stats.DEF||1)*.33,index,lane:index%3,cooldown:.4+index*.18,damage:0,kills:0};
@@ -744,12 +744,21 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     const dx=x2-x1,dy=y2-y1;
     let e=document.createElement('i');e.className='battle-effect';e.style.left=x1+'px';e.style.top=y1+'px';e.style.width=Math.hypot(dx,dy)+'px';e.style.transform='rotate('+Math.atan2(dy,dx)+'rad)';field.append(e);setTimeout(()=>e.remove(),310);
   }
+  function combatEvent(type,actor,target,value){
+    if(!battle)return;
+    const entry={time:Math.round(battle.elapsed*10)/10,type,actorId:actor?.id||null,targetId:target?.id||null,value:Math.max(0,Number(value)||0)};
+    battle.events.push(entry);
+    if(battle.events.length>500)battle.events.shift();
+    return entry;
+  }
   function performAttack(a,target,animate=true){
     if(!battle||battle.ended||!a||!target||target.hp<=0||a.hp<=0)return;
     let damage=Math.max(1,Math.round(a.attack*(.78+Math.random()*.45)-(target.defense||0)));
-    target.hp=Math.max(0,target.hp-damage);a.damage+=damage;
-    if(animate){swipe(a,target);flyingNumber(target,damage,target.enemy?'':'damage-ally')}
-    if(target.hp<=0){if(target.enemy){battle.kills++;a.kills++;if(animate)logBattle(a.name+' derrota a un goblin.')}else if(animate)logBattle(target.name+' queda fuera de combate.');}
+    const applied=Math.min(target.hp,damage);
+    target.hp=Math.max(0,target.hp-applied);a.damage+=applied;
+    combatEvent('hit',a,target,applied);
+    if(animate){swipe(a,target);flyingNumber(target,applied,target.enemy?'':'damage-ally')}
+    if(target.hp<=0){combatEvent('ko',a,target,0);if(target.enemy){battle.kills++;a.kills++;if(animate)logBattle(a.name+' derrota a un goblin.')}else if(animate)logBattle(target.name+' queda fuera de combate.');}
   }
   function closestTarget(u,all){
     const live=all.filter(x=>x.hp>0);if(!live.length)return null;
@@ -767,7 +776,7 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
       battle.nextGoblin+=6.5+Math.random()*4;
     }
     if(battle.elapsed>=battle.healAt){
-      battle.allies.forEach(a=>{if(a.hp>0){const healed=Math.min(a.maxHp-a.hp,8+2*(a.character.stats.CON||1));a.hp+=healed;if(animate&&healed>0)flyingNumber(a,healed,'heal')}});
+      battle.allies.forEach(a=>{if(a.hp>0){const healed=Math.min(a.maxHp-a.hp,8+2*(a.character.stats.CON||1));a.hp+=healed;if(healed>0)combatEvent('heal',a,a,healed);if(animate&&healed>0)flyingNumber(a,healed,'heal')}});
       battle.healAt+=24;
     }
     if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}
@@ -796,7 +805,8 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     if(!battle)return;
     if(!confirm('¿Retirarse de la expedición sin recibir recompensas?'))return;
     const record=state.missionRecords[battle.mission.id]||{wins:0,attempts:0};record.attempts++;state.missionRecords[battle.mission.id]=record;
-    const b=battle;stopBattle();b.allies.forEach(u=>{u.character.hp=Math.max(1,Math.ceil(u.hp))});
+    const b=battle;stopBattle();b.allies.forEach(u=>{u.character.hp=Math.max(0,Math.ceil(u.hp));if(u.hp<=0)u.character.dead=true});
+    state.team=state.team.filter(id=>state.characters.some(c=>c.id===id&&!c.dead));
     save();renderLobby();show('lobby');toast('El grupo se ha retirado de la expedición.');
   };
   function levelUp(c,earned){
@@ -810,9 +820,10 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     const end=battle,m=end.mission;const record=state.missionRecords[m.id]||{wins:0,attempts:0};record.attempts++;if(victory)record.wins++;
     state.missionRecords[m.id]=record;
     end.allies.forEach(u=>{
-      u.character.hp=u.hp>0?Math.ceil(u.hp):Math.ceil(u.maxHp*.2);
+      u.character.hp=Math.max(0,Math.ceil(u.hp));
       u.character.maxHp=maxHP(u.character);
-      if(victory)levelUp(u.character,m.rewards.exp);
+      if(u.hp<=0)u.character.dead=true;
+      if(victory&&u.hp>0)levelUp(u.character,m.rewards.exp);
     });
     let rewards=[];
     if(victory){
@@ -822,6 +833,7 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
       rewards=[['Monedas',m.rewards.gold],['Madera',m.rewards.wood],['EXP por héroe',m.rewards.exp]];
       if(Math.random()<.32){addItem('rustySword','Espada mellada',1,'Equipo','🗡️','Un arma de baja rareza encontrada en la expedición.');rewards.push(['Equipo ★1',1]);}
     }
+    state.team=state.team.filter(id=>state.characters.some(c=>c.id===id&&!c.dead));
     save();
     $('resultMissionText').textContent=`${victory?'Misión completada':'La expedición ha fracasado'} · ${formatTime(end.elapsed)} · ${end.kills} enemigos derrotados. Las recompensas ya se han ${victory?'añadido':'omitido'} al guardar el resultado.`;
     let badge=$('resultOutcome');if(!badge){badge=document.createElement('div');badge.id='resultOutcome';$('resultMissionText').before(badge)}
@@ -830,6 +842,10 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     $('resultRows').innerHTML=end.allies.map(u=>`<div class="result-row"><span>${esc(u.name)} ★${u.character.star}</span><b>${u.hp>0?'EN PIE':'INCAPACITADO'}</b><span>${Math.round(u.damage)} daño · ${u.kills} bajas · ${Math.ceil(Math.max(0,u.hp))} PV</span></div>`).join('');
     let payout=$('battleRewardPanel');if(!payout){payout=document.createElement('div');payout.id='battleRewardPanel';$('resultRows').after(payout)}
     payout.className='mission-collect';payout.innerHTML=rewards.map(([k,v])=>`<span>+${v} ${esc(k)}</span>`).join('')||'<span>Sin recompensas</span>';
+    const combatEvents=end.events||[];
+    const actionSummary=document.createElement('p');actionSummary.className='muted';
+    actionSummary.textContent='Acciones registradas: '+combatEvents.filter(e=>e.type==='hit').length+' impactos · '+combatEvents.filter(e=>e.type==='heal').length+' curaciones · '+combatEvents.filter(e=>e.type==='ko').length+' bajas.';
+    $('resultRows').after(actionSummary);
     battle=null;show('battleResults');
   }
   $('backLobbyResult').onclick=()=>{renderLobby();show('lobby')};
