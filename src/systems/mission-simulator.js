@@ -34,6 +34,7 @@ export function simulateSurvivalMission(team,mission){
   let enemiesDefeated=0;
   const totalEnemies=waves.reduce((a,b)=>a+b,0);
   const events=[];
+  const frames=[];
 
   for(let sec=0;sec<duration;sec++){
     if(!chars.some(x=>x.alive))break;
@@ -121,6 +122,15 @@ export function simulateSurvivalMission(team,mission){
     }
 
     events.push(ev(sec,lines.join(' '),type));
+    // Instantánea autoritativa por segundo para animaciones sincronizadas.
+    frames.push({
+      t:sec,
+      wave:Math.max(1,waveTimes.filter(t=>t<=sec).length),
+      enemiesAlive:activeEnemies.length,
+      enemiesDefeated,
+      allies:chars.map(x=>({id:x.id,hp:x.hp,maxHp:x.maxHp,alive:x.alive,damage:x.damage,kills:x.kills})),
+      kind:type
+    });
   }
 
   const survivors=chars.filter(x=>x.alive);
@@ -155,7 +165,7 @@ export function simulateSurvivalMission(team,mission){
     completed,
     duration:completed?duration:Math.min(duration,events.length),
     enemiesDefeated,totalEnemies,enemyRemaining:activeEnemies.length,
-    events,
+    events,frames,
     survivors:survivors.map(x=>x.id),
     fallen:chars.filter(x=>!x.alive).map(x=>x.id),
     damageMetrics,xpMetrics,rewards
