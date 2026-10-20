@@ -10,7 +10,8 @@
     "content:build": "node scripts/generate-content.mjs",
     "equipment:build": "node scripts/generate-equipment.mjs",
     "check:master": "node scripts/verify-master.mjs",
-    "prepare:modular": "npm run content:build && npm run equipment:build"
+    "prepare:modular": "npm run content:build && npm run equipment:build",
+    "test:combat": "node scripts/test-combat.mjs"
   },
   "dependencies": {
     "pixi.js": "^8.8.1"
