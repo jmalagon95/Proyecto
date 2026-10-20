@@ -8,7 +8,15 @@
     "description": "Guerreros de sangre y energía. Feroces, ágiles y marcados por venas de poder visibles.",
     "history": "Linajes orgullosos forjados en regiones montañosas y salvajes. Su cultura premia la supervivencia, la voluntad y el dominio del propio cuerpo.",
     "origin": "Rhaz’Kel · Reino de Varkh",
-    "visualRules": "Humanoide atlético de estética anime/manga oscura. EXACTAMENTE un cuerno central frontal, nunca dos. Orejas largas y puntiagudas, colmillos, uñas o garras y venas energéticas visibles bajo la piel. El cuerno, las venas y la anatomía deben leerse como rasgos biológicos de la raza, no como accesorios."
+    "visualRules": "Humanoide atlético de estética anime/manga oscura. EXACTAMENTE un cuerno central frontal, nunca dos. Orejas largas y puntiagudas, colmillos, uñas o garras y venas energéticas visibles bajo la piel. El cuerno, las venas y la anatomía deben leerse como rasgos biológicos de la raza, no como accesorios.",
+    "availableSexes": [
+      "masculino",
+      "femenino"
+    ],
+    "portraits": {
+      "masculino": "/assets/races/kairakh.png",
+      "femenino": "/assets/races/kairakh.png"
+    }
   },
   {
     "id": "elfos",
@@ -19,7 +27,15 @@
     "description": "Herederos de la gracia ancestral. Viven en armonía con la naturaleza y la magia antigua.",
     "history": "Civilizaciones longevas de bosques, ciudades lunares y santuarios antiguos, donde la precisión, la memoria y la belleza forman parte de la vida cotidiana.",
     "origin": "Sylvaris · Reino de Elenor",
-    "visualRules": "Humanoide elegante de proporciones naturales, orejas claramente puntiagudas y facciones refinadas. Anime/manga oscuro, líneas limpias, sin convertirlo en un humano genérico ni añadir rasgos de otras razas."
+    "visualRules": "Humanoide elegante de proporciones naturales, orejas claramente puntiagudas y facciones refinadas. Anime/manga oscuro, líneas limpias, sin convertirlo en un humano genérico ni añadir rasgos de otras razas.",
+    "availableSexes": [
+      "masculino",
+      "femenino"
+    ],
+    "portraits": {
+      "masculino": "/assets/races/elfos.png",
+      "femenino": "/assets/races/elfos.png"
+    }
   },
   {
     "id": "kijins",
@@ -30,7 +46,15 @@
     "description": "Onís nobles de dos cuernos y piel pálida, con marcas lacrimales bajo los ojos. Honor, poder y disciplina.",
     "history": "Clanes guerreros y cortes ceremoniales donde disciplina y fuerza conviven con una estética refinada de inspiración oriental.",
     "origin": "Kozan · Reino de Hokuren",
-    "visualRules": "Humanoide Oni elegante y noble, piel generalmente pálida, DOS cuernos visibles y bien separados. Líneas oscuras o rojizas que descienden desde los ojos como lágrimas rituales. No debe parecer un Kairakh: nunca un único cuerno central. Evitar aspecto de ogro bruto."
+    "visualRules": "Humanoide Oni elegante y noble, piel generalmente pálida, DOS cuernos visibles y bien separados. Líneas oscuras o rojizas que descienden desde los ojos como lágrimas rituales. No debe parecer un Kairakh: nunca un único cuerno central. Evitar aspecto de ogro bruto.",
+    "availableSexes": [
+      "masculino",
+      "femenino"
+    ],
+    "portraits": {
+      "masculino": "/assets/races/kijins.png",
+      "femenino": "/assets/races/kijins.png"
+    }
   },
   {
     "id": "vampiros",
@@ -41,7 +65,15 @@
     "description": "Señores de la noche, refinados y predadores. Ambición, dominio y una fisiología sobrenatural.",
     "history": "Casas, cortes y clanes nocturnos compiten por influencia. La sangre es parte de su fisiología y cultura, aunque la hemomancia requiere técnicas concretas.",
     "origin": "Nocthera · Reino de Valdrenn",
-    "visualRules": "Humanoide refinado, belleza inquietante, piel clara o fría, colmillos visibles y ojos predatorios sobrenaturales. Estética gótica anime/manga oscura; elegante, no monstruoso salvo que el individuo lo requiera."
+    "visualRules": "Humanoide refinado, belleza inquietante, piel clara o fría, colmillos visibles y ojos predatorios sobrenaturales. Estética gótica anime/manga oscura; elegante, no monstruoso salvo que el individuo lo requiera.",
+    "availableSexes": [
+      "masculino",
+      "femenino"
+    ],
+    "portraits": {
+      "masculino": "/assets/races/vampiros.png",
+      "femenino": "/assets/races/vampiros.png"
+    }
   },
   {
     "id": "insectoides",
@@ -52,7 +84,15 @@
     "description": "Hijos de la colmena. Precisión biológica, adaptación extrema y culturas de metamorfosis.",
     "history": "Mantis, escarabajos, polillas, avispas, hormigas, libélulas y especies insectoides originales dan lugar a sociedades de enorme diversidad.",
     "origin": "Thryx · Colmena de Irix",
-    "visualRules": "Humanoide insecto anime/manga oscuro con quitina integrada, antenas y anatomía funcional. Puede inspirarse en mantis, escarabajo, polilla, avispa, hormiga o libélula. No usar arañas ni rasgos arácnidos."
+    "visualRules": "Humanoide insecto anime/manga oscuro con quitina integrada, antenas y anatomía funcional. Puede inspirarse en mantis, escarabajo, polilla, avispa, hormiga o libélula. No usar arañas ni rasgos arácnidos.",
+    "availableSexes": [
+      "masculino",
+      "femenino"
+    ],
+    "portraits": {
+      "masculino": "/assets/races/insectoides.png",
+      "femenino": "/assets/races/insectoides.png"
+    }
   },
   {
     "id": "reptro",
@@ -63,6 +103,14 @@
     "description": "Humanoides escamados del sol árido. Cuerpos ágiles, rayos vivos y mirada reptiliana.",
     "history": "Habitan mesetas, cañones y cordilleras secas sometidas a un sol intenso, lejos de grandes masas de agua. Su fisiología canaliza calor y carga eléctrica.",
     "origin": "Mesetas de Khar-Sol",
-    "visualRules": "Humanoide ágil cubierto COMPLETAMENTE de escamas verde oscuro o verde grisáceo. Boca serpentiforme/reptiliana, ojos de camaleón o reptil y SIN orejas externas: solo un orificio auditivo en cada lado. Garras retráctiles como las de un felino. NO tiene pelo físico: el cabello está formado ÚNICAMENTE por rayos eléctricos que nacen de la cabeza. NO tiene cola física: la cola está formada ÚNICAMENTE por electricidad. Mantener la cantidad de rayos moderada y legible, sin saturar la silueta."
+    "visualRules": "Humanoide ágil cubierto COMPLETAMENTE de escamas verde oscuro o verde grisáceo. Boca serpentiforme/reptiliana, ojos de camaleón o reptil y SIN orejas externas: solo un orificio auditivo en cada lado. Garras retráctiles como las de un felino. NO tiene pelo físico: el cabello está formado ÚNICAMENTE por rayos eléctricos que nacen de la cabeza. NO tiene cola física: la cola está formada ÚNICAMENTE por electricidad. Mantener la cantidad de rayos moderada y legible, sin saturar la silueta.",
+    "availableSexes": [
+      "masculino",
+      "femenino"
+    ],
+    "portraits": {
+      "masculino": "/assets/races/reptro.webp",
+      "femenino": "/assets/races/reptro.webp"
+    }
   }
 ]
