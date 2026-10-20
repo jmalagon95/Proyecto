@@ -13,13 +13,5 @@ case "$(git remote get-url origin 2>/dev/null || true)" in
 esac
 
 echo "🔄 Actualizando Kami No Challenge desde GitHub main..."
-old_lock="$(git rev-parse HEAD:package-lock.json 2>/dev/null || true)"
-git fetch origin main --quiet
-git reset --hard origin/main
-new_lock="$(git rev-parse HEAD:package-lock.json 2>/dev/null || true)"
-if [ ! -x node_modules/.bin/vite ] || [ "$old_lock" != "$new_lock" ]; then
-  npm install --no-audit --no-fund
-fi
-npm run check:master --silent
-touch index.html
-echo "✅ Actualizado a $(git rev-parse --short HEAD). Abre http://127.0.0.1:5173 con jugar.sh activo."
+bash scripts/sync-safe.sh
+echo "✅ Abre http://127.0.0.1:5173 con jugar.sh activo."
