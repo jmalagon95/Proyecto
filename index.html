@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07101c"><title>Kami No Challenge v0.16 · Prototipo maestro</title>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07101c"><title>Kami No Challenge v0.17 · Prototipo maestro</title>
 <style>
 :root{--ink:#f5efe5;--muted:#b7bfd0;--gold:#f3d29b;--gold2:#c99c57;--bg:#060a13;--panel:#0d1525eF;--line:#ffffff14;--shadow:0 20px 60px #0008;--red:#c94b45;--blue:#6db9ff}
 *{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#050913;color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden}.screen{display:none;min-height:100dvh}.screen.on{display:block;animation:screenIn .42s ease}@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -341,15 +341,12 @@ function renderItems(){$('items').innerHTML=state.inventory.map(([n,q],i)=>`<div
 // Menu
 $('saveUsername').onclick=()=>{state.username=$('usernameInput').value||'Jugador';save();renderLobby();toast('Nombre guardado.')};$('saveGame').onclick=()=>{save();toast('Partida guardada.')};$('titleBtn').onclick=()=>{closeModal('menuModal');show('cover')};
 // Battle
-function renderBattle(){let field=$('battleField');field.querySelectorAll('.fighter').forEach(x=>x.remove());let team=state.team.map(id=>state.characters.find(c=>c.id===id)).filter(Boolean).slice(0,5);let lanes=[.16,.49,.82];team.forEach((c,i)=>{let d=document.createElement('div');d.className='fighter';d.dataset.name=c.name;d.style.backgroundImage=`url('${ASSETS[c.race]}')`;d.style.left=(8+(i%2)*10)+'%';d.style.top=`calc(${lanes[i%3]*100}% - 45px)`;field.append(d)});for(let i=0;i<10;i++){let d=document.createElement('div');d.className='fighter enemy';d.dataset.name='Goblin';d.style.right=(4+(i%4)*8)+'%';d.style.top=`calc(${lanes[i%3]*100}% - 45px)`;field.append(d)}$('timer').textContent='03:00'}
-$('repositionBtn').onclick=()=>{let fs=[...$('battleField').querySelectorAll('.fighter:not(.enemy)')];if(fs.length>1){let a=fs[0].style.top;fs[0].style.top=fs[1].style.top;fs[1].style.top=a}};$('simulateBattle').onclick=()=>{let line=$('attackline');line.style.left='25%';line.style.top='48%';line.style.width='50%';line.classList.remove('flash');void line.offsetWidth;line.classList.add('flash');$('timer').textContent='00:00';setTimeout(showBattleResults,900)};$('retreat').onclick=()=>{renderLobby();show('lobby')};
-function showBattleResults(){let alive=state.team.map(id=>state.characters.find(c=>c.id===id)).filter(Boolean);$('resultMissionText').textContent=`Misión simulada con ${alive.length} personajes. Sistema: 3 carriles invisibles, profundidad ligera y ataques diagonales.`;$('resultRows').innerHTML=alive.map((c,i)=>`<div class="result-row"><span>${c.name} ★${c.star}</span><b>${i===alive.length-1?'Herido':'Vivo'}</b><span>${Math.floor(120+Math.random()*700)} daño</span></div>`).join('');show('battleResults')}
-$('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+=5;save();renderLobby();show('lobby')};
+function renderBattle(){} // La implementación autoritativa se instala desde el motor táctico v17.
 // Init
 /* Storage migration managed in master v0.16 */
 
 /* ===========================
- * KAMI NO CHALLENGE · MASTER v0.16
+ * KAMI NO CHALLENGE · MASTER v0.17
  * All screens and systems extend the same persistent prototype.
  * =========================== */
 (() => {
