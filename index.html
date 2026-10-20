@@ -843,9 +843,8 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     let payout=$('battleRewardPanel');if(!payout){payout=document.createElement('div');payout.id='battleRewardPanel';$('resultRows').after(payout)}
     payout.className='mission-collect';payout.innerHTML=rewards.map(([k,v])=>`<span>+${v} ${esc(k)}</span>`).join('')||'<span>Sin recompensas</span>';
     const combatEvents=end.events||[];
-    const actionSummary=document.createElement('p');actionSummary.className='muted';
+    let actionSummary=$('combatActionSummary');if(!actionSummary){actionSummary=document.createElement('p');actionSummary.id='combatActionSummary';actionSummary.className='muted';$('resultRows').after(actionSummary);}
     actionSummary.textContent='Acciones registradas: '+combatEvents.filter(e=>e.type==='hit').length+' impactos · '+combatEvents.filter(e=>e.type==='heal').length+' curaciones · '+combatEvents.filter(e=>e.type==='ko').length+' bajas.';
-    $('resultRows').after(actionSummary);
     battle=null;show('battleResults');
   }
   $('backLobbyResult').onclick=()=>{renderLobby();show('lobby')};
