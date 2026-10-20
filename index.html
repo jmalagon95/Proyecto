@@ -316,7 +316,7 @@ function toast(t){alert(t)}
 $('press').onclick=()=>{$('press').classList.add('hidden');$('coverMenu').classList.add('show')};$('newGame').onclick=()=>{state={...state,world:null,hero:null,characters:[],team:[],resources:{crystals:15,gold:100,essence:0,wood:24,stone:16},inventory:[['Madera vieja','x24'],['Piedra común','x16'],['Colmillo goblin','x7'],['Tela raída','x5'],['Hierro oxidado','x3'],['Hierba de pradera','x12'],['Espacio libre','43/50']]};show('world')};$('continueGame').onclick=()=>{if(load()){renderLobby();show(state.hero?'lobby':'world')}else toast('Todavía no hay una partida guardada.')};$('settings').onclick=()=>toast('Los ajustes completos se integrarán más adelante.');$('backCover').onclick=()=>show('cover');
 // WORLD
 function makeWorld(){let pool=['Velmora','Astreon','Myrhalis','Eryndor','Kaelthar','Solyth','Neravia','Aetheris'];let name=pool[Math.floor(Math.random()*pool.length)];let pop=Math.floor(6e9+Math.random()*4e9);let civs=[['Kairakh','Varkh','Rhaz’Kel'],['Humanos','Kergelian','Hoflip'],['Elfos','Elenor','Sylvaris'],['Kijins','Hokuren','Kozan'],['Hombres Bestia','Vaelra','Garoum'],['Vampiros','Valdrenn','Nocthera'],['Insectoides','Colmena de Irix','Thryx'],['Huecos','Ruinas del Eco','Abyr']];state.world={name,pop,civs}}
-$('forge').onclick=()=>{makeWorld();$('worldResult').classList.remove('show');$('planet').classList.add('ready');let steps=[['Condensando núcleo',12],['Vertiendo océanos',26],['Elevando continentes',42],['Formando atmósfera',58],['Fundando civilizaciones',73],['Inscribiendo destinos',89],['Mundo completado',100]],i=0;function run(){let [t,v]=steps[i++];$('fill').style.width=v+'%';$('pct').textContent=v+'%';$('worldStep').textContent=t;if(i<steps.length)setTimeout(run,520);else setTimeout(renderWorldResult,450)}setTimeout(run,200)};
+$('forge').onclick=()=>{makeWorld();save();$('worldResult').classList.remove('show');$('planet').classList.add('ready');let steps=[['Condensando núcleo',12],['Vertiendo océanos',26],['Elevando continentes',42],['Formando atmósfera',58],['Fundando civilizaciones',73],['Inscribiendo destinos',89],['Mundo completado',100]],i=0;function run(){let [t,v]=steps[i++];$('fill').style.width=v+'%';$('pct').textContent=v+'%';$('worldStep').textContent=t;if(i<steps.length)setTimeout(run,520);else setTimeout(renderWorldResult,450)}setTimeout(run,200)};
 function renderWorldResult(){$('planetName').textContent=state.world.name;$('population').textContent=state.world.pop.toLocaleString('es-ES');$('civList').innerHTML=state.world.civs.map(c=>`<div class="civ"><h3>${c[0]}</h3><p>Reino: ${c[1]}</p><p>Asentamiento: ${c[2]}</p></div>`).join('');$('worldResult').classList.add('show')}
 $('chooseRace').onclick=()=>{renderRaces();show('race')};
 // RACE
@@ -416,6 +416,11 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
       c.level=Math.max(1,Number(c.level)||1);c.star=clamp(Number(c.star)||1,1,8);
       c.birthStar=clamp(Number(c.birthStar)||c.star,1,8);
       c.stats={FUE:3,AGI:3,CON:3,DEF:3,INT:3,VOL:3,...(c.stats||{})};
+      for(const key of ['FUE','AGI','CON','DEF','INT','VOL']){
+        const value=Number(c.stats[key]);
+        c.stats[key]=Number.isFinite(value)&&value>=0?Math.min(100000,Math.floor(value)):3;
+      }
+      if(c.sex!=='Hombre'&&c.sex!=='Mujer')c.sex='No especificado';
       c.skills=Array.isArray(c.skills)?c.skills:[];c.passives=Array.isArray(c.passives)?c.passives:[];
       c.exp=Number(c.exp)||0;c.maxHp=maxHP(c);
       c.hp=c.hp===undefined?c.maxHp:clamp(Number(c.hp),0,c.maxHp);
