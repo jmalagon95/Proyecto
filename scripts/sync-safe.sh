@@ -2,7 +2,7 @@
 # Sincroniza el maestro sin reemplazar una versión válida por una candidata rota.
 set -euo pipefail
 cd "$HOME/KamiNoChallenge"
-git fetch origin main --quiet || { echo "⚠️ Sin conexión con GitHub; se conserva la versión actual."; return 1 2>/dev/null || exit 1; }
+git fetch origin main --quiet || { echo "⚠️ Sin conexión con GitHub; se conserva la versión actual."; exit 1; }
 old_head="$(git rev-parse HEAD)"
 new_head="$(git rev-parse origin/main)"
 if [ "$old_head" = "$new_head" ]; then
@@ -10,10 +10,12 @@ if [ "$old_head" = "$new_head" ]; then
   exit 0
 fi
 candidate="$(mktemp "$HOME/KamiNoChallenge/.kami-candidate-XXXXXX.html")"
-trap 'rm -f "$candidate"' EXIT
+checker="$(mktemp "$HOME/KamiNoChallenge/scripts/.kami-checker-XXXXXX.mjs")"
+trap 'rm -f "$candidate" "$checker"' EXIT
 git show "origin/main:index.html" > "$candidate" || { echo "❌ Falta index.html en la actualización."; exit 1; }
+git show "origin/main:scripts/verify-master.mjs" > "$checker" || { echo "❌ Falta el verificador nuevo."; exit 1; }
 # Se valida contra el verificador que ya funciona en el teléfono.
-KAMI_MASTER_FILE="$candidate" npm run check:master --silent || {
+KAMI_MASTER_FILE="$candidate" node "$checker" || {
   echo "❌ Nueva versión rechazada: la partida actual no se modifica."
   exit 1
 }
