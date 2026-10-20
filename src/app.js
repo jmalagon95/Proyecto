@@ -56,7 +56,7 @@ export async function startGame(app){
       onBack:()=>routes.race(),
       onConfirm:(cls)=>{
         const race=raceById(data,state.selectedRace);
-        const hero=createHero(race,cls,state.heroName);
+        const hero=createHero(race,cls,state.heroName,state.heroSex);
         state.characters=[hero];
         state.activeCharacterId=hero.id;
         if(state.inhabitantsRemaining!=null) state.inhabitantsRemaining=Math.max(0,state.inhabitantsRemaining-1);
