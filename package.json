@@ -8,9 +8,9 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "content:build": "node scripts/generate-content.mjs",
-    "predev": "node scripts/generate-content.mjs && node scripts/generate-equipment.mjs",
-    "prebuild": "node scripts/generate-content.mjs && node scripts/generate-equipment.mjs",
-    "equipment:build": "node scripts/generate-equipment.mjs"
+    "equipment:build": "node scripts/generate-equipment.mjs",
+    "check:master": "node scripts/verify-master.mjs",
+    "prepare:modular": "npm run content:build && npm run equipment:build"
   },
   "dependencies": {
     "pixi.js": "^8.8.1"

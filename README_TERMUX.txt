@@ -1,41 +1,44 @@
-KAMI NO CHALLENGE — PROYECTO MÓVIL v0.2
+KAMI NO CHALLENGE — TERMUX + GITHUB (v0.16)
 
-ACTUALIZAR DESDE v0.1
-=====================
+Repositorio: https://github.com/jmalagon95/Proyecto
+Rama: main
+Archivo principal: index.html
+Dirección de juego: http://127.0.0.1:5173
 
-1. Detén Vite en Termux con CTRL+C si está abierto.
+USO NORMAL (instalación ya conectada)
+--------------------------------------
+1) Abre Termux.
+2) cd ~/KamiNoChallenge
+3) bash jugar.sh
+4) Abre http://127.0.0.1:5173 en Chrome.
 
-2. Descarga este ZIP en tu teléfono.
+El script descarga los cambios de GitHub cada 15 segundos y Vite recarga
+el juego. No hay que descargar ZIP, subir un HTML ni copiar archivos.
+Si Termux está cerrado, no puede descargar actualizaciones hasta abrirlo.
 
-3. Haz copia opcional de tu proyecto anterior:
-   mv ~/KamiNoChallenge ~/KamiNoChallenge_v01_backup
+ACTUALIZACIÓN MANUAL
+---------------------
+cd ~/KamiNoChallenge
+bash actualizar.sh
 
-4. Crea la carpeta limpia:
-   mkdir -p ~/KamiNoChallenge
-   cd ~/KamiNoChallenge
+INSTALACIÓN DESDE CERO EN UN TERMUX NUEVO
+-----------------------------------------
+pkg update
+pkg install git nodejs
+git clone https://github.com/jmalagon95/Proyecto.git ~/KamiNoChallenge
+cd ~/KamiNoChallenge
+bash jugar.sh
 
-5. Extrae el ZIP:
-   unzip ~/storage/downloads/kami_no_challenge_mobile_project_v02.zip
+También puedes usar: bash instalar_termux.sh, si ya tienes el repositorio.
 
-6. Instala dependencias:
-   npm install
-
-7. Arranca el juego:
-   npm run dev -- --host
-
-8. Abre en Chrome:
-   http://localhost:5173
-
-CONTENIDO v0.2
-==============
-- Proyecto modular real con Vite.
-- Portada canónica.
-- Creación planetaria premium.
-- Selección de raza premium y responsive.
-- Clases raciales canónicas y descripción copiable.
-- Gacha inicial básico.
-- Resultado de invocación.
-- Lobby Nv.1 pobre con HUD superior y materiales.
-- Dormitorios, Santuario, Portal y Almacén como pantallas separadas.
-- PixiJS instalado y base de combate preparada.
-- JSON de razas/clases y catálogos de skills/pasivas separados.
+REGLAS IMPORTANTES
+------------------
+- GitHub main es la fuente de verdad, no las copias locales.
+- La sincronización usa git reset --hard y descarta cambios locales en archivos
+  versionados. Edita o confirma los cambios en GitHub.
+- La partida se guarda en el navegador (localStorage), no en GitHub.
+- Usa siempre el mismo dominio: 127.0.0.1 y localhost tienen guardados distintos.
+- El maestro v16 intenta recuperar guardados v12. El antiguo estado modular v04
+  no se transforma automáticamente.
+- El código anterior src/, data/, public/ y Unity/ queda conservado.
+- Verificación: npm run check:master.
