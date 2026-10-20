@@ -11,7 +11,8 @@
     "equipment:build": "node scripts/generate-equipment.mjs",
     "check:master": "node scripts/verify-master.mjs",
     "prepare:modular": "npm run content:build && npm run equipment:build",
-    "test:combat": "node scripts/test-combat.mjs"
+    "test:combat": "node scripts/test-combat.mjs",
+    "test:sexes": "node scripts/test-sex-variants.mjs"
   },
   "dependencies": {
     "pixi.js": "^8.8.1"
