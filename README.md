@@ -1,6 +1,6 @@
 # Kami No Challenge — prototipo maestro
 
-**Versión activa:** v0.16. **Fuente única:** `index.html` de `main`.
+**Versión activa:** v0.17. **Fuente única:** `index.html` de `main`.
 
 La versión jugable se sirve desde la raíz del proyecto mediante Vite. Todas las pantallas aprobadas se integran en **un único prototipo maestro**, no en minidemos separadas. Las imágenes principales están incluidas en la propia página, por lo que no hay que copiar el HTML al teléfono ni subirlo a otros servicios.
 
@@ -23,7 +23,7 @@ bash jugar.sh
 
 Abre **http://127.0.0.1:5173** en el navegador del mismo teléfono. Mientras `jugar.sh` esté ejecutándose, los commits de `main` llegan automáticamente al entorno local en aproximadamente 15 segundos; Vite recarga la página al cambiar `index.html`. Si el servidor está cerrado, inicia `bash jugar.sh` para sincronizar antes de arrancar, o ejecuta `bash actualizar.sh` para actualizar sin iniciar Vite.
 
-Antes del `git reset`, la actualización comprueba el nuevo `index.html` con el verificador de la propia revisión entrante. Si falla la verificación, se conserva la versión anterior. La carpeta local de Termux recibe un `git reset --hard origin/main`: **los cambios locales no confirmados en Git se descartan**. GitHub es la fuente de verdad. Las partidas se guardan con `localStorage` en el navegador del teléfono, **no en GitHub**. Mantén la misma dirección (127.0.0.1 frente a localhost son orígenes diferentes) para ver las mismas partidas. La versión maestra tiene compatibilidad con guardados de la versión v12; los datos del antiguo módulo v04 no se migran automáticamente.
+Antes del `git reset`, la actualización comprueba el nuevo `index.html` con el verificador de la propia revisión entrante. Si falla la verificación, se conserva la versión anterior. La carpeta local de Termux recibe un `git reset --hard origin/main`: **los cambios locales no confirmados en Git se descartan**. GitHub es la fuente de verdad. Las partidas se guardan con `localStorage` en el navegador del teléfono, **no en GitHub**. Mantén la misma dirección (127.0.0.1 frente a localhost son orígenes diferentes) para ver las mismas partidas. La versión maestra v17 mantiene la clave de guardado v16 y la compatibilidad con guardados de la versión v12; los datos del antiguo módulo v04 no se migran automáticamente.
 
 ## Desarrollo y comprobaciones
 
