@@ -21,23 +21,7 @@ case "$(git remote get-url origin 2>/dev/null || true)" in
 esac
 
 sync_game() {
-  if ! git fetch origin main --quiet; then return 1; fi
-  local old_head new_head old_lock new_lock
-  old_head="$(git rev-parse HEAD)"
-  new_head="$(git rev-parse origin/main)"
-  [ "$old_head" = "$new_head" ] && return 0
-
-  old_lock="$(git rev-parse HEAD:package-lock.json 2>/dev/null || true)"
-  git reset --hard origin/main >/dev/null || return 1
-  new_lock="$(git rev-parse HEAD:package-lock.json 2>/dev/null || true)"
-
-  if [ ! -x node_modules/.bin/vite ] || [ "$old_lock" != "$new_lock" ]; then
-    echo "📦 Actualizando dependencias..."
-    npm install --no-audit --no-fund || return 1
-  fi
-  npm run check:master --silent || return 1
-  touch index.html
-  echo "✅ Nueva versión sincronizada: $(git rev-parse --short HEAD)"
+  bash scripts/sync-safe.sh
 }
 
 echo "🔄 Comprobando GitHub (rama main)..."
