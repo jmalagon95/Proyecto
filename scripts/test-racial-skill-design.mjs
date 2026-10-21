@@ -5,7 +5,7 @@ import {resolveSkill} from '../src/systems/effects.js';
 import {simulateSurvivalMission} from '../src/systems/mission-simulator.js';
 const classes=JSON.parse(fs.readFileSync('data/classes.json','utf8'));
 const targets=JSON.parse(fs.readFileSync('data/content_targets.json','utf8'));
-assert.equal(RACIAL_SKILL_DESIGN_VERSION,4);
+assert.equal(RACIAL_SKILL_DESIGN_VERSION,5);
 const allIds=new Set();
 let total=0,highPowered=0,evolutions=0,percent=0;
 let sampleU;
