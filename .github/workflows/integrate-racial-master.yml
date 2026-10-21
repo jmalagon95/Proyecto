@@ -7,6 +7,7 @@ on:
       - 'scripts/integrate-racial-master.mjs'
       - 'scripts/clean-master-catalog.mjs'
       - 'scripts/test-master-canonical.mjs'
+      - 'scripts/integrate-mission-experience.mjs'
       - 'scripts/integrate-goblin-stat-gacha.mjs'
       - 'scripts/test-goblin-gacha.mjs'
       - 'src/systems/stat-gacha.js'
@@ -46,9 +47,12 @@ jobs:
         run: node scripts/clean-master-catalog.mjs --write
       - name: Integrar el mismo gacha de estadísticas en goblins del maestro
         run: node scripts/integrate-goblin-stat-gacha.mjs --write
+      - name: Añadir cinco equipos, crónica de 180 segundos y MVP
+        run: node scripts/integrate-mission-experience.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
+          node scripts/integrate-mission-experience.mjs
           node scripts/integrate-goblin-stat-gacha.mjs
           git diff --check
       - name: Guardar maestro actualizado en main
@@ -57,7 +61,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if ! git diff --cached --quiet; then
-            git commit -m "feat(master): goblins con seis estadísticas y tiradas de gacha ★1 como los PJ"
+            git commit -m "feat(master): cinco equipos guardados, supervivencia narrada y MVP"
             git push
           else
             echo "El index maestro ya estaba integrado."
