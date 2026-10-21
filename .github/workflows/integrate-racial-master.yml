@@ -20,6 +20,9 @@ on:
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
       - 'src/systems/battle-lanes.js'
+      - 'src/systems/kairakh-sprite-attack.js'
+      - 'assets/battle/kairakh_star1/attack_basic_30.webp'
+      - 'scripts/test-kairakh-sprite-attack.mjs'
       - 'scripts/remove-static-combat-art.mjs'
       - 'src/systems/mannequin-rig.js'
       - 'src/systems/kairakh-wood-sword-skin.js'
@@ -73,6 +76,7 @@ jobs:
           node scripts/test-combat.mjs
           node scripts/test-combat-cooldowns.mjs
           node scripts/test-mannequin-rig.mjs
+          node scripts/test-kairakh-sprite-attack.mjs
           node scripts/test-wood-sword-kairakh.mjs
           node scripts/test-kairakh-star1-anchors.mjs
           node scripts/test-racial-rigs.mjs
@@ -117,6 +121,7 @@ jobs:
           node --check src/systems/kairakh-wood-sword-skin.js
           node --check src/systems/racial-rig-profiles.js
           node --check src/systems/racial-rig-renderer.js
+          node --check src/systems/kairakh-sprite-attack.js
           node --check src/systems/battle-lanes.js
           node --check src/systems/master-racial-bridge.js
           node scripts/integrate-mission-experience.mjs
