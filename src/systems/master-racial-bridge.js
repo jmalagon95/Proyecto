@@ -131,9 +131,12 @@ function tick(b,dt,hooks={}){
       // the gap; magic and ranged techniques keep their firing distance.
       const target=primaryTarget(b,u),skill=complete.skill;
       const reach=skillRangeMeters(skill,u);
+      const ops=(skill.mechanics?.effects||[]).map(e=>e.op);
+      const isSupport=['heal','shield','guard','evade','haste'].includes(skill.kind)||
+        (ops.length>0&&ops.every(op=>['heal','shield','haste','cleanse','buff'].includes(op)));
       const resolveAtContact=()=>{
         if(!active(b).length||u.hp<=0)return;
-        if(reach>0&&target&&!inSkillRange(u,target,skill))return;
+        if(!isSupport&&reach>0&&target&&!inSkillRange(u,target,skill))return;
         window.KamiBattleLanes?.onSkill(u,target,skill,'skill');
         if(skill._racial){
           castRacial(b,u,hooks);
@@ -146,7 +149,7 @@ function tick(b,dt,hooks={}){
           }
         }
       };
-      if(target&&reach<=4&&!(inSkillRange(u,target,skill))){
+      if(target&&!isSupport&&reach<=4&&!(inSkillRange(u,target,skill))){
         window.KamiBattleLanes?.onAttack(u,target,resolveAtContact);
       }else resolveAtContact();
     }
