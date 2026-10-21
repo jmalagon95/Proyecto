@@ -5,6 +5,10 @@ on:
     paths:
       - '.github/workflows/integrate-racial-master.yml'
       - 'scripts/integrate-racial-master.mjs'
+      - 'scripts/clean-master-catalog.mjs'
+      - 'scripts/test-master-canonical.mjs'
+      - 'data/classes.json'
+      - 'data/races.json'
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
 permissions:
@@ -31,9 +35,11 @@ jobs:
           node scripts/test-combat.mjs
       - name: Integrar dentro de index.html
         run: node scripts/integrate-racial-master.mjs --write
-      - name: Comprobar parche insertado
+      - name: Eliminar razas y clases obsoletas del maestro
+        run: node scripts/clean-master-catalog.mjs --write
+      - name: Validar razas, clases, migraciones y JavaScript
         run: |
-          node scripts/integrate-racial-master.mjs
+          node scripts/test-master-canonical.mjs
           git diff --check
       - name: Guardar maestro actualizado en main
         run: |
@@ -41,7 +47,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if ! git diff --cached --quiet; then
-            git commit -m "feat(master): ejecutar habilidades raciales v4 en index.html"
+            git commit -m "fix(master): seis razas y 31 clases raciales vigentes, con migración de partidas"
             git push
           else
             echo "El index maestro ya estaba integrado."
