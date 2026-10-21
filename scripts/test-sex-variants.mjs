@@ -16,11 +16,11 @@ for(const pool of Object.values(classes)){
     assert.deepEqual(cls.availableSexes,SEXES,cls.name);
   }
 }
-assert.equal(count,38,'Se esperan 8 genéricas y 30 raciales');
+assert.equal(count,39,'Se esperan 8 genéricas y 31 raciales');
 for(const id of ['humanos','hombres_bestia'])assert.equal(classes[id],undefined,'La raza retirada sigue en el catálogo: '+id);
-assert.equal(classes.kairakh.length,5,'Los Kairakh necesitan 5 clases raciales');
+assert.equal(classes.kairakh.length,6,'Los Kairakh necesitan 6 clases raciales');
 const names=Object.values(classes).flat().map(c=>c.name);
-assert.equal(new Set(names).size,38,'Las 38 clases deben tener nombres únicos');
+assert.equal(new Set(names).size,39,'Las 39 clases deben tener nombres únicos');
 const compatibility=JSON.parse(readFileSync(new URL('../data/equipment/weapon_class_compatibility.json',import.meta.url),'utf8'));
 for(const cls of Object.values(classes).flat())if(cls.weaponFamilyIds){
   for(const family of cls.weaponFamilyIds)assert.ok(compatibility.families[family]?.includes(cls.name),'Arma no compatible '+cls.name+' / '+family);
