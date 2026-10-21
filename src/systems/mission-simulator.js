@@ -1,6 +1,8 @@
 import { killXpForLevels, grantExperience } from './experience.js';
 import { levelCap } from './progression.js';
 import { attackProfile, characterMaxHp } from './combat-stats.js';
+import { executeRacialTechnique } from './racial-techniques.js';
+import { resolveSkill } from './effects.js';
 
 function roleBias(c){
   const role=(c.role||'').toLowerCase();
@@ -21,7 +23,7 @@ export function simulateSurvivalMission(team,mission){
     const attack=attackProfile(c),hp=characterMaxHp(c);
     return {
       ref:c,id:c.id,name:c.name,hp,maxHp:hp,damage:0,kills:0,alive:true,
-      bias:roleBias(c),attack,attackAccumulator:0
+      bias:roleBias(c),attack,attackAccumulator:0,shield:0,nextSkillAt:0,nextRacialAt:0
     };
   });
 
@@ -43,7 +45,7 @@ export function simulateSurvivalMission(team,mission){
 
     const wi=waveTimes.indexOf(sec);
     if(wi>=0){
-      for(let e=0;e<waves[wi];e++)activeEnemies.push({hp:enemyHp});
+      for(let e=0;e<waves[wi];e++)activeEnemies.push({hp:enemyHp,maxHp:enemyHp});
       lines.push('Oleada '+(wi+1)+': aparecen '+waves[wi]+' goblins Nv.'+(mission.enemyLevel||1)+'.');
       type='wave';
     }
@@ -52,6 +54,42 @@ export function simulateSurvivalMission(team,mission){
     let killsThisSecond=0;
     let damageThisSecond=0;
 
+    // Ejecuta las técnicas raciales y habilidades realmente aprendidas.
+    for(const actor of living){
+      if(!activeEnemies.length)break;
+      const racial=executeRacialTechnique(actor,chars,activeEnemies,sec);
+      if(racial){
+        actor.damage+=racial.damage;actor.kills+=racial.kills;
+        enemiesDefeated+=racial.kills;killsThisSecond+=racial.kills;damageThisSecond+=racial.damage;
+        activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
+        lines.push(actor.name+' usa '+racial.skill+'.');
+        type='combat';
+      }
+      if(!activeEnemies.length)break;
+      const learned=(actor.ref.skills||[]).find(sk=>sk?.functional&&sk?.mechanics?.effects?.length);
+      if(learned&&sec>=actor.nextSkillAt){
+        const action=resolveSkill(learned,actor.ref,activeEnemies[0]);
+        if(action.ok){
+          actor.nextSkillAt=sec+Math.max(1,Number(action.cooldownSeconds||6));
+          const penetration=action.results.find(e=>e.op==='penetration_pct')?.value||0;
+          for(const e of action.results){
+            if(e.op==='damage'){
+              for(const target of (e.target==='area'?activeEnemies.slice(0,3):activeEnemies.slice(0,1))){
+                const dealt=Math.min(target.hp,Math.max(1,Math.round(e.amount*(1+penetration/100))));
+                target.hp-=dealt;actor.damage+=dealt;damageThisSecond+=dealt;
+                if(target.hp<=0){actor.kills++;enemiesDefeated++;killsThisSecond++;}
+              }
+            }else if(e.op==='heal'){
+              const target=chars.filter(x=>x.alive).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
+              if(target)target.hp=Math.min(target.maxHp,target.hp+e.amount);
+            }else if(e.op==='shield')actor.shield+=e.amount;
+          }
+          activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
+          lines.push(actor.name+' ejecuta '+learned.name+'.');
+          type='combat';
+        }
+      }
+    }
     for(const a of living){
       if(!activeEnemies.length)break;
       a.attackAccumulator+=Math.max(.01,a.attack.attacksPerFiveSeconds/5);
@@ -91,7 +129,9 @@ export function simulateSurvivalMission(team,mission){
         const s=target.ref.stats||{};
         const mitigation=1+((s.DEF||0)*.025)+((s.CON||0)*.012);
         const incoming=Math.max(1,Math.round((enemyAttackMin+Math.random()*(enemyAttackMax-enemyAttackMin))/mitigation/target.bias.defense));
-        target.hp-=incoming;
+        const absorbed=Math.min(target.shield||0,incoming);
+        target.shield=Math.max(0,(target.shield||0)-absorbed);
+        target.hp-=incoming-absorbed;
         if(target.hp<=0&&target.alive){
           target.alive=false;
           target.hp=0;
@@ -128,7 +168,7 @@ export function simulateSurvivalMission(team,mission){
       wave:Math.max(1,waveTimes.filter(t=>t<=sec).length),
       enemiesAlive:activeEnemies.length,
       enemiesDefeated,
-      allies:chars.map(x=>({id:x.id,hp:x.hp,maxHp:x.maxHp,alive:x.alive,damage:x.damage,kills:x.kills})),
+      allies:chars.map(x=>({id:x.id,hp:x.hp,maxHp:x.maxHp,shield:x.shield||0,alive:x.alive,damage:x.damage,kills:x.kills})),
       kind:type
     });
   }
