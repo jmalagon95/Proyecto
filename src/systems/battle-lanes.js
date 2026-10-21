@@ -1,3 +1,4 @@
+import {attachRig,playRig,tickRig,rigState} from './mannequin-rig.js';
 // Kami No Challenge · Campo 2.5D por carriles.
 // Renderer ligero: conserva la simulación existente y reacciona a eventos reales.
 const visual=new WeakMap();
@@ -49,6 +50,7 @@ function place(unit,node,field=getField()){
  node.style.zIndex=String(20+p.depth*20+(unit.enemy?2:5)+p.x/20);
  node.style.transform='scale('+p.scale+')';
  visual.set(unit,{x:p.x,y:p.y,scale:p.scale,active:false});
+ attachRig(unit);
 }
 function shake(field,strength){
  field?.style.setProperty('--kami-shake',Math.min(7,Math.max(0,strength))+'px');
@@ -67,6 +69,7 @@ function flash(x,y,kind){
 function onAttack(actor,target){
  if(!actor?.node||!target?.node)return;
  const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
+ playRig(actor,'attack');playRig(target,'hit');
  const node=actor.node;
  node.style.setProperty('--kami-step-x',clamp((b.x-a.x)*.16,-11,11)+'vw');
  node.classList.remove('kami-lunge');void node.offsetWidth;node.classList.add('kami-lunge');
@@ -77,6 +80,8 @@ function onAttack(actor,target){
 }
 function onSkill(actor,target,skill,kind){
  if(!actor?.node)return;
+ playRig(actor,kind==='block'?'block':'cast');
+ if(target&&target.hp>0)playRig(target,'hit');
  const cls=actor.character?.className||'';
  const magic=/taumaturgo|mago|arconte|chispa|rayo|confe|hierofante|invoc/i.test(cls);
  actor.node.classList.remove('kami-cast');void actor.node.offsetWidth;actor.node.classList.add('kami-cast');
@@ -107,12 +112,13 @@ function showAction(unit,state){
 function tick(b,dt){
  if(!b||b.ended)return;
  const field=getField();if(!field)return;
- createArena(field);
+ createArena(field);prepareRigToggle();
  // Solamente posiciones visuales: no se teletransportan durante un ataque.
  for(const unit of [...b.allies,...b.enemies]){
   if(!unit.node)continue;
   const last=visual.get(unit);
   if(!last||unit.node.dataset.lane!==String(laneOf(unit)))place(unit,unit.node,field);
+  tickRig(unit,dt);
   unit.node.classList.toggle('kami-fallen',unit.hp<=0);
   if(unit.hp>0)unit.node.classList.toggle('kami-low-hp',unit.hp/unit.maxHp<.25);
  }
@@ -136,8 +142,34 @@ function chooseTarget(attacker,candidates){
  };
  return alive.sort((a,b)=>threat(b)-threat(a)||a.hp-b.hp)[0];
 }
+// Maniquí funcional de desarrollo, visible por defecto; se puede desactivar
+// temporalmente para comparar con los retratos anteriores sin tocar la partida.
+function setRigVisible(value){
+ const field=getField();if(!field)return;
+ field.classList.toggle('kami-show-rig',Boolean(value));
+ const btn=document.getElementById('kamiRigToggle');
+ if(btn){btn.textContent=value?'Maniquí: ON':'Maniquí: OFF';btn.setAttribute('aria-pressed',String(Boolean(value)))}
+}
+function prepareRigToggle(){
+ const field=getField();if(!field)return;
+ if(!field.dataset.kamiRigReady){
+  field.dataset.kamiRigReady='1';
+  setRigVisible(true);
+  const button=document.createElement('button');button.type='button';button.id='kamiRigToggle';
+  button.className='btn kami-rig-toggle';button.textContent='Maniquí: ON';
+  button.setAttribute('aria-label','Mostrar u ocultar maniquí articulado de prueba');
+  button.setAttribute('aria-pressed','true');
+  button.onclick=()=>setRigVisible(!getField()?.classList.contains('kami-show-rig'));
+  const control=field.parentElement?.querySelector('.battle-controls')||field.parentElement;
+  control?.append(button);
+ }
+}
 const css=document.createElement('style');css.id='kami-lanes-style';
 css.textContent=`
+#battleField.kami-lane-arena.kami-show-rig .kami-rig-host{background-image:none!important;background-color:transparent!important}
+#battleField.kami-lane-arena .kami-rig-svg{display:none;position:absolute;inset:-18% -12% -4%;width:124%;height:123%;pointer-events:none;overflow:visible}
+#battleField.kami-lane-arena.kami-show-rig .kami-rig-svg{display:block}
+#battleField.kami-lane-arena .kami-rig-toggle{font-size:11px;min-width:115px;border:1px solid #e4c18e9a;background:#1d2639;color:#f5ddab}
 #battleField.kami-lane-arena{isolation:isolate;perspective:950px;overflow:hidden;background:radial-gradient(ellipse at 61% 18%,#bc4e4640,transparent 47%),linear-gradient(180deg,#101b30 0%,#24334a 27%,#293446 33%,#191923 90%,#0e101b 100%)!important}
 .kami-lane-arena .kami-horizon{pointer-events:none;position:absolute;inset:0 0 41%;background:linear-gradient(180deg,#7b253f22,#0d172300 75%),repeating-linear-gradient(90deg,#0b142e00 0 8%,#060d1d88 8.2% 8.8%,#0b142e00 9% 17%);filter:drop-shadow(0 3px 7px #0007)}
 .kami-lane-arena .kami-floor{pointer-events:none;position:absolute;inset:13% -18% -25%;transform:perspective(600px) rotateX(51deg) scale(1.24);transform-origin:center 50%;background:repeating-linear-gradient(0deg,#a3927922 0 2px,transparent 2px 65px),repeating-linear-gradient(90deg,#9d816022 0 2px,transparent 2px 93px),linear-gradient(#273447,#1b202e);border-top:4px solid #b5776760}
@@ -162,4 +194,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,version:3};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,setRigVisible,rigState,version:4};
