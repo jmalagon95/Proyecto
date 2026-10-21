@@ -21,6 +21,7 @@ on:
       - 'src/systems/master-racial-bridge.js'
       - 'src/systems/battle-lanes.js'
       - 'scripts/integrate-battle-lanes.mjs'
+      - 'scripts/integrate-manual-formations.mjs'
       - 'scripts/test-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
       - 'src/systems/effects.js'
@@ -62,6 +63,8 @@ jobs:
         run: node scripts/enrich-mission-chronicle.mjs --write
       - name: Aplicar campo de batalla 2.5D
         run: node scripts/integrate-battle-lanes.mjs --write
+      - name: Aplicar formaciones manuales guardadas
+        run: node scripts/integrate-manual-formations.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
@@ -72,6 +75,7 @@ jobs:
           node scripts/enrich-mission-chronicle.mjs
           node scripts/integrate-goblin-stat-gacha.mjs
           node scripts/integrate-battle-lanes.mjs
+          node scripts/integrate-manual-formations.mjs
           git diff --check
       - name: Guardar maestro actualizado en main
         run: |
