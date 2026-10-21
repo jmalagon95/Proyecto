@@ -51,6 +51,8 @@ function place(unit,node,field=getField()){
  node.style.transform='scale('+p.scale+')';
  visual.set(unit,{x:p.x,y:p.y,scale:p.scale,active:false});
  attachRig(unit);
+ // Combat units are articulated models, never flat race portraits or enemy artwork.
+ node.dataset.combatRenderer='skeletal';
 }
 function shake(field,strength){
  field?.style.setProperty('--kami-shake',Math.min(7,Math.max(0,strength))+'px');
@@ -112,7 +114,7 @@ function showAction(unit,state){
 function tick(b,dt){
  if(!b||b.ended)return;
  const field=getField();if(!field)return;
- createArena(field);prepareRigToggle();
+ createArena(field);
  // Solamente posiciones visuales: no se teletransportan durante un ataque.
  for(const unit of [...b.allies,...b.enemies]){
   if(!unit.node)continue;
@@ -142,34 +144,15 @@ function chooseTarget(attacker,candidates){
  };
  return alive.sort((a,b)=>threat(b)-threat(a)||a.hp-b.hp)[0];
 }
-// Maniquí funcional de desarrollo, visible por defecto; se puede desactivar
-// temporalmente para comparar con los retratos anteriores sin tocar la partida.
-function setRigVisible(value){
- const field=getField();if(!field)return;
- field.classList.toggle('kami-show-rig',Boolean(value));
- const btn=document.getElementById('kamiRigToggle');
- if(btn){btn.textContent=value?'Maniquí: ON':'Maniquí: OFF';btn.setAttribute('aria-pressed',String(Boolean(value)))}
-}
-function prepareRigToggle(){
- const field=getField();if(!field)return;
- if(!field.dataset.kamiRigReady){
-  field.dataset.kamiRigReady='1';
-  setRigVisible(true);
-  const button=document.createElement('button');button.type='button';button.id='kamiRigToggle';
-  button.className='btn kami-rig-toggle';button.textContent='Maniquí: ON';
-  button.setAttribute('aria-label','Mostrar u ocultar maniquí articulado de prueba');
-  button.setAttribute('aria-pressed','true');
-  button.onclick=()=>setRigVisible(!getField()?.classList.contains('kami-show-rig'));
-  const control=field.parentElement?.querySelector('.battle-controls')||field.parentElement;
-  control?.append(button);
- }
-}
+// El rig es ahora el único cuerpo visible en combate: no hay modo de
+// sustituirlo por imágenes estáticas. Los retratos del lobby no se alteran.
 const css=document.createElement('style');css.id='kami-lanes-style';
 css.textContent=`
-#battleField.kami-lane-arena.kami-show-rig .kami-rig-host{background-image:none!important;background-color:transparent!important}
-#battleField.kami-lane-arena .kami-rig-svg{display:none;position:absolute;inset:-18% -12% -4%;width:124%;height:123%;pointer-events:none;overflow:visible}
-#battleField.kami-lane-arena.kami-show-rig .kami-rig-svg{display:block}
-#battleField.kami-lane-arena .kami-rig-toggle{font-size:11px;min-width:115px;border:1px solid #e4c18e9a;background:#1d2639;color:#f5ddab}
+#battleField.kami-lane-arena .kami-rig-host{background-image:none!important;background-color:transparent!important;position:relative}
+#battleField.kami-lane-arena .kami-rig-host > svg:not(.kami-rig-svg){display:none!important}
+#battleField.kami-lane-arena .kami-rig-svg{display:block!important;position:absolute;inset:-20% -22% -9%;width:144%;height:138%;pointer-events:none;overflow:visible;filter:drop-shadow(0 3px 2px #060b1299)}
+#battleField.kami-lane-arena .kami-fighter[data-combat-renderer=skeletal] .unit-body{background-image:none!important}
+#battleField.kami-lane-arena .kami-fighter .unit-body::before,#battleField.kami-lane-arena .kami-fighter .unit-body::after{display:none!important}
 #battleField.kami-lane-arena{isolation:isolate;perspective:950px;overflow:hidden;background:radial-gradient(ellipse at 61% 18%,#bc4e4640,transparent 47%),linear-gradient(180deg,#101b30 0%,#24334a 27%,#293446 33%,#191923 90%,#0e101b 100%)!important}
 .kami-lane-arena .kami-horizon{pointer-events:none;position:absolute;inset:0 0 41%;background:linear-gradient(180deg,#7b253f22,#0d172300 75%),repeating-linear-gradient(90deg,#0b142e00 0 8%,#060d1d88 8.2% 8.8%,#0b142e00 9% 17%);filter:drop-shadow(0 3px 7px #0007)}
 .kami-lane-arena .kami-floor{pointer-events:none;position:absolute;inset:13% -18% -25%;transform:perspective(600px) rotateX(51deg) scale(1.24);transform-origin:center 50%;background:repeating-linear-gradient(0deg,#a3927922 0 2px,transparent 2px 65px),repeating-linear-gradient(90deg,#9d816022 0 2px,transparent 2px 93px),linear-gradient(#273447,#1b202e);border-top:4px solid #b5776760}
@@ -194,4 +177,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,setRigVisible,rigState,version:4};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,rigState,version:5};
