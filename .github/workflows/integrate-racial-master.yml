@@ -19,6 +19,10 @@ on:
       - 'data/races.json'
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
+      - 'src/systems/combat-cooldowns.js'
+      - 'src/systems/effects.js'
+      - 'scripts/racial-skill-design.mjs'
+      - 'scripts/test-combat-cooldowns.mjs'
 permissions:
   contents: write
 concurrency:
@@ -41,6 +45,7 @@ jobs:
           node scripts/test-racial-skill-design.mjs
           node scripts/test-racial-techniques.mjs
           node scripts/test-combat.mjs
+          node scripts/test-combat-cooldowns.mjs
           node scripts/test-goblin-gacha.mjs
       - name: Integrar dentro de index.html
         run: node scripts/integrate-racial-master.mjs --write
