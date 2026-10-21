@@ -93,4 +93,22 @@ replaceExactly(oldRole,"let role=c.role||'Guerrero';",'Rol de la nueva clase');
 // nivel, rareza, equipo y nombre, y obtienen una clase canónica compatible.
 const marker='/* KAMI_CANONICAL_RACES_V5 */';
 if(!html.includes(marker)){
- const migration=String.raw
+ const migration="/* KAMI_CANONICAL_RACES_V5 */\nfunction migrateCanonicalRacesV5(s){\n if(!s||s._canonicalRacesVersion===5)return s;\n const all=Array.isArray(s.characters)?s.characters:[];\n const archived=Array.isArray(s.retiredRaceCharacters)?s.retiredRaceCharacters:[];\n const active=[];\n for(const ch of all){\n   if(!RACES[ch.race]){\n     if(!archived.some(x=>x.id===ch.id))archived.push(ch);\n     continue;\n   }\n   const options=CLASSES[ch.race];\n   if(!options.some(x=>x.name===ch.className)){\n     const role=String(ch.role||'').toLowerCase();\n     const selected=options.find(x=>/sanaci|apoyo|support|invoc/.test(role)&&/sanaci|apoyo|support|invoc/.test(String(x.role).toLowerCase()))\n       ||options.find(x=>/tanque|defens|prote/.test(role)&&/tanque|defens|prote/.test(String(x.role).toLowerCase()))\n       ||options.find(x=>/ranger|distancia|tirador/.test(role)&&/ranger|distancia|tirador/.test(String(x.role).toLowerCase()))\n       ||options.find(x=>/mag/.test(role)&&/mag/.test(String(x.role).toLowerCase()))\n       ||options.find(x=>/dps|guerrero/.test(role)&&/dps/.test(String(x.role).toLowerCase()))\n       ||options[0];\n     ch.previousClassName=ch.className;\n     ch.className=selected.name;\n     ch.weapons=selected.weapons;\n     ch.weapon=selected.weapons.includes(ch.weapon)?ch.weapon:selected.weapons[0];\n     ch.role=selected.role;\n     if(Array.isArray(ch.skills)){\n       ch.retiredLegacySkillNames=(ch.retiredLegacySkillNames||[]).concat(ch.skills.filter(x=>typeof x==='string'));\n       ch.skills=ch.skills.filter(x=>x&&typeof x==='object'&&x.mechanics?.effects);\n     }\n   }\n   active.push(ch);\n }\n s.characters=active;s.retiredRaceCharacters=archived;\n s.hero=active.find(x=>x.id===s.hero?.id)||active[0]||null;\n s.team=(Array.isArray(s.team)?s.team:[]).filter(id=>active.some(x=>x.id===id));\n if(!s.team.length&&s.hero)s.team=[s.hero.id];\n if(!RACES[s.race])s.race=s.hero?.race||'Kairakh';\n if(!CLASSES[s.race]?.some(x=>x.name===s.className))\n   s.className=s.hero?.race===s.race?s.hero.className:CLASSES[s.race][0].name;\n if(s.world?.civs){\n   const current=s.world.civs.filter(x=>RACES[x[0]]);\n   for(const entry of [['Kairakh','Varkh','Rhaz’Kel'],['Elfos','Elenor','Sylvaris'],\n     ['Kijins','Hokuren','Kozan'],['Vampiros','Valdrenn','Nocthera'],\n     ['Insectoides','Colmena de Irix','Thryx'],['Reptro','Voltrax','Akrion']])\n     if(!current.some(x=>x[0]===entry[0]))current.push(entry);\n   s.world.civs=current;\n }\n s._canonicalRacesVersion=5;\n return s;\n}\n";
+
+ replaceExactly('function save(){',migration+'function save(){','Migración de partidas');
+ replaceExactly('if(s){state=s;return true}',"if(s){state=migrateCanonicalRacesV5(s);save();return true}",'Carga de partidas antiguas');
+}
+for(const item of ['ASSETS','RACES','CLASSES','names']){
+ const value=declaration(item).value;
+ for(const gone of ['Humanos','Hombres Bestia','Huecos'])
+   if(Object.prototype.hasOwnProperty.call(value,gone))throw new Error(item+': raza retirada '+gone);
+}
+const actualClasses=declaration('CLASSES').value;
+for(const r of canonical){
+ if(JSON.stringify(actualClasses[r.name].map(x=>x.name))!==JSON.stringify(classes[r.id].map(x=>x.name)))
+   throw new Error('Clases obsoletas '+r.name);
+}
+if(!html.includes('migrateCanonicalRacesV5')||!html.includes(marker))
+ throw new Error('Falta migración');
+if(process.argv.includes('--write'))fs.writeFileSync(filepath,html);
+console.log('✅ Maestro canónico: seis razas, 31 clases raciales. '+(process.argv.includes('--write')?'Guardado.':'Validado.'));
