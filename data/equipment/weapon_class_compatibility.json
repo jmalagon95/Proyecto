@@ -6,62 +6,58 @@
       "Guerrero",
       "Defensor",
       "Pícaro",
-      "Director de Fuego Cruzado",
       "Portador de Dos Veredictos",
       "Caballero del Ataúd Abierto",
-      "Esgrimista de la Rosa Negra"
+      "Esgrimista de la Rosa Negra",
+      "Ojo de la Última Guerra"
     ],
     "greatsword_2h": [
-      "Caballero del Ataúd Abierto"
+      "Caballero del Ataúd Abierto",
+      "Quebrador de Juramentos"
     ],
     "rapier_1h": [
-      "Tasador de Fallos",
       "Coleccionista de Últimos Suspiros",
-      "Esgrimista de la Rosa Negra"
+      "Esgrimista de la Rosa Negra",
+      "Ojo de la Última Guerra"
     ],
     "dagger_1h": [
       "Pícaro",
-      "Sacrificador del Pulso Blanco",
-      "Cirujano de Campaña",
       "Bailarín de las Siete Hojas",
-      "Alfa de la Mordida Compartida",
-      "Zorro de los Mil Amagos",
       "Coleccionista de Últimos Suspiros"
     ],
     "axe_1h": [
       "Guerrero",
-      "Toro de la Primera Colisión"
+      "Primogénito de la Masacre Honorable"
     ],
     "throwing_axe": [],
     "mace_1h": [
       "Guerrero",
       "Defensor",
-      "Cuerno de la Última Muralla",
       "Deudor de Cien Golpes",
       "Martillo de Élitra",
-      "Pararrayos Errante"
+      "Pararrayos Errante",
+      "Cornamenta del Juicio"
     ],
     "heavy_club_2h": [
       "Deudor de Cien Golpes",
-      "Demonio del Séptimo Impacto"
+      "Demonio del Séptimo Impacto",
+      "Primogénito de la Masacre Honorable"
     ],
     "hammer_2h": [
       "Demonio del Séptimo Impacto",
-      "Toro de la Primera Colisión"
+      "Quebrador de Juramentos"
     ],
     "spear_1h": [
       "Defensor",
-      "Cuerno de la Última Muralla",
       "Aguijón de la Cuenta Regresiva",
-      "Latigador de Cola de Plasma"
+      "Latigador de Cola de Plasma",
+      "Cornamenta del Juicio"
     ],
     "spear_2h": [
-      "Verdugo de Tres Latidos",
-      "Portador de Dos Veredictos"
+      "Portador de Dos Veredictos",
+      "Heraldo del Rugido Primordial"
     ],
-    "halberd_2h": [
-      "Verdugo de Tres Latidos"
-    ],
+    "halberd_2h": [],
     "javelin": [],
     "scythe_2h": [
       "Segador"
@@ -72,20 +68,14 @@
     ],
     "crossbow_2h": [
       "Ranger",
-      "Director de Fuego Cruzado",
-      "Pistolero del Último Cartucho",
-      "Artillero de Doble Recámara",
       "Tirador de la Quietud"
     ],
     "staff_2h": [
       "Mago",
       "Invocador",
       "Apoyo",
-      "Arpista de Arterias",
       "Custodio del Último Brote",
       "Monje de las Marcas Gemelas",
-      "Médium del Aullido Hueco",
-      "Cuidador del Cachorro de Guerra",
       "Matriarca de la Segunda Crisálida",
       "Calibrador de Frecuencia"
     ],
@@ -98,7 +88,6 @@
       "Mago",
       "Invocador",
       "Apoyo",
-      "Tasador de Fallos",
       "Relojero de Luciérnagas",
       "Arconte de los Gemelos Astrales",
       "Censor de Juramentos Rotos",
@@ -108,15 +97,11 @@
     ],
     "scepter_1h": [
       "Apoyo",
-      "Cirujano de Campaña",
       "Custodio del Último Brote",
-      "Cuidador del Cachorro de Guerra",
       "Mayordomo del Trono Vacío"
     ],
     "catalyst_1h": [
       "Invocador",
-      "Nexo de las Siete Venas",
-      "Arpista de Arterias",
       "Arconte de los Gemelos Astrales",
       "Matriarca de la Segunda Crisálida",
       "Coronel de Antenas Partidas",
@@ -126,26 +111,19 @@
     ],
     "gauntlets_pair": [
       "Pícaro",
-      "Nexo de las Siete Venas",
-      "Sacrificador del Pulso Blanco",
       "Monje de las Marcas Gemelas",
-      "Alfa de la Mordida Compartida",
       "Martillo de Élitra",
       "Trenzador de Rayos Gemelos",
       "Latigador de Cola de Plasma",
-      "Pararrayos Errante"
+      "Pararrayos Errante",
+      "Heraldo del Rugido Primordial"
     ],
     "chakrams_pair": [
-      "Bailarín de las Siete Hojas",
-      "Zorro de los Mil Amagos"
+      "Bailarín de las Siete Hojas"
     ],
-    "cannon_2h": [
-      "Pistolero del Último Cartucho",
-      "Artillero de Doble Recámara"
-    ],
+    "cannon_2h": [],
     "fan_1h": [
       "Censor de Juramentos Rotos",
-      "Médium del Aullido Hueco",
       "Coronel de Antenas Partidas"
     ],
     "spike_launcher": [],
