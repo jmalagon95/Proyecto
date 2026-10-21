@@ -1,6 +1,7 @@
 import {racialTechniqueFor} from './racial-techniques.js';
 import {resolveSkill} from './effects.js';
 import {loadSkillsForClass} from './content-loader.js';
+import {newActionState,advanceActionState,startAction,canStartAction,selectCombatSkill,skillPriority,skillCooldown} from './combat-cooldowns.js';
 
 // Puente para el index.html MONOLÍTICO de Kami No Challenge.
 // No modifica las partidas guardadas, no concede automáticamente habilidades U,
@@ -26,7 +27,7 @@ function learnedFor(char){
     (x.mechanics?.effects?.length?x:catalog?.get(x.id)):null)
     .filter(x=>x&&x.functional&&x.mechanics?.effects?.length);
 }
-function currentState(u){let st=runtime.get(u);if(!st){st={racialTimer:2,skillTimers:new Map(),shield:0,temporaryHaste:0};runtime.set(u,st)}return st}
+function currentState(u){let st=runtime.get(u);if(!st){st={...newActionState(),shield:0};runtime.set(u,st)}return st}
 function active(b){return (b?.enemies||[]).filter(e=>e.hp>0)}
 function companions(b){return (b?.allies||[]).filter(x=>x.hp>0)}
 function primaryTarget(b){return active(b).sort((a,c)=>a.hp-c.hp)[0]||null}
@@ -81,12 +82,12 @@ function castRacial(b,u,hooks){
   const descriptor=racialTechniqueFor(u.character);
   if(!descriptor)return false;
   const r=currentState(u);
-  if(r.racialTimer>0)return false;
+  if(r.racialRemaining>0)return false;
   const enemies=active(b), allies=companions(b);
   const skill=descriptor, stat=Math.max(1,Number(u.character.stats?.[skill.stat]||1));
   const base=round(stat*.65+Number(u.character.level||1)*.45);
   if(skill.kind==='heal'&&!allies.some(x=>x.hp<x.maxHp))return false;
-  r.racialTimer=Math.max(1,skill.cooldownSeconds);
+  r.racialRemaining=skillCooldown(skill,u.character);
   const foe=primaryTarget(b);
   const weak=allies.sort((a,c)=>a.hp/a.maxHp-c.hp/c.maxHp)[0];
   if(skill.kind==='heal'){
@@ -110,19 +111,40 @@ function tick(b,dt,hooks={}){
   if(!b||b.ended||!Array.isArray(b.allies)||!Array.isArray(b.enemies)||!Number.isFinite(dt)||dt<=0)return;
   for(const u of b.allies){
     if(!u?.character||u.hp<=0)continue;
-    const s=currentState(u);
-    s.racialTimer-=dt;
-    for(const [id,remaining] of s.skillTimers)s.skillTimers.set(id,remaining-dt);
-    if(active(b).length&&castRacial(b,u,hooks))hooks.log?.(u.name+' activa una técnica racial.');
-    for(const skill of learnedFor(u.character)){
-      if(!active(b).length)break;
-      if((s.skillTimers.get(skill.id)||0)>0)continue;
-      const cast=resolveSkill(skill,u.character,primaryTarget(b));
-      if(!cast.ok)continue;
-      s.skillTimers.set(skill.id,Math.max(1,Number(cast.cooldownSeconds)||6));
-      applyResults(b,u,skill,cast.results,hooks);
-      hooks.log?.(u.name+' ejecuta '+skill.name+' ['+skill.rank+'].');
-      break; // Máximo una habilidad equipada por personaje y pulso.
+    const state=currentState(u),complete=advanceActionState(state,dt);
+    if(complete){
+      // Si cae o desaparece el último enemigo durante la ejecución, se cancela
+      // sin producir daño inventado ni gastar una segunda habilidad.
+      if(active(b).length&&u.hp>0){
+        if(complete.skill._racial){
+          castRacial(b,u,hooks);
+          hooks.log?.(u.name+' activa '+complete.skill.name+'.');
+        }else{
+          const result=resolveSkill(complete.skill,u.character,primaryTarget(b));
+          if(result.ok){
+            applyResults(b,u,complete.skill,result.results,hooks);
+            hooks.log?.(u.name+' ejecuta '+complete.skill.name+' ['+complete.skill.rank+'].');
+          }
+        }
+      }
+    }
+    if(!active(b).length||state.pending||state.global>0)continue;
+    const skills=learnedFor(u.character);
+    const racial=racialTechniqueFor(u.character);
+    const racialCandidate=racial&&state.racialRemaining<=0?{
+      ...racial,_racial:true,functional:true,
+      mechanics:{cooldownSeconds:racial.cooldownSeconds,timeCostSeconds:.75,effects:[
+        {op:racial.kind==='heal'?'heal':racial.kind==='shield'||racial.kind==='guard'||racial.kind==='evade'?'shield':'damage',
+          target:racial.kind==='heal'?'ally':'single',multiplier:1}]}
+    }:null;
+    const allies=companions(b),enemies=active(b);
+    const available=[...skills,...(racialCandidate?[racialCandidate]:[])];
+    const chosen=selectCombatSkill(available,state,u.character,allies,enemies);
+    if(!chosen)continue;
+    // El enfriamiento individual comienza al iniciar el lanzamiento;
+    // el impacto se aplica únicamente cuando acaba el tiempo de ejecución.
+    if(startAction(state,chosen,u.character,{racial:false})){
+      hooks.log?.(u.name+' prepara '+chosen.name+'.');
     }
   }
 }
