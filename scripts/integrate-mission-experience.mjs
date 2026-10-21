@@ -98,7 +98,7 @@ inject("if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}",S
      while(battle.lastNarratedSecond<reached){battle.lastNarratedSecond++;narrateMissionSecond(battle,battle.lastNarratedSecond)}
 `);
 inject("let rewards=[];","     displayMissionStats(end);\n");
-replace("$('simulateBattle').onclick=()=>{","$('simulateBattle').onclick=()=>{return;");
+html=html.split("$('simulateBattle').onclick=()=>{").join("$('simulateBattle').onclick=()=>{return;");
 replace("Math.min(.09,(timestamp-battler.last)/1000)*battle.speed","Math.min(.09,(timestamp-battler.last)/1000)");
 }
 if(!html.includes(marker)||!html.includes('displayMissionStats(end)')||!html.includes('narrateMissionSecond(battle,battle.lastNarratedSecond)'))throw Error('Parche incompleto');
