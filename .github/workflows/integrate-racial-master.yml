@@ -25,6 +25,7 @@ on:
       - 'scripts/test-manual-formations.mjs'
       - 'scripts/audit-mission-ui.mjs'
       - 'scripts/test-mission-ui-e2e.mjs'
+      - 'scripts/fix-mission-runtime.mjs'
       - 'scripts/test-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
       - 'src/systems/effects.js'
@@ -62,6 +63,8 @@ jobs:
         run: node scripts/integrate-goblin-stat-gacha.mjs --write
       - name: Añadir cinco equipos, crónica de 180 segundos y MVP
         run: node scripts/integrate-mission-experience.mjs --write
+      - name: Inicializar crónica sin bloquear menú de misión
+        run: node scripts/fix-mission-runtime.mjs --write
       - name: Relatar golpes reales y corregir daño efectivo
         run: node scripts/enrich-mission-chronicle.mjs --write
       - name: Aplicar campo de batalla 2.5D
@@ -77,6 +80,7 @@ jobs:
           node --check src/systems/battle-lanes.js
           node --check src/systems/master-racial-bridge.js
           node scripts/integrate-mission-experience.mjs
+          node scripts/fix-mission-runtime.mjs
           node scripts/enrich-mission-chronicle.mjs
           node scripts/integrate-goblin-stat-gacha.mjs
           node scripts/integrate-battle-lanes.mjs
