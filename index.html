@@ -932,7 +932,8 @@ renderFormation();
     const node=document.createElement('div');node.className='fighter'+(u.enemy?' enemy':'');node.dataset.unit=u.id;
     node.style.left=(u.enemy?59+(u.index%3)*12:9+(u.index%3)*12)+'%';
     node.style.top=`calc(${[16,44,71][u.lane]}% - 45px)`;
-    node.innerHTML=`<div class="unit-life"><i style="width:100%"></i></div><div class="unit-body" ${u.enemy?'':`style="background-image:url('${ASSETS[u.character.race]}')"`}>${u.enemy?goblinSprite:''}</div><div class="unit-name">${esc(u.name)}</div>`;
+    /* KAMI_RIG_ONLY_BATTLE_V1 */
+     node.innerHTML=`<div class="unit-life"><i style="width:100%"></i></div><div class="unit-body"></div><div class="unit-name">${esc(u.name)}</div>`;
     field.append(node);u.node=node;window.KamiBattleLanes?.place(u,node,field);return node;
   }
   function addGoblin(){
