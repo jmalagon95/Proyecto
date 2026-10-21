@@ -2,7 +2,7 @@
 // 31 disciplinas únicas; 1000 registros por clase; 11 rangos. Sin DoT.
 // Una familia evolutiva se representa mediante ID estable y predecesores;
 // las técnicas nativas superiores no inventan versiones inferiores.
-export const RACIAL_SKILL_DESIGN_VERSION=4;
+export const RACIAL_SKILL_DESIGN_VERSION=5;
 const profiles={
 'Taumaturgo Bélico':['Arcanismo de Guerra','Explosión del Asedio','Runas del Combate','Fulgor de Conquista','spell','INT'],
 'Invocador de Avatares':['Ancestro de las Mil Batallas','Estandarte Viviente','Golpe del Avatar','Consejo de los Caídos','summon','VOL'],
