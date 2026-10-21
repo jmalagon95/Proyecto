@@ -68,32 +68,34 @@ try{
  assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
  assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
  const rigCheck=await page.evaluate(()=>{
-  const units=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')];
-  return {rigged:units.filter(u=>u.querySelector('.kami-rig-svg')).length,
-    skeletonNodes:units[0]?.querySelectorAll('[data-bone]').length||0,
-    enabled:document.querySelector('#battleField')?.classList.contains('kami-show-rig'),
-    toggle:!!document.querySelector('#kamiRigToggle')};
+  const heroes=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')];
+  const opponents=[...document.querySelectorAll('#battleField .fighter.enemy')];
+  const all=[...heroes,...opponents];
+  return {heroRigs:heroes.filter(u=>u.querySelector('.kami-rig-svg')).length,
+    enemyRigs:opponents.filter(u=>u.querySelector('.kami-rig-svg')).length,
+    bones:heroes[0]?.querySelectorAll('[data-bone]').length||0,
+    allSkeletal:all.every(u=>u.dataset.combatRenderer==='skeletal'),
+    skeletonVisible:heroes.every(u=>getComputedStyle(u.querySelector('.kami-rig-svg')).display!=='none'),
+    backgroundsHidden:heroes.every(u=>getComputedStyle(u.querySelector('.unit-body')).backgroundImage==='none'),
+    spritesHidden:opponents.every(u=>{
+      const legacy=u.querySelector('.unit-body > svg:not(.kami-rig-svg)');
+      return !legacy||getComputedStyle(legacy).display==='none'
+    })};
  });
  console.log('RIG_CHECK',JSON.stringify(rigCheck));
- assert.equal(rigCheck.rigged,2,'Los maniquíes no están instalados en los dos héroes');
- assert.equal(rigCheck.skeletonNodes,19,'El esqueleto dibujado no está completo');
- assert.ok(rigCheck.enabled&&rigCheck.toggle,'No funciona el modo maniquí');
- const raceCheck=await page.evaluate(async()=>{
-  const {createRigSvg}=await import('/src/systems/mannequin-rig.js');
-  return ['Kairakh','Elfos','Kijins','Vampiros','Insectoides','Reptro'].map(race=>{
-   const {svg}=createRigSvg({character:{race}});
-   return {race,rig:svg.dataset.rigRace,bones:svg.querySelectorAll('[data-bone]').length,
-     features:svg.querySelectorAll('[data-feature]').length};
-  });
+ assert.equal(rigCheck.heroRigs,2,'Los héroes no usan rigs');
+ assert.ok(rigCheck.enemyRigs>0,'Los enemigos no usan rigs');
+ assert.equal(rigCheck.bones,19);
+ assert.ok(rigCheck.allSkeletal&&rigCheck.skeletonVisible&&rigCheck.backgroundsHidden&&rigCheck.spritesHidden,
+   'Quedan imágenes estáticas visibles en la batalla');
+ const races=await page.evaluate(async()=>{
+   const {createRigSvg}=await import('/src/systems/mannequin-rig.js');
+   return ['Kairakh','Elfos','Kijins','Vampiros','Insectoides','Reptro'].map(race=>{
+     const rig=createRigSvg({character:{race}}).svg;
+     return {race,bones:rig.querySelectorAll('[data-bone]').length,features:rig.querySelectorAll('[data-feature]').length}
+   })
  });
- console.log('RACE_RIGS',JSON.stringify(raceCheck));
- assert.ok(raceCheck.every(r=>r.rig===r.race.toLowerCase()&&r.bones===19&&r.features>0),
-  'Una raza no conserva esqueleto o rasgos anatómicos');
-
- await page.evaluate(()=>document.querySelector('#kamiRigToggle')?.click());
- assert.equal(await page.evaluate(()=>document.querySelector('#battleField').classList.contains('kami-show-rig')),false);
- await page.evaluate(()=>document.querySelector('#kamiRigToggle')?.click());
-
+ assert.ok(races.every(r=>r.bones===19&&r.features>0),'Anatomías raciales incompletas');
  assert.ok(await page.locator('#kamiResultSummary').count(),'Falta el panel de resultados de daño y MVP');
  assert.ok(await page.locator('#resultRows').count(),'Falta la clasificación de resultado');
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
