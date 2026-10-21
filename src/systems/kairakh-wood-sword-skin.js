@@ -54,7 +54,9 @@ export function isWoodSwordKairakh(character){
  if(rarity!==1)return false;
  const explicit=JSON.stringify(character.equipment||character.weapon||{}).toLowerCase();
  // Primer combatiente Kairakh ★1 sin equipamiento especial: espada pobre de entrenamiento.
- return !/lanza|hacha|maza|báculo|arco|escudo|guantelete|martillo/.test(explicit);
+ if(/lanza|hacha|maza|báculo|arco|escudo|guantelete|martillo/.test(explicit))return false;
+ const cls=String(character.className||character.role||'').toLowerCase();
+ return /espada|monarca|guerrero|sword|fighter/.test(cls)||/espada/.test(explicit);
 }
 export function installWoodSwordKairakh({nodes,svg:root},character){
  if(!isWoodSwordKairakh(character))return false;
