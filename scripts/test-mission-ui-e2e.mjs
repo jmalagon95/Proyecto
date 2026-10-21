@@ -67,6 +67,21 @@ try{
  assert.equal(battleState.heroes,2,'No aparecen los dos héroes seleccionados');
  assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
  assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
+ const rigCheck=await page.evaluate(()=>{
+  const units=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')];
+  return {rigged:units.filter(u=>u.querySelector('.kami-rig-svg')).length,
+    skeletonNodes:units[0]?.querySelectorAll('[data-bone]').length||0,
+    enabled:document.querySelector('#battleField')?.classList.contains('kami-show-rig'),
+    toggle:!!document.querySelector('#kamiRigToggle')};
+ });
+ console.log('RIG_CHECK',JSON.stringify(rigCheck));
+ assert.equal(rigCheck.rigged,2,'Los maniquíes no están instalados en los dos héroes');
+ assert.equal(rigCheck.skeletonNodes,19,'El esqueleto dibujado no está completo');
+ assert.ok(rigCheck.enabled&&rigCheck.toggle,'No funciona el modo maniquí');
+ await page.evaluate(()=>document.querySelector('#kamiRigToggle')?.click());
+ assert.equal(await page.evaluate(()=>document.querySelector('#battleField').classList.contains('kami-show-rig')),false);
+ await page.evaluate(()=>document.querySelector('#kamiRigToggle')?.click());
+
  assert.ok(await page.locator('#kamiResultSummary').count(),'Falta el panel de resultados de daño y MVP');
  assert.ok(await page.locator('#resultRows').count(),'Falta la clasificación de resultado');
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
