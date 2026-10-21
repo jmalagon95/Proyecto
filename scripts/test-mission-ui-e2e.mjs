@@ -50,14 +50,16 @@ try{
  assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
  assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
  await page.waitForFunction(()=>Boolean(window.KamiBattleFocus&&document.querySelector('#battleField .fighter.enemy')));
- await page.locator('#battleField .fighter:not(.enemy)').first().click();
- await page.locator('#battleField .fighter.enemy').first().click();
- const focusStatus=await page.evaluate(()=>({
-   selected:window.KamiBattleFocus?.selected,
-   assignments:[...window.KamiBattleFocus.assigned.entries()],
-   marked:document.querySelectorAll('#battleField .fighter.kami-focus-marked').length,
-   label:document.getElementById('kamiFocusLabel')?.textContent
- }));
+ const focusStatus=await page.evaluate(()=>{
+   document.querySelector('#battleField .fighter:not(.enemy)')?.click();
+   document.querySelector('#battleField .fighter.enemy')?.click();
+   return {
+     selected:window.KamiBattleFocus?.selected,
+     assignments:[...window.KamiBattleFocus.assigned.entries()],
+     marked:document.querySelectorAll('#battleField .fighter.kami-focus-marked').length,
+     label:document.getElementById('kamiFocusLabel')?.textContent
+   };
+ });
  console.log('FOCUS_CHECK',JSON.stringify(focusStatus));
  assert.equal(focusStatus.selected,'test01');
  assert.equal(focusStatus.assignments.length,1);
