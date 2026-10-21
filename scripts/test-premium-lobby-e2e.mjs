@@ -5,8 +5,9 @@ const page=await browser.newPage({viewport:{width:430,height:920},isMobile:true,
 const errors=[];page.on('pageerror',error=>errors.push(error.message));
 try{
  await page.goto('http://127.0.0.1:5173',{waitUntil:'domcontentloaded'});
- await page.waitForSelector('#lobby .kami-lobby-shortcuts');
+ await page.waitForSelector('#lobby .kami-lobby-shortcuts',{state:'attached'});
  await page.evaluate(()=>window.eval("show('lobby')"));
+ await page.waitForSelector('#lobby .kami-lobby-shortcuts',{state:'visible'});
  const shortcuts=page.locator('#lobby .kami-shortcut');
  assert.equal(await shortcuts.count(),6);
  const races=await page.locator('#lobby .kami-race-standards span').allTextContents();
