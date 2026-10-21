@@ -5,12 +5,19 @@ const laneOffsets=[19,47,75]; // trasero, medio, frontal: profundidad creciente
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function getField(){return document.getElementById('battleField')}
 function laneOf(unit){return clamp(Number(unit.lane)||0,0,2)}
+function laneFor(character,index=0){
+ const role=String(character?.role||'').toLowerCase();
+ if(/tanque|defens|prote|coloso|bruiser|primera línea/.test(role))return 2;
+ if(/sanaci|healer|support|apoyo|invoc|mágico|magia|control|ranger|distancia/.test(role))return 0;
+ if(/dps|duelista|guerrero|martillo|esgrimista/.test(role))return 1;
+ return index%3;
+}
 function position(unit){
  const depth=laneOf(unit);
  const ally=!unit.enemy;
  const index=Math.max(0,Number(unit.index)||0);
- const stagger=(Math.floor(index/3)%3);
- const x=ally?12+stagger*10:67+stagger*8;
+ const stagger=index%5;
+ const x=ally?12+stagger*7.5:64+stagger*6.4;
  const y=laneOffsets[depth]+((index%2)?2:-1);
  const scale=[.77,.91,1.06][depth]*(unit.enemy?.91:1);
  return {x,y,scale,depth};
@@ -138,4 +145,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,version:1};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,version:2};
