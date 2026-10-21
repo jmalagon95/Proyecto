@@ -27,6 +27,6 @@ for(const symbol of ['KAMI_BATTLE_25D_LANES_V1','KAMI_BATTLE_ROLE_LANES_V1','Kam
  assert.ok(html.includes(symbol),'Falta la conexión '+symbol);
 }
 const js=readFileSync('src/systems/battle-lanes.js','utf8');
-const sanitized=js.replace(/^export\s/gm,'');
+const sanitized=js.replace(/^import .*?;\s*$/gm,'').replace(/^export\s/gm,'');
 new Script(sanitized);
 console.log('✅ Tres carriles, roles, prioridades de objetivos, estilos y cableado al maestro validados');
