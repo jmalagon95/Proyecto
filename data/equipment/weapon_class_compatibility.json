@@ -9,16 +9,15 @@
       "Portador de Dos Veredictos",
       "Caballero del Ataúd Abierto",
       "Esgrimista de la Rosa Negra",
-      "Ojo de la Última Guerra"
+      "Monarca de la Espada Indómita"
     ],
     "greatsword_2h": [
       "Caballero del Ataúd Abierto",
-      "Quebrador de Juramentos"
+      "Monarca de la Espada Indómita"
     ],
     "rapier_1h": [
       "Coleccionista de Últimos Suspiros",
-      "Esgrimista de la Rosa Negra",
-      "Ojo de la Última Guerra"
+      "Esgrimista de la Rosa Negra"
     ],
     "dagger_1h": [
       "Pícaro",
@@ -26,8 +25,7 @@
       "Coleccionista de Últimos Suspiros"
     ],
     "axe_1h": [
-      "Guerrero",
-      "Primogénito de la Masacre Honorable"
+      "Guerrero"
     ],
     "throwing_axe": [],
     "mace_1h": [
@@ -36,39 +34,43 @@
       "Deudor de Cien Golpes",
       "Martillo de Élitra",
       "Pararrayos Errante",
-      "Cornamenta del Juicio"
+      "Quebrantador de Asedios"
     ],
     "heavy_club_2h": [
       "Deudor de Cien Golpes",
       "Demonio del Séptimo Impacto",
-      "Primogénito de la Masacre Honorable"
+      "Monarca de la Espada Indómita"
     ],
     "hammer_2h": [
       "Demonio del Séptimo Impacto",
-      "Quebrador de Juramentos"
+      "Quebrantador de Asedios"
     ],
     "spear_1h": [
       "Defensor",
       "Aguijón de la Cuenta Regresiva",
       "Latigador de Cola de Plasma",
-      "Cornamenta del Juicio"
+      "Hierofante de Guerra",
+      "Quebrantador de Asedios"
     ],
     "spear_2h": [
-      "Portador de Dos Veredictos",
-      "Heraldo del Rugido Primordial"
+      "Portador de Dos Veredictos"
     ],
     "halberd_2h": [],
-    "javelin": [],
+    "javelin": [
+      "Exterminador Primordial"
+    ],
     "scythe_2h": [
       "Segador"
     ],
     "bow_2h": [
       "Ranger",
-      "Tirador de la Quietud"
+      "Tirador de la Quietud",
+      "Exterminador Primordial"
     ],
     "crossbow_2h": [
       "Ranger",
-      "Tirador de la Quietud"
+      "Tirador de la Quietud",
+      "Exterminador Primordial"
     ],
     "staff_2h": [
       "Mago",
@@ -77,7 +79,9 @@
       "Custodio del Último Brote",
       "Monje de las Marcas Gemelas",
       "Matriarca de la Segunda Crisálida",
-      "Calibrador de Frecuencia"
+      "Calibrador de Frecuencia",
+      "Taumaturgo Bélico",
+      "Invocador de Avatares"
     ],
     "wand_1h": [
       "Mago",
@@ -93,12 +97,14 @@
       "Censor de Juramentos Rotos",
       "Mayordomo del Trono Vacío",
       "Confesor de Sangre Fría",
-      "Gemelo de Chispa"
+      "Gemelo de Chispa",
+      "Invocador de Avatares"
     ],
     "scepter_1h": [
       "Apoyo",
       "Custodio del Último Brote",
-      "Mayordomo del Trono Vacío"
+      "Mayordomo del Trono Vacío",
+      "Hierofante de Guerra"
     ],
     "catalyst_1h": [
       "Invocador",
@@ -107,7 +113,9 @@
       "Coronel de Antenas Partidas",
       "Trenzador de Rayos Gemelos",
       "Calibrador de Frecuencia",
-      "Gemelo de Chispa"
+      "Gemelo de Chispa",
+      "Taumaturgo Bélico",
+      "Invocador de Avatares"
     ],
     "gauntlets_pair": [
       "Pícaro",
@@ -116,7 +124,8 @@
       "Trenzador de Rayos Gemelos",
       "Latigador de Cola de Plasma",
       "Pararrayos Errante",
-      "Heraldo del Rugido Primordial"
+      "Taumaturgo Bélico",
+      "Hierofante de Guerra"
     ],
     "chakrams_pair": [
       "Bailarín de las Siete Hojas"
