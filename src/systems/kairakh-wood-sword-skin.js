@@ -70,10 +70,20 @@ export function installWoodSwordKairakh({nodes,svg:root},character){
  svg('path',{d:'M -5 -29 L -6 -88 L 0 -98 L 6 -88 L 5 -29 Z',fill:palette.wood,stroke:palette.ink,'stroke-width':1.5},weapon);
  svg('path',{d:'M -2 -34 L -2 -83',stroke:palette.woodLight,'stroke-width':1.2},weapon);
  svg('path',{d:'M -14 -29 L 14 -29',stroke:palette.ink,'stroke-width':4.5,'stroke-linecap':'round'},weapon);
+ const arc=svg('path',{'data-wood-strike-arc':'1',d:'M -30 -95 Q 14 -117 37 -65',fill:'none',stroke:'#e7e4d4','stroke-width':3.2,'stroke-linecap':'round',opacity:0},arm);
  const ribbon=svg('g',{'data-rig-hair':'white'},nodes.head);
  for(const d of ['M -9 -30 Q -34 -21 -26 10 Q -38 2 -31 -20','M 7 -32 Q 26 -24 21 17 Q 33 3 17 -25']){
   svg('path',{d,fill:'none',stroke:palette.hair,'stroke-width':5,'stroke-linecap':'round'},ribbon);
  }
  root.setAttribute('data-combat-skin','kairakh-star1-wood-sword');
  return true;
+}
+
+// Visual keyframes, never changing actual combat damage or cooldowns.
+export function tickWoodSwordKairakh(rig){
+ if(rig?.svg?.getAttribute('data-combat-skin')!=='kairakh-star1-wood-sword')return;
+ const arc=rig.svg.querySelector('[data-wood-strike-arc]');if(!arc)return;
+ const progress=rig.duration>0?Math.max(0,Math.min(1,rig.time/rig.duration)):0;
+ const visible=rig.mode==='attack'&&progress>.31&&progress<.72;
+ arc.setAttribute('opacity',visible?String(Math.sin((progress-.31)/.41*Math.PI)*.9):'0');
 }
