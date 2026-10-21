@@ -85,8 +85,26 @@ function onSkill(actor,target,skill,kind){
  const enemy=target?.enemy?target:null;
  const p=visual.get(enemy)||visual.get(actor)||{x:50,y:48};
  flash(p.x,p.y,magic||kind==='heal'?'magic':'hit');
- if(skill?.rank==='U'||skill?.rank==='SSS+'||skill?.rank==='SSS')shake(getField(),6);
+ if(skill?.rank==='U'||skill?.rank==='SSS+'||skill?.rank==='SSS'){
+  shake(getField(),6);
+  const field=getField();
+  if(field){const banner=document.createElement('div');banner.className='kami-ultimate-title';
+   banner.textContent=(skill.rank||'')+' · '+String(skill.name||'Técnica definitiva');
+   field.append(banner);setTimeout(()=>banner.remove(),1250)}
+ }
  setTimeout(()=>actor.node?.classList.remove('kami-cast'),520);
+}
+function showAction(unit,state){
+ if(!unit?.node||!state)return;
+ let text='';
+ if(state.pending)text='✦ '+String(state.pending.skill?.name||'Preparando').slice(0,23)+' · '+state.castRemaining.toFixed(1)+'s';
+ else if(state.global>.05)text='Preparado en '+state.global.toFixed(1)+'s';
+ else if(state.racialRemaining>0)text='Racial '+Math.ceil(state.racialRemaining)+'s';
+ else text='✦ Lista';
+ let tag=unit.node.querySelector('.kami-action-status');
+ if(!tag){tag=document.createElement('div');tag.className='kami-action-status';unit.node.append(tag)}
+ if(tag.textContent!==text)tag.textContent=text;
+ tag.dataset.preparing=String(Boolean(state.pending));
 }
 function tick(b,dt){
  if(!b||b.ended)return;
@@ -135,6 +153,7 @@ css.textContent=`
 .kami-lane-arena .kami-fighter.kami-cast{animation:kami-cast .48s ease-in-out}
 .kami-lane-arena.kami-shake{animation:kami-camera .2s ease-in-out}
 .kami-lane-arena .kami-burst{position:absolute;z-index:95;width:70px;height:70px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);background:radial-gradient(circle,#fffad0 0%,#e77c53aa 20%,#fb4d2133 48%,transparent 68%);animation:kami-burst .42s ease-out forwards}
+.kami-lane-arena .kami-action-status{position:absolute;bottom:-37px;left:-18px;min-width:95px;max-width:160px;z-index:100;border:1px solid #a59ad96b;background:#081223eb;color:#d6e6ff;font:9px/1.3 sans-serif;padding:3px 5px;border-radius:5px;text-align:center;pointer-events:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kami-lane-arena .kami-action-status[data-preparing=true]{border-color:#ffd37c;color:#ffdf99;box-shadow:0 0 14px #e5ab6d60}.kami-lane-arena .kami-ultimate-title{position:absolute;z-index:110;left:50%;top:38%;transform:translate(-50%,-50%);pointer-events:none;max-width:85%;white-space:normal;text-align:center;font:700 clamp(13px,2.4vw,29px)/1.3 Georgia,serif;color:#ffe4b4;text-shadow:0 2px 5px #000,0 0 12px #f13e43;animation:kami-ult 1.2s ease-out forwards;background:#140e24cf;padding:10px 20px;border:1px solid #cfad7d;border-radius:7px}@keyframes kami-ult{0%{opacity:0;filter:blur(5px);transform:translate(-50%,-50%) scale(.6)}20%,70%{opacity:1;filter:blur(0)}100%{opacity:0;transform:translate(-50%,-52%) scale(1.1)}}
 .kami-lane-arena .kami-burst-magic{background:radial-gradient(circle,#f8f0ff 0%,#706ef6bb 22%,#4421d146 52%,transparent 70%)}
 @keyframes kami-lunge{0%,100%{transform:scale(var(--kami-scale))}45%{transform:scale(var(--kami-scale)) translateX(var(--kami-step-x))}}
 @keyframes kami-impact{30%{filter:brightness(2.2) drop-shadow(0 0 12px #ff7246)}}
@@ -145,4 +164,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,version:2};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,version:3};
