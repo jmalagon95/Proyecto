@@ -10,7 +10,9 @@ export function isWoodSwordKairakh(unit){
  const c=unit?.character||unit?.ref||{};
  if(String(c.race||c.raceId||'').toLowerCase()!=='kairakh'||Number(c.currentStar??c.star??1)!==1)return false;
  const equip=c.equipment||{};
- const item=Object.values(equip).filter(Boolean).map(v=>typeof v==='object'?[v.name,v.id,v.type,v.family,v.weaponFamilyId].filter(Boolean).join(' '):String(v)).join(' ').toLowerCase();
+ const weaponKeys=Object.entries(equip).filter(([slot])=>/weapon|arma|main|hand|mano|espada/i.test(slot));
+ const parts=[c.weapon,...weaponKeys.map(([,v])=>v)].filter(Boolean);
+ const item=parts.map(v=>typeof v==='object'?[v.name,v.id,v.type,v.family,v.weaponFamilyId].filter(Boolean).join(' '):String(v)).join(' ').toLowerCase();
  if(!item)return true;
  return /espada|sword|madera|wood|mandoble|blade/.test(item);
 }
