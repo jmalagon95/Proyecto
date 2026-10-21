@@ -43,6 +43,7 @@ function updateObject(key,value) {
 }
 function replaceExactly(oldText,replacement,label){
   const count=html.split(oldText).length-1;
+  if(count===0&&html.includes(replacement))return; // Ejecutable más de una vez sin cambiar el maestro.
   if(count!==1)throw new Error(label+': esperaba 1 coincidencia, encontradas '+count);
   html=html.replace(oldText,replacement);
 }
