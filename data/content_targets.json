@@ -38,19 +38,19 @@
     "racialMinimumPerRace": 200
   },
   "skills": {
-    "minimumPerClass": 2000,
+    "minimumPerClass": 1000,
     "rankCountsPerClass": {
-      "F": 500,
-      "E": 380,
-      "D": 300,
-      "C": 240,
-      "B": 190,
-      "A": 140,
-      "S": 100,
-      "SS": 70,
-      "SSS": 45,
-      "SSS+": 25,
-      "U": 10
+      "F": 250,
+      "E": 190,
+      "D": 150,
+      "C": 120,
+      "B": 95,
+      "A": 70,
+      "S": 50,
+      "SS": 35,
+      "SSS": 20,
+      "SSS+": 12,
+      "U": 8
     }
   }
 }
