@@ -58,7 +58,7 @@ export function createRigSvg({debug=false,character=null}={}){
  svg.setAttribute('data-rig-race',racial.race);
  return {svg,nodes,root,racial};
 }
-export function sampleRigPose(mode='idle',t=0,progress=0){
+export function sampleRigPose(mode='idle',t=0,progress=0,variant=0){
  const p=clamp(progress,0,1),a={},movement={x:0,y:0};
  const wave=Math.sin(t*10);
  if(mode==='walk'||mode==='run'){
@@ -74,6 +74,11 @@ export function sampleRigPose(mode='idle',t=0,progress=0){
    a.chest=-18*wind+22*swing;a.shoulderR=-85*wind+102*swing;
    a.elbowR=-30*wind+15*swing;a.shoulderL=20*wind-10*swing;
    a.hipL=-20*swing;a.hipR=13*swing;movement.x=12*swing;
+   if(variant===1){ // Segundo golpe: corte diagonal, más torsión del torso.
+     a.chest+=12*swing;a.shoulderR+=-24*wind+18*swing;
+     a.elbowR+=15*wind-20*swing;a.head=-8*swing;
+     a.hipL-=8*swing;movement.x+=4*swing;
+   }
  }else if(mode==='cast'){
    const rise=ease(Math.min(1,p*2));
    a.shoulderL=-64*rise;a.shoulderR=64*rise;
@@ -99,7 +104,7 @@ export function attachRig(unit,{debug=false}={}){
  const host=unit.node.querySelector('.unit-body')||unit.node;
  const existing=rigs.get(unit);if(existing)return existing;
  const parts=createRigSvg({debug,character:unit.character||unit.ref||null});host.append(parts.svg);host.classList.add('kami-rig-host');
- const state={...parts,mode:'idle',clock:0,time:0,duration:0,rotations:{},previousHp:unit.hp};
+ const state={...parts,mode:'idle',clock:0,time:0,duration:0,rotations:{},previousHp:unit.hp,attackCount:0,attackVariant:0};
  rigs.set(unit,state);return state;
 }
 export function playRig(unit,mode,{duration}={}){
@@ -107,6 +112,7 @@ export function playRig(unit,mode,{duration}={}){
  if(s.mode==='death')return false;
  const rank={death:10,hit:7,dodge:7,block:6,cast:5,attack:4,run:2,walk:1,idle:0};
  if((rank[mode]||0)<(rank[s.mode]||0)&&s.time<s.duration*.65)return false;
+ if(mode==='attack'){s.attackCount++;s.attackVariant=s.attackCount%2}
  s.mode=mode;s.time=0;s.duration=duration||times[mode]||.6;return true;
 }
 export function tickRig(unit,dt){
@@ -117,7 +123,7 @@ export function tickRig(unit,dt){
  else if(unit.hp>0&&unit.hp<s.previousHp&&s.mode!=='hit')playRig(unit,'hit');
  s.previousHp=unit.hp;
  if(s.mode!=='death'&&s.mode!=='idle'&&s.time>=s.duration){s.mode='idle';s.time=0;s.duration=0}
- const pose=sampleRigPose(s.mode,s.clock,s.duration?s.time/s.duration:0);
+ const pose=sampleRigPose(s.mode,s.clock,s.duration?s.time/s.duration:0,s.attackVariant);
  s.root.setAttribute('transform','translate('+(70+pose.movement.x)+' '+(107+pose.movement.y)+')');
  const blend=1-Math.exp(-dt*24);
  for(const [id,node] of Object.entries(s.nodes)){
