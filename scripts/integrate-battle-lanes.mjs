@@ -28,7 +28,7 @@ if(!html.includes(marker)){
    'Recolocar en profundidad');
 }
 if(!html.includes(tag)||!html.includes(marker)||!html.includes('window.KamiBattleLanes?.chooseTarget'))
- throw Error('Integración visual incompleta');
+ throw Error('Integración visual incompleta: tag='+html.includes(tag)+' marker='+html.includes(marker)+' targeting='+html.includes('window.KamiBattleLanes?.chooseTarget'));
 for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)){
  if(m[1].trim())new vm.Script(m[1]);
 }
