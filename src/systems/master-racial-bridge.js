@@ -101,6 +101,7 @@ function castRacial(b,u,hooks){
   if(skill.kind==='heal'&&!allies.some(x=>x.hp<x.maxHp))return false;
   r.racialRemaining=skillCooldown(skill,u.character);
   const foe=primaryTarget(b,u);
+  if(foe&&skill.kind!=='heal'&&!['shield','guard','evade'].includes(skill.kind)&&!inSkillRange(u,foe,skill))return false;
   const weak=allies.sort((a,c)=>a.hp/a.maxHp-c.hp/c.maxHp)[0];
   if(skill.kind==='heal'){
     const healed=Math.min(weak.maxHp-weak.hp,base*2);weak.hp+=healed;notify(hooks,u,weak,skill.name,healed,'heal');
@@ -110,7 +111,7 @@ function castRacial(b,u,hooks){
     const fastest=[...allies].sort((a,c)=>c.attack-a.attack)[0];if(fastest)fastest.cooldown=Math.max(0,fastest.cooldown-.5);
     hit(b,u,foe,base,hooks,skill.name);
   }else if(['chain','multi'].includes(skill.kind)){
-    for(const e of active(b).slice(0,3))hit(b,u,e,base*(skill.kind==='chain'?.8:.55),hooks,skill.name);
+    for(const e of active(b).filter(e=>inSkillRange(u,e,skill)).slice(0,3))hit(b,u,e,base*(skill.kind==='chain'?.8:.55),hooks,skill.name);
   }else{
     const factor=skill.kind==='colossus'?2.15:skill.kind==='pierce'||skill.kind==='guardbreak'?1.75:
       skill.kind==='execute'&&foe.hp/foe.maxHp<.45?2.3:skill.kind==='mark'?.8:1.3;
