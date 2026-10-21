@@ -760,6 +760,10 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
   function performAttack(a,target,animate=true){
     if(!battle||battle.ended||!a||!target||target.hp<=0||a.hp<=0)return;
     let damage=Math.max(1,Math.round(a.attack*(.78+Math.random()*.45)-(target.defense||0)));
+    /* KAMI_RACIAL_V4_SHIELD */
+    if(!target.enemy&&window.KamiRacialSkills){
+      const guard=window.KamiRacialSkills.absorb(target,damage);damage=guard.remaining;
+    }
     target.hp=Math.max(0,target.hp-damage);a.damage+=damage;
     if(animate){swipe(a,target);flyingNumber(target,damage,target.enemy?'':'damage-ally')}
     if(target.hp<=0){if(target.enemy){battle.kills++;a.kills++;if(animate)logBattle(a.name+' derrota a un goblin.')}else if(animate)logBattle(target.name+' queda fuera de combate.');}
@@ -770,6 +774,19 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
   }
   function stepLogic(dt,animate=true){
     if(!battle||battle.ended)return;
+    /* KAMI_RACIAL_V4_MASTER_BRIDGE */
+    if(battle.auto&&window.KamiRacialSkills){
+      window.KamiRacialSkills.tick(battle,dt,{
+        animate,
+        log:msg=>{if(animate)logBattle(msg)},
+        announce:(a,target,name,value,kind)=>{
+          if(!animate)return;
+          if(target?.node){if(kind==='damage')swipe(a,target);
+            if(value>0)flyingNumber(target,value,kind==='heal'?'heal':kind==='damage'?(target.enemy?'':'damage-ally'):'heal')}
+          if(name)logBattle(a.name+' · '+name);
+        }
+      });
+    }
     battle.elapsed+=dt;battle.timeLeft=Math.max(0,battle.mission.duration-battle.elapsed);
     for(const a of battle.allies){if(a.hp<=0)continue;a.cooldown-=dt;
       if(battle.auto&&a.cooldown<=0){const t=closestTarget(a,battle.enemies);if(t)performAttack(a,t,animate);a.cooldown+=Math.max(.65,1.38-(a.character.stats.AGI||1)*.011)}}
@@ -881,4 +898,4 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
   renderMissions();renderItems();renderSanctuary('invoke');
 })();
 
-</script></body></html>
+</script><script type="module" src="/src/systems/master-racial-bridge.js"></script></body></html>
