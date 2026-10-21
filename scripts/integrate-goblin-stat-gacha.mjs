@@ -9,7 +9,7 @@ const once=(oldText,newText,label)=>{
  html=html.replace(oldText,newText);
 };
 if(!html.includes(marker)){
- const shared=marker+\`
+ const shared=marker+`
   // Misma tirada de atributos que los PJ: STAR_RANGES y rollStat.
   function rollEnemyStats(star=1){
     const stats={};
@@ -20,7 +20,7 @@ if(!html.includes(marker)){
   const combatStatDamage=(stats,level=1,star=1)=>11+Math.max(0,stats.FUE||0)*1.55+Math.max(0,stats.INT||0)*.18;
   const combatStatDefense=stats=>Math.max(0,Number(stats.DEF)||0);
   const combatMitigation=(raw,def)=>Math.max(1,Math.round(Math.max(0,raw)*100/(100+Math.max(0,def))));
-  \`;
+  `;
  once('function makeHero(){',shared+'function makeHero(){','Gacha compartido: makeHero');
  once('const maxHP = c => 160+Math.max(1,Number(c?.stats?.CON)||1)*14+(Math.max(1,Number(c?.level)||1)-1)*16;',
    'const maxHP = c => combatStatHp(c?.stats||{CON:1},c?.level||1);','HP CON');
@@ -29,7 +29,7 @@ if(!html.includes(marker)){
  const start=html.indexOf('  function addGoblin(){');
  const end=html.indexOf('     e.maxHp=e.hp;battle.enemies.push(e);',start);
  if(start<0||end<0||end-start>1200)throw new Error('No se reconoce el constructor de goblins');
- const replacement=\`  function addGoblin(){
+ const replacement=`  function addGoblin(){
      const m=battle.mission,index=battle.enemies.length;
      const star=1,level=1;
      const stats=rollEnemyStats(star);
@@ -37,7 +37,7 @@ if(!html.includes(marker)){
        star,level,stats,hp:combatStatHp(stats,level),maxHp:0,
        attack:combatStatDamage(stats,level,star),defense:combatStatDefense(stats),
        index,lane:index%3,cooldown:1.1+Math.random()*2.2,kills:0,damage:0};
-\`;
+`;
  html=html.slice(0,start)+replacement+html.slice(end);
  once('let damage=Math.max(1,Math.round(a.attack*(.78+Math.random()*.45)-(target.defense||0)));',
    'let damage=combatMitigation(a.attack*(.78+Math.random()*.45),target.defense||0);','DEF solo mitiga');
