@@ -1,3 +1,4 @@
+import {playRig} from './mannequin-rig.js';
 // Shared defensive reaction system for basic attacks and skill damage.
 // The mitigation layer for armour/DEF remains in the caller: this module
 // resolves dodge, parry and active shield blocks exactly once per hit.
@@ -45,6 +46,7 @@ export function showDefense(target,result){
  const kind=result?.kind;
  if(!target?.node||!['dodge','parry','block'].includes(kind))return;
  const node=target.node;
+ playRig(target,kind==='dodge'?'dodge':'block',{duration:.5});
  const old=states.get(node);if(old)clearTimeout(old);
  node.classList.remove('kami-def-dodge','kami-def-parry','kami-def-block');
  void node.offsetWidth;
