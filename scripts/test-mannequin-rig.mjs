@@ -33,7 +33,7 @@ assert.ok(attachRig(unit,{debug:true}));
 assert.equal(rigState(unit),'idle');
 assert.ok(rigSocket(unit,'weaponR'));
 tickRig(unit,1/60);
-assert.ok(nodes.head.attrs.transform.includes('rotate('));
+assert.ok(rigSocket(unit,'headVfx').attrs.transform.includes('rotate('));
 assert.ok(playRig(unit,'attack'));
 for(let i=0;i<45;i++)tickRig(unit,1/60);
 assert.equal(rigState(unit),'idle','Attack must end');
