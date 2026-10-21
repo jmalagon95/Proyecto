@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/integrate-racial-master.yml'
       - 'scripts/integrate-racial-master.mjs'
+      - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
 permissions:
   contents: write
