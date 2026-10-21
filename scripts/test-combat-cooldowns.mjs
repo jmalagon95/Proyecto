@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {newActionState,advanceActionState,startAction,selectCombatSkill,skillCooldown,actionDuration,cooldownReduction} from '../src/systems/combat-cooldowns.js';
+import {buildRacialSkills} from './racial-skill-design.mjs';
+import {simulateSurvivalMission} from '../src/systems/mission-simulator.js';
+const actor={name:'Test',className:'Monarca de la Espada Indómita',stats:{FUE:10,AGI:10,CON:10,DEF:10,INT:10,VOL:10},
+ passives:[{functional:true,mechanics:{effects:[{op:'cooldown_pct',value:-20}]}}]};
+assert.equal(cooldownReduction(actor),20);
+const fast={id:'fast',name:'Corte',functional:true,rank:'F',mechanics:{cooldownSeconds:4,timeCostSeconds:.5,effects:[{op:'damage',scalingStat:'FUE',multiplier:2,target:'single'}]}};
+const slow={id:'slow',name:'Golpe U',functional:true,rank:'U',mechanics:{cooldownSeconds:65,timeCostSeconds:4,effects:[{op:'damage',scalingStat:'FUE',multiplier:1000,target:'single'}]}};
+assert.equal(skillCooldown(fast,actor),3.2);
+const st=newActionState();
+assert.equal(startAction(st,fast,actor),true);
+assert.equal(startAction(st,slow,actor),false,'No simultanear lanzamientos');
+assert.equal(advanceActionState(st,.1),null);
+assert.equal(st.pending.skill.id,'fast');
+assert.equal(advanceActionState(st,actionDuration(fast,actor)).skill.id,'fast');
+assert.equal(st.pending,null);
+assert.equal(startAction(st,fast,actor),false,'CD individual vigente');
+assert.equal(startAction(st,slow,actor),false,'GCD vigente');
+advanceActionState(st,2);
+assert.equal(startAction(st,slow,actor),true);
+advanceActionState(st,5);
+assert.equal(st.pending,null);
+assert.equal(startAction(st,slow,actor),false,'No se puede repetir U instantáneamente');
+const heal={id:'heal',name:'Curar',functional:true,mechanics:{cooldownSeconds:5,timeCostSeconds:1,effects:[{op:'heal',scalingStat:'VOL',multiplier:3,target:'ally'}]}};
+const enemy=[{hp:100,maxHp:100}];
+assert.equal(selectCombatSkill([heal,fast],newActionState(),actor,[{hp:100,maxHp:100}],enemy).id,'fast','No curar a aliados sanos');
+assert.equal(selectCombatSkill([heal,fast],newActionState(),actor,[{hp:10,maxHp:100}],enemy).id,'heal','Curar al aliado crítico');
+const classes=JSON.parse(fs.readFileSync('data/classes.json','utf8'));
+const targets=JSON.parse(fs.readFileSync('data/content_targets.json','utf8'));
+const racial=buildRacialSkills({...classes.kairakh[5],group:'kairakh'},targets);
+const u=racial.filter(s=>s.rank==='U');
+assert.equal(u.length,8);
+assert.ok(u.some(s=>s.mechanics.cooldownSeconds>30),'Definitivas muy poderosas requieren enfriamiento');
+assert.ok(racial.every(s=>s.mechanics.cooldownSeconds>=2&&s.mechanics.cooldownSeconds<=120));
+const hero={id:'h',name:'Hero',className:actor.className,role:'DPS',level:1,currentStar:1,
+ stats:actor.stats,equipment:{},skills:[fast,slow],passives:actor.passives};
+const mission=simulateSurvivalMission([hero],{durationSeconds:30,waves:[1],enemyLevel:1,enemyPressure:0,enemyFactory:()=>({
+ name:'Dummy',currentStar:1,level:1,role:'Guerrero',stats:{FUE:1,AGI:1,CON:100000,DEF:0,INT:1,VOL:1},equipment:{}})});
+const combat=mission.events.filter(e=>e.text.includes(' ejecuta ')).map(e=>e.t);
+assert.ok(combat.length>0);
+assert.ok(combat.every((t,i)=>i===0||t-combat[i-1]>=1));
+console.log('✅ GCD, cast, recarga independiente, pasivas de CD, prioridad de sanación y U comprobados');
