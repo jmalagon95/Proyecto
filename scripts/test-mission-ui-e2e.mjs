@@ -6,7 +6,10 @@ const page=await browser.newPage({viewport:{width:430,height:920},deviceScaleFac
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try{
  await page.goto('http://127.0.0.1:5173',{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>Boolean(document.querySelector('#expeditionLayout')&&document.querySelector('#kamiFormationPicker')),null,{timeout:15000});
+ await page.waitForTimeout(1200);
+ console.log('STARTUP',JSON.stringify(await page.evaluate(()=>({title:document.title,modal:!!document.querySelector('#expeditionLayout'),editor:!!document.querySelector('#kamiFormationPicker'),scripts:document.scripts.length,body:document.body?.innerText?.slice(0,150)}))));
+ console.log('PAGE_ERRORS',JSON.stringify(errors));
+ await page.waitForFunction(()=>Boolean(document.querySelector('#expeditionLayout')&&document.querySelector('#kamiFormationPicker')),null,{timeout:4000});
  const before=await page.evaluate(()=>{
   const nodes=['kamiFormationPicker','kamiFormationGrid','kamiFormationHeroes','kamiPresetBox','kamiPresetRows','startMission','teamRoster'];
   return Object.fromEntries(nodes.map(id=>[id,!!document.getElementById(id)]));
