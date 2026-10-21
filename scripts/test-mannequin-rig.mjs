@@ -13,7 +13,7 @@ class Node{
 }
 globalThis.document={createElementNS:(ns,tag)=>new Node(tag)};
 const bones=Object.keys(SKELETON);
-assert.equal(bones.length,18);
+assert.equal(bones.length,19);
 assert.equal(bones[0],'root');
 for(const [bone,[parent]] of Object.entries(SKELETON))
  assert.ok(parent===null||SKELETON[parent],bone+' has no parent');
@@ -26,7 +26,7 @@ for(const mode of RIG_STATES){
 }
 const {svg,nodes}=createRigSvg({debug:true});
 assert.equal(svg.tagName,'svg');
-assert.equal(Object.keys(nodes).length,18);
+assert.equal(Object.keys(nodes).length,19);
 const body=new Node('div'),node=new Node('div');node.body=body;
 const unit={id:'hero',hp:100,maxHp:100,node};
 assert.ok(attachRig(unit,{debug:true}));
@@ -42,4 +42,4 @@ unit.hp=0;tickRig(unit,1/60);assert.equal(rigState(unit),'death');
 for(let i=0;i<130;i++)tickRig(unit,1/60);
 assert.equal(rigState(unit),'death');
 assert.equal(playRig(unit,'attack'),false,'Dead mannequin cannot attack');
-console.log('✅ 18 bones, named sockets, 9 poses, interpolated animation, HP hit and permanent death');
+console.log('✅ 19 bones, named sockets, 9 poses, interpolated animation, HP hit and permanent death');
