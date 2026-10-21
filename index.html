@@ -786,7 +786,7 @@ renderTeam=function(){oldTeamRender();drawSquads()};
 const chronicle=document.createElement('div');chronicle.id='kamiChronicle';
 chronicle.setAttribute('role','log');chronicle.setAttribute('aria-live','off');
 chronicle.innerHTML='<b>CRÓNICA DEL COMBATE · TIEMPO REAL</b><div id="kamiChronicleEntries"></div>';
-$('battleLog').after(chronicle);
+const logHost=$('battleLog');if(logHost)logHost.after(chronicle);else $('battleField').after(chronicle);
 function narrateMissionSecond(b,sec){
  if(!b||b.ended)return;
  const entries=b.pendingChronicle.splice(0);
