@@ -33,6 +33,22 @@ try{
  await page.evaluate(()=>window.eval('load();renderTeam();openModal("portalModal")'));
  await page.locator('[data-load="0"]').click();
  assert.deepEqual(await page.evaluate(()=>window.eval('state.missionPositions.test02')),{lane:0,slot:4});
+ await page.locator('#startMission').click();
+ await page.waitForTimeout(2600);
+ const battleState=await page.evaluate(()=>{
+  const screen=document.querySelector('#battle');
+  const slots=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')]
+   .map(el=>({lane:el.dataset.lane,unit:el.dataset.unit,top:el.style.top,left:el.style.left}));
+  return {active:screen?.classList.contains('on'),heroes:slots.length,slots,
+    entries:document.querySelectorAll('#kamiChronicleEntries .entry').length,
+    time:document.querySelector('#timer')?.textContent,
+    chronicle:document.querySelector('#kamiChronicle')?.textContent?.slice(0,120)};
+ });
+ console.log('BATTLE_CHECK',JSON.stringify(battleState));
+ assert.ok(battleState.active,'No se abrió la pantalla de combate');
+ assert.equal(battleState.heroes,2,'No aparecen los dos héroes seleccionados');
+ assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
+ assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
  console.log('✅ E2E Android: menú, dos héroes, ubicación manual, guardado y recuperación de formación');
 }finally{await browser.close()}
