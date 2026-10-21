@@ -1019,6 +1019,8 @@ Math.ceil(target.hp)+'/'+Math.ceil(target.maxHp)+' PV restantes).');
     if(target.hp<=0){if(target.enemy){battle.kills++;a.kills++;if(animate)logBattle(a.name+' derrota a un goblin.')}else if(animate)logBattle(target.name+' queda fuera de combate.');}
   }
   function closestTarget(u,all){
+    /* KAMI_PLAYER_FOCUS_V1 */
+    const forced=window.KamiBattleFocus?.targetFor(u,all);if(forced)return forced;
     if(window.KamiBattleLanes)return window.KamiBattleLanes.chooseTarget(u,all);
     const live=all.filter(x=>x.hp>0);if(!live.length)return null;
     live.sort((a,b)=>Math.abs(a.lane-u.lane)-Math.abs(b.lane-u.lane)||a.hp-b.hp);return live[0];
@@ -1040,6 +1042,7 @@ Math.ceil(target.hp)+'/'+Math.ceil(target.maxHp)+' PV restantes).');
     }
     /* KAMI_BATTLE_25D_LANES_V1 */
     window.KamiBattleLanes?.tick(battle,dt);
+    window.KamiBattleFocus?.tick(battle);
     battle.elapsed+=dt;battle.timeLeft=Math.max(0,battle.mission.duration-battle.elapsed);
     for(const a of battle.allies){if(a.hp<=0)continue;a.cooldown-=dt;
       if(battle.auto&&a.cooldown<=0){const t=closestTarget(a,battle.enemies);if(t)performAttack(a,t,animate);a.cooldown+=Math.max(.65,1.38-(a.character.stats.AGI||1)*.011)}}
@@ -1156,4 +1159,5 @@ let rewards=[];
 })();
 
 </script><script type="module" src="/src/systems/master-racial-bridge.js"></script><script type="module" src="/src/systems/battle-lanes.js"></script><script type="module" src="/src/ui/kami-premium-lobby.js"></script>
+<script type="module" src="/src/systems/battle-focus.js"></script>
 </body></html>
