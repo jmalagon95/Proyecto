@@ -28,7 +28,7 @@ export function primaryCombatStat(character){
 
 export function characterMaxHp(character){
   const s=character?.stats||{};
-  return Math.max(35,55+Number(s.CON||0)*7+Number(s.DEF||0)*3+(Number(character?.level||1)-1)*5);
+  return Math.max(1,20+Number(s.CON||0)*3+(Number(character?.level||1)-1)*2);
 }
 
 export function attackProfile(character){
@@ -60,4 +60,10 @@ export function attackProfile(character){
 
 export function estimatedDps(character){
   return Math.round(attackProfile(character).dps*10)/10;
+}
+
+// DEF es exclusivamente mitigación de daño. La CON no interviene aquí.
+export function damageAfterDefense(rawDamage,defense=0){
+  const d=Math.max(0,Number(defense)||0);
+  return Math.max(1,Math.round(Math.max(0,rawDamage)*100/(100+d)));
 }
