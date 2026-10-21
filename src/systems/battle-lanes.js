@@ -86,7 +86,7 @@ function onAttack(actor,target,onContact=null){
  const node=actor.node,field=getField();
  // One movement sequence per actor; replacing it cancels pending impact safely.
  const previous=node._kamiReachSequence;
- if(previous){previous.cancelled=true;for(const id of previous.timers)clearTimeout(id)}
+ if(previous&&!previous.cancelled)return; // No se reinicia una carrera por cada cooldown.
  const seq={cancelled:false,timers:[]};node._kamiReachSequence=seq;
  const after=(fn,ms)=>seq.timers.push(setTimeout(()=>{if(!seq.cancelled&&node.isConnected)fn()},ms));
  const impact=()=>{
@@ -105,6 +105,7 @@ function onAttack(actor,target,onContact=null){
  if(!melee||distance<=reach+0.25){
   const illustrated=playKairakhBasicAttack(actor,{onImpact:impact});
   if(!illustrated){playRig(actor,'attack');after(impact,190)}
+  after(()=>{if(node._kamiReachSequence===seq)node._kamiReachSequence=null},illustrated?950:480);
   return;
  }
  // Approach to the edge of the weapon reach, with correct x AND depth movement.
@@ -116,11 +117,11 @@ function onAttack(actor,target,onContact=null){
  node.classList.add('kami-approaching');
  node.style.transition='left '+moveMs+'ms linear,top '+moveMs+'ms linear,transform .25s ease';
  node.style.left=x+'%';node.style.top='calc('+y+'% - 45px)';
- visual.set(actor,{x,y,scale:a.scale,depth:a.depth,active:true});
  node.style.zIndex=String(85+laneOf(actor)*10);
  playRig(actor,'run',{duration:moveMs/1000});
  after(()=>{
   if(target.hp<=0){settle();return}
+  visual.set(actor,{x,y,scale:a.scale,depth:a.depth,active:false});
   node.classList.remove('kami-approaching');node.classList.add('kami-in-range');
   // Remain on the contact spot until the hit animation reaches its strike frame.
   const illustrated=playKairakhBasicAttack(actor,{onImpact:impact});
