@@ -101,7 +101,7 @@ export function buildRacialSkills(cls,targets){
    const last=isEvolution?familyLast.get(family):null;
    const motif=profile[family%4];
    const form=methods[Math.floor(i/4+family)%methods.length];
-   const name=isEvolution?motif+' — '+stages[tier]+' '+form:motif+' — '+form+' de '+stages[tier]+' '+String(within+1).padStart(3,'0');
+   const name=isEvolution?motif+' — '+stages[tier]+' '+form+' · Senda '+String(family+1).padStart(2,'0'):motif+' — '+form+' de '+stages[tier]+' '+String(within+1).padStart(3,'0');
    const id='SK-'+slug+'-'+String(i+1).padStart(4,'0');
    const mechanics=effectsFor(style,stat,rank,i+family*37);
    const weapon=cls.weapons[(i+family)%cls.weapons.length];
