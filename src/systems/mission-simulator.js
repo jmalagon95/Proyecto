@@ -1,6 +1,7 @@
 import { killXpForLevels, grantExperience } from './experience.js';
 import { levelCap } from './progression.js';
-import { attackProfile, characterMaxHp } from './combat-stats.js';
+import { attackProfile, characterMaxHp, damageAfterDefense } from './combat-stats.js';
+import { createEnemyCharacter } from './stat-gacha.js';
 import { executeRacialTechnique } from './racial-techniques.js';
 import { resolveSkill } from './effects.js';
 
@@ -27,10 +28,10 @@ export function simulateSurvivalMission(team,mission){
     };
   });
 
-  const enemyHp=Math.max(1,Number(mission.enemyHp||36));
-  const enemyDefense=Math.max(0,Number(mission.enemyDefense||1));
-  const enemyAttackMin=Math.max(1,Number(mission.enemyAttackMin||7));
-  const enemyAttackMax=Math.max(enemyAttackMin,Number(mission.enemyAttackMax||11));
+  // No existen HP, DEF ni ataque fijos en enemigos: cada goblin nace del gacha ★1.
+  const enemyStar=Math.max(1,Number(mission.enemyStar||1));
+  const enemyLevel=Math.max(1,Number(mission.enemyLevel||1));
+  const enemyFactory=mission.enemyFactory||(()=>createEnemyCharacter({name:'Goblin',star:enemyStar,level:enemyLevel}));
   const enemyPressure=Math.max(0,Number(mission.enemyPressure||.47));
   const activeEnemies=[];
   let enemiesDefeated=0;
@@ -45,7 +46,11 @@ export function simulateSurvivalMission(team,mission){
 
     const wi=waveTimes.indexOf(sec);
     if(wi>=0){
-      for(let e=0;e<waves[wi];e++)activeEnemies.push({hp:enemyHp,maxHp:enemyHp});
+      for(let e=0;e<waves[wi];e++){
+        const char=enemyFactory();
+        const hp=characterMaxHp(char);
+        activeEnemies.push({ref:char,hp,maxHp:hp,attack:attackProfile(char),attackAccumulator:0});
+      }
       lines.push('Oleada '+(wi+1)+': aparecen '+waves[wi]+' goblins Nv.'+(mission.enemyLevel||1)+'.');
       type='wave';
     }
@@ -86,8 +91,8 @@ export function simulateSurvivalMission(team,mission){
                     amount*=Math.max(1,e.critMultiplier||1);
                     if(e.executeBelowHpPct&&target.hp/target.maxHp*100<=e.executeBelowHpPct)
                       amount*=Math.max(1,e.executeBonusMultiplier||1);
-                    const mitigation=enemyDefense*(1-Math.min(100,e.ignoreDefensePct||0)/100);
-                    amount=Math.max(1,Math.round(amount-mitigation));
+                    const mitigation=(target.ref?.stats?.DEF||0)*(1-Math.min(100,e.ignoreDefensePct||0)/100);
+                    amount=damageAfterDefense(amount,mitigation);
                     if(target.vulnerableUntil>sec)amount=Math.round(amount*(1+(target.vulnerablePct||0)/100));
                   }
                   const dealt=Math.min(target.hp,Math.max(1,amount));
@@ -121,8 +126,8 @@ export function simulateSurvivalMission(team,mission){
       while(a.attackAccumulator>=1&&activeEnemies.length){
         a.attackAccumulator-=1;
         const variance=.88+Math.random()*.24;
-        let dmg=Math.max(1,Math.round(a.attack.averageHit*a.bias.damage*variance-enemyDefense*.7));
         const target=activeEnemies[0];
+        let dmg=damageAfterDefense(a.attack.averageHit*a.bias.damage*variance,target.ref.stats.DEF);
         if(target.vulnerableUntil>sec)dmg=Math.round(dmg*(1+(target.vulnerablePct||0)/100));
         const applied=Math.min(dmg,target.hp);
         target.hp-=dmg;
@@ -143,26 +148,20 @@ export function simulateSurvivalMission(team,mission){
     }
 
     if(activeEnemies.length){
-      const aliveNow=chars.filter(x=>x.alive);
-      let attacks=0;
-      for(let i=0;i<activeEnemies.length;i++){
-        if(Math.random()<enemyPressure/5)attacks++;
-      }
-      for(let i=0;i<attacks&&aliveNow.length;i++){
-        const candidates=chars.filter(x=>x.alive);
-        if(!candidates.length)break;
-        const target=candidates[Math.floor(Math.random()*candidates.length)];
-        const s=target.ref.stats||{};
-        const mitigation=1+((s.DEF||0)*.025)+((s.CON||0)*.012);
-        const incoming=Math.max(1,Math.round((enemyAttackMin+Math.random()*(enemyAttackMax-enemyAttackMin))/mitigation/target.bias.defense));
-        const absorbed=Math.min(target.shield||0,incoming);
-        target.shield=Math.max(0,(target.shield||0)-absorbed);
-        target.hp-=incoming-absorbed;
-        if(target.hp<=0&&target.alive){
-          target.alive=false;
-          target.hp=0;
-          lines.push(target.name+' cae en combate.');
-          type='death';
+      // Cada goblin ataca según AGI, FUE y arma, igual que los personajes del grupo.
+      for(const enemy of activeEnemies){
+        enemy.attackAccumulator+=Math.max(.01,enemy.attack.attacksPerFiveSeconds/5)*enemyPressure;
+        while(enemy.attackAccumulator>=1){
+          enemy.attackAccumulator-=1;
+          const candidates=chars.filter(x=>x.alive);
+          if(!candidates.length)break;
+          const target=candidates[Math.floor(Math.random()*candidates.length)];
+          const raw=enemy.attack.averageHit*(.88+Math.random()*.24);
+          const incoming=damageAfterDefense(raw,target.ref.stats?.DEF||0);
+          const absorbed=Math.min(target.shield||0,incoming);
+          target.shield=Math.max(0,(target.shield||0)-absorbed);
+          target.hp=Math.max(0,target.hp-incoming+absorbed);
+          if(target.hp<=0&&target.alive){target.alive=false;lines.push(target.name+' cae en combate.');type='death';}
         }
       }
     }
