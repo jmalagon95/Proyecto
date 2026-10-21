@@ -114,192 +114,95 @@
   ],
   "kairakh": [
     {
-      "name": "Nexo de las Siete Venas",
-      "role": "Tanque / protección compartida",
-      "weapons": [
-        "Guanteletes",
-        "Catalizador"
-      ],
+      "name": "Primogénito de la Masacre Honorable",
+      "role": "DPS / furia disciplinada",
       "weaponFamilyIds": [
-        "gauntlets_pair",
-        "catalyst_1h"
+        "heavy_club_2h",
+        "axe_1h"
       ],
-      "description": "Conecta su circulación energética con dos aliados; absorbe una parte de los impactos que reciben y convierte cada protección en resistencia para el siguiente golpe.",
-      "combatIdentity": "guardian_link",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "weapons": [
+        "Kanabō",
+        "Hacha"
+      ],
+      "combatIdentity": "honorable_fury",
+      "description": "Heredero del dios de la guerra salvaje. Cada golpe acertado aumenta su ferocidad, pero únicamente obtiene su máxima potencia si combate de frente y sostiene el duelo contra el mismo rival. Si cambia continuamente de objetivo, pierde su ímpetu; no utiliza daño periódico.",
+      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Cuerno de la Última Muralla",
-      "role": "Tanque / contraataque",
-      "weapons": [
-        "Lanza",
-        "Maza"
-      ],
+      "name": "Cornamenta del Juicio",
+      "role": "Tanque / embestida y desafío",
       "weaponFamilyIds": [
         "spear_1h",
         "mace_1h"
       ],
-      "description": "Su único cuerno concentra la energía de impactos recibidos; devuelve una embestida poderosa después de soportar una secuencia de ataques.",
-      "combatIdentity": "counter_wall",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "weapons": [
+        "Lanza",
+        "Maza"
+      ],
+      "combatIdentity": "horn_challenge",
+      "description": "Su único cuerno frontal es arma divina y estandarte de honor. Desafía al adversario más peligroso, concentra sobre sí sus ataques y responde con una brutal embestida de cuerno tras resistir un número de golpes. No depende de la sangre ni de alterar el escenario.",
+      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Arpista de Arterias",
-      "role": "Apoyo / tempo de ataques",
-      "weapons": [
-        "Catalizador",
-        "Bastón"
-      ],
-      "weaponFamilyIds": [
-        "catalyst_1h",
-        "staff_2h"
-      ],
-      "description": "Modula el pulso de sus venas para acelerar el siguiente ataque de un aliado y retrasar el suyo; distribuye turnos en vez de curar.",
-      "combatIdentity": "pulse_tempo",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Sacrificador del Pulso Blanco",
-      "role": "DPS / riesgo vital",
-      "weapons": [
-        "Guanteletes",
-        "Daga"
-      ],
-      "weaponFamilyIds": [
-        "gauntlets_pair",
-        "dagger_1h"
-      ],
-      "description": "Convierte una fracción de su propia vida en un golpe amplificado; cuanto más cerca está de caer, más debe calcular cuándo atacar.",
-      "combatIdentity": "hp_burst",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Verdugo de Tres Latidos",
-      "role": "DPS / remate secuencial",
-      "weapons": [
-        "Lanza larga",
-        "Alabarda"
-      ],
-      "weaponFamilyIds": [
-        "spear_2h",
-        "halberd_2h"
-      ],
-      "description": "Marca al mismo enemigo con dos impactos rápidos y ejecuta un tercer golpe de penetración si ambos acertaron; reinicia la secuencia al cambiar de objetivo.",
-      "combatIdentity": "triple_finisher",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    }
-  ],
-  "humanos": [
-    {
-      "name": "Director de Fuego Cruzado",
-      "role": "Apoyo / coordinación ofensiva",
-      "weapons": [
-        "Ballesta",
-        "Espada"
-      ],
-      "weaponFamilyIds": [
-        "crossbow_2h",
-        "sword_1h"
-      ],
-      "description": "Señala un objetivo prioritario; los aliados que ya iban a atacarlo reciben precisión adicional sin alterar su posición.",
-      "combatIdentity": "focus_fire",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Pistolero del Último Cartucho",
-      "role": "DPS / apuesta de precisión",
-      "weapons": [
-        "Ballesta",
-        "Cañón"
-      ],
-      "weaponFamilyIds": [
-        "crossbow_2h",
-        "cannon_2h"
-      ],
-      "description": "Prepara disparos cada vez más exactos, pero el último sacrifica cadencia para buscar un impacto excepcional.",
-      "combatIdentity": "last_round",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Cirujano de Campaña",
-      "role": "Sanador / triaje",
-      "weapons": [
-        "Cetro",
-        "Daga"
-      ],
-      "weaponFamilyIds": [
-        "scepter_1h",
-        "dagger_1h"
-      ],
-      "description": "Cura al aliado con peor proporción de vida y convierte el exceso de sanación en una pequeña protección inmediata.",
-      "combatIdentity": "triage_heal",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Tasador de Fallos",
-      "role": "Especialista / debilitación defensiva",
-      "weapons": [
-        "Estoque",
-        "Tomo"
-      ],
+      "name": "Ojo de la Última Guerra",
+      "role": "DPS / lectura de ataque y contraataque",
       "weaponFamilyIds": [
         "rapier_1h",
-        "tome_1h"
+        "sword_1h"
       ],
-      "description": "Cada impacto observa la guardia enemiga y reduce brevemente su defensa frente al siguiente atacante; no inflige daño periódico.",
-      "combatIdentity": "weakness_assess",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "weapons": [
+        "Estoque",
+        "Espada"
+      ],
+      "combatIdentity": "war_gaze_counter",
+      "description": "Sus ojos sobrenaturales perciben el instante de intención homicida. Cuando esquiva o desvía un ataque, ejecuta una réplica precisa contra el agresor; en ataques normales prioriza el enemigo con mayor capacidad ofensiva. No es un mago ni un sanador.",
+      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Artillero de Doble Recámara",
-      "role": "DPS / ráfagas alternas",
-      "weapons": [
-        "Cañón",
-        "Ballesta"
-      ],
+      "name": "Quebrador de Juramentos",
+      "role": "DPS / verdugo de defensores",
       "weaponFamilyIds": [
-        "cannon_2h",
-        "crossbow_2h"
+        "hammer_2h",
+        "greatsword_2h"
       ],
-      "description": "Alterna un disparo de preparación con otro de gran penetración; cambia potencia por regularidad, sin depender del escenario.",
-      "combatIdentity": "double_chamber",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "weapons": [
+        "Gran martillo",
+        "Mandoble"
+      ],
+      "combatIdentity": "oath_breaker",
+      "description": "El ejecutor de la antigua ley de guerra Kairakh. Rompe escudos, guardias y mitigaciones mediante golpes de gran peso; si el objetivo se protege o intercepta por otro, su siguiente golpe obtiene penetración. No aplica estados persistentes ni efectos de escenario.",
+      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Heraldo del Rugido Primordial",
+      "role": "Support / ímpetu bélico colectivo",
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "spear_2h"
+      ],
+      "weapons": [
+        "Guanteletes",
+        "Lanza larga"
+      ],
+      "combatIdentity": "ancestral_war_cry",
+      "description": "Invoca la memoria de su ancestro, dios de la guerra, mediante un rugido y el fulgor simultáneo de sus ojos, cuerno y venas. Concede a los aliados una bonificación corta de precisión y fuerza de ataque; cuando un compañero cae, fortalece momentáneamente la voluntad de quienes sobreviven. No invoca criaturas.",
+      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
@@ -493,103 +396,6 @@
       ],
       "description": "Sus dos cuernos rigen un intercambio temporal: entrega parte de su daño a un aliado y recibe una bonificación defensiva equivalente.",
       "combatIdentity": "stat_exchange",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    }
-  ],
-  "hombres_bestia": [
-    {
-      "name": "Alfa de la Mordida Compartida",
-      "role": "DPS / ataque asistido",
-      "weapons": [
-        "Guanteletes",
-        "Daga"
-      ],
-      "weaponFamilyIds": [
-        "gauntlets_pair",
-        "dagger_1h"
-      ],
-      "description": "Al asestar un crítico emite una señal instintiva que puede provocar un ataque básico inmediato del compañero designado.",
-      "combatIdentity": "pack_followup",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Médium del Aullido Hueco",
-      "role": "Apoyo / reacción colectiva",
-      "weapons": [
-        "Bastón",
-        "Abanico ritual"
-      ],
-      "weaponFamilyIds": [
-        "staff_2h",
-        "fan_1h"
-      ],
-      "description": "Un aullido propio de su linaje aumenta la probabilidad de esquivar el siguiente golpe recibido por la manada.",
-      "combatIdentity": "pack_dodge",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Toro de la Primera Colisión",
-      "role": "Tanque / apertura",
-      "weapons": [
-        "Gran martillo",
-        "Hacha"
-      ],
-      "weaponFamilyIds": [
-        "hammer_2h",
-        "axe_1h"
-      ],
-      "description": "Interviene al iniciar la oleada y atrae el primer ataque de los enemigos; obtiene protección solo durante esa apertura.",
-      "combatIdentity": "opening_guard",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Zorro de los Mil Amagos",
-      "role": "DPS / engaño",
-      "weapons": [
-        "Daga",
-        "Chakrams"
-      ],
-      "weaponFamilyIds": [
-        "dagger_1h",
-        "chakrams_pair"
-      ],
-      "description": "Alterna golpes reales y amagos rápidos; cada amago exitoso incrementa la precisión del siguiente golpe sin generar clones físicos.",
-      "combatIdentity": "feint_accuracy",
-      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Cuidador del Cachorro de Guerra",
-      "role": "Invocador / bestia vinculada",
-      "weapons": [
-        "Cetro",
-        "Bastón"
-      ],
-      "weaponFamilyIds": [
-        "scepter_1h",
-        "staff_2h"
-      ],
-      "description": "Combate junto a una sola cría espiritual de su linaje; sus ataques evolucionan con la supervivencia del maestro dentro de cada combate.",
-      "combatIdentity": "bonded_cub",
       "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
