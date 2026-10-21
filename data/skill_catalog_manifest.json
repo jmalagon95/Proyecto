@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "title": "Kami No Challenge - catálogo de habilidades activas",
+  "source": "scripts/generate-content.mjs",
+  "generation": "deterministic on Termux via npm run dev / npm run build",
+  "implementedInAutoCombat": false,
+  "skillsPerClass": 1000,
+  "rankDistribution": {
+    "F": 250,
+    "E": 190,
+    "D": 150,
+    "C": 120,
+    "B": 95,
+    "A": 70,
+    "S": 50,
+    "SS": 35,
+    "SSS": 20,
+    "SSS+": 12,
+    "U": 8
+  },
+  "totalClasses": 39,
+  "totalSkills": 39000,
+  "groups": {
+    "generic": {
+      "classCount": 8,
+      "skillCount": 8000,
+      "classes": [
+        "Guerrero",
+        "Defensor",
+        "Ranger",
+        "Pícaro",
+        "Segador",
+        "Mago",
+        "Invocador",
+        "Apoyo"
+      ]
+    },
+    "kairakh": {
+      "classCount": 6,
+      "skillCount": 6000,
+      "classes": [
+        "Taumaturgo Bélico",
+        "Invocador de Avatares",
+        "Hierofante de Guerra",
+        "Quebrantador de Asedios",
+        "Exterminador Primordial",
+        "Monarca de la Espada Indómita"
+      ]
+    },
+    "elfos": {
+      "classCount": 5,
+      "skillCount": 5000,
+      "classes": [
+        "Relojero de Luciérnagas",
+        "Bailarín de las Siete Hojas",
+        "Custodio del Último Brote",
+        "Arconte de los Gemelos Astrales",
+        "Tirador de la Quietud"
+      ]
+    },
+    "kijins": {
+      "classCount": 5,
+      "skillCount": 5000,
+      "classes": [
+        "Deudor de Cien Golpes",
+        "Demonio del Séptimo Impacto",
+        "Censor de Juramentos Rotos",
+        "Portador de Dos Veredictos",
+        "Monje de las Marcas Gemelas"
+      ]
+    },
+    "vampiros": {
+      "classCount": 5,
+      "skillCount": 5000,
+      "classes": [
+        "Coleccionista de Últimos Suspiros",
+        "Mayordomo del Trono Vacío",
+        "Confesor de Sangre Fría",
+        "Caballero del Ataúd Abierto",
+        "Esgrimista de la Rosa Negra"
+      ]
+    },
+    "insectoides": {
+      "classCount": 5,
+      "skillCount": 5000,
+      "classes": [
+        "Matriarca de la Segunda Crisálida",
+        "Martillo de Élitra",
+        "Aguijón de la Cuenta Regresiva",
+        "Obrero de las Cien Pinzas",
+        "Coronel de Antenas Partidas"
+      ]
+    },
+    "reptro": {
+      "classCount": 5,
+      "skillCount": 5000,
+      "classes": [
+        "Trenzador de Rayos Gemelos",
+        "Latigador de Cola de Plasma",
+        "Calibrador de Frecuencia",
+        "Pararrayos Errante",
+        "Gemelo de Chispa"
+      ]
+    }
+  }
+}
