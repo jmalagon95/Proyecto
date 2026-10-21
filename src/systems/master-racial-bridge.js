@@ -30,8 +30,8 @@ function learnedFor(char){
 function currentState(u){let st=runtime.get(u);if(!st){st={...newActionState(),shield:0};runtime.set(u,st)}return st}
 function active(b){return (b?.enemies||[]).filter(e=>e.hp>0)}
 function companions(b){return (b?.allies||[]).filter(x=>x.hp>0)}
-function primaryTarget(b){return active(b).sort((a,c)=>a.hp-c.hp)[0]||null}
-function targetUnits(b,type){const enemies=active(b);return type==='area'?enemies.slice(0,3):enemies.slice(0,1)}
+function primaryTarget(b,actor=null){return (actor&&window.KamiBattleFocus?.targetFor(actor,active(b)))||active(b).sort((a,c)=>a.hp-c.hp)[0]||null}
+function targetUnits(b,type,actor=null){const enemies=active(b);const focus=actor&&window.KamiBattleFocus?.targetFor(actor,enemies);if(focus){enemies.splice(enemies.indexOf(focus),1);enemies.unshift(focus)}return type==='area'?enemies.slice(0,3):enemies.slice(0,1)}
 function notify(hooks,a,t,title,amount,kind){
   if(!hooks?.animate)return;
   try{hooks.announce?.(a,t,title,round(amount),kind)}catch(error){console.warn('[Kami] Efecto visual:',error)}
@@ -50,7 +50,7 @@ function applyResults(b,a,skill,results,hooks){
   const penetration=results.find(e=>e.op==='penetration_pct')?.value||0;
   for(const effect of results){
     if(effect.op==='damage'||effect.op==='bonus_damage_pct_max_hp'){
-      for(const enemy of targetUnits(b,effect.target)){
+      for(const enemy of targetUnits(b,effect.target,a)){
         for(let i=0;i<Math.min(25,Math.max(1,effect.hits||1))&&enemy.hp>0;i++){
           const base=effect.op==='bonus_damage_pct_max_hp'?
             (enemy.maxHp||enemy.hp)*effect.value/100:
@@ -88,7 +88,7 @@ function castRacial(b,u,hooks){
   const base=round(stat*.65+Number(u.character.level||1)*.45);
   if(skill.kind==='heal'&&!allies.some(x=>x.hp<x.maxHp))return false;
   r.racialRemaining=skillCooldown(skill,u.character);
-  const foe=primaryTarget(b);
+  const foe=primaryTarget(b,u);
   const weak=allies.sort((a,c)=>a.hp/a.maxHp-c.hp/c.maxHp)[0];
   if(skill.kind==='heal'){
     const healed=Math.min(weak.maxHp-weak.hp,base*2);weak.hp+=healed;notify(hooks,u,weak,skill.name,healed,'heal');
@@ -122,7 +122,7 @@ function tick(b,dt,hooks={}){
           castRacial(b,u,hooks);
           hooks.log?.(u.name+' activa '+complete.skill.name+'.');
         }else{
-          const result=resolveSkill(complete.skill,u.character,primaryTarget(b));
+          const result=resolveSkill(complete.skill,u.character,primaryTarget(b,u));
           if(result.ok){
             applyResults(b,u,complete.skill,result.results,hooks);
             hooks.log?.(u.name+' ejecuta '+complete.skill.name+' ['+complete.skill.rank+'].');
