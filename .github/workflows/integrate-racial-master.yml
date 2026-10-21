@@ -26,6 +26,8 @@ on:
       - 'src/systems/racial-rig-renderer.js'
       - 'scripts/test-racial-rigs.mjs'
       - 'scripts/test-mannequin-rig.mjs'
+      - 'scripts/test-kairakh-star1-anchors.mjs'
+      - 'data/rigs/kairakh_star1_anchors.json'
       - 'src/systems/battle-focus.js'
       - 'scripts/integrate-battle-focus.mjs'
       - 'scripts/integrate-battle-lanes.mjs'
@@ -69,6 +71,7 @@ jobs:
           node scripts/test-combat.mjs
           node scripts/test-combat-cooldowns.mjs
           node scripts/test-mannequin-rig.mjs
+          node scripts/test-kairakh-star1-anchors.mjs
           node scripts/test-racial-rigs.mjs
           node scripts/test-goblin-gacha.mjs
       - name: Integrar dentro de index.html
