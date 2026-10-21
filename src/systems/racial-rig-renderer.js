@@ -21,6 +21,15 @@ export function installRacialRig(nodes,character){
   if(body){
     const isSkin=!/foot/.test(bone);
     body.setAttribute('fill',isSkin?tone:shadow);
+    // Escalamos ÚNICAMENTE la pieza gráfica, nunca el nodo-hueso:
+    // los pivotes, hijos y sockets mantienen coordenadas idénticas.
+    const width=bone==='head'?config.headScale:
+      bone==='chest'||bone==='root'?config.build:
+      /shoulder|hip/.test(bone)?(1+(config.build-1)*.7):
+      /elbow|knee/.test(bone)?(1+(config.build-1)*.4):1;
+    const height=bone==='head'?(id==='elfos'?.99:1.02):1;
+    body.setAttribute('transform','scale('+width.toFixed(3)+' '+height.toFixed(3)+')');
+    body.setAttribute('data-anatomy-shape',id);
   }
  }
  const face=ornament(nodes,'head','face');
