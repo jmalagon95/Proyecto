@@ -14,11 +14,10 @@ for(const cls of racial){
   const unit={id:char.id,ref:char,name:char.name,hp:180,maxHp:180,shield:0,alive:true,
     attack:{dps:4},attackAccumulator:0,nextRacialAt:0};
   const enemy=[{hp:150,maxHp:150},{hp:150,maxHp:150},{hp:150,maxHp:150}];
+  if(racialTechniqueFor(char)?.kind==='heal')unit.hp=100;
   const action=executeRacialTechnique(unit,[unit],enemy,0);
-  if(action?.kind==='heal'){
-    unit.hp=100;unit.nextRacialAt=0;
-    assert.ok(executeRacialTechnique(unit,[unit],enemy,0)?.healing>0);
-  }else assert.ok(action,cls.name+' no ejecutó técnica');
+  assert.ok(action,cls.name+' no ejecutó técnica');
+  if(action.kind==='heal')assert.ok(action.healing>0);
   for(const e of enemy)assert.ok(e.hp>=0&&e.hp<=e.maxHp);
   assert.ok(unit.hp>=0&&unit.hp<=unit.maxHp);
 }
