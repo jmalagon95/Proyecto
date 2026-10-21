@@ -27,6 +27,18 @@ if(!html.includes(marker)){
    "window.KamiBattleLanes?.place(u,u.node,field)",
    'Recolocar en profundidad');
 }
+const roleMarker='/* KAMI_BATTLE_ROLE_LANES_V1 */';
+if(!html.includes(roleMarker)){
+ once('index,lane:index%3,cooldown:.4+index*.18',
+  'index,lane:(window.KamiBattleLanes?.laneFor(c,index)??index%3),cooldown:.4+index*.18',
+  'Carril automático según clase');
+ once("$('repositionBtn').textContent='Cambiar carriles';",
+  "$('repositionBtn').textContent='Posiciones automáticas';$('repositionBtn').hidden=true;",
+  'Combate sin intervención manual');
+ once("    updateBars();logBattle('¡Comienza",
+  "    "+roleMarker+"\n    updateBars();logBattle('¡Comienza",
+  'Marcar distribución automática');
+}
 if(!html.includes(tag)||!html.includes(marker)||!html.includes('window.KamiBattleLanes.chooseTarget'))
  throw Error('Integración visual incompleta: tag='+html.includes(tag)+' marker='+html.includes(marker)+' targeting='+html.includes('window.KamiBattleLanes.chooseTarget'));
 for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)){
