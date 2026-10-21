@@ -19,6 +19,8 @@ on:
       - 'data/races.json'
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
+      - 'src/systems/battle-lanes.js'
+      - 'scripts/integrate-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
       - 'src/systems/effects.js'
       - 'scripts/racial-skill-design.mjs'
@@ -57,12 +59,15 @@ jobs:
         run: node scripts/integrate-mission-experience.mjs --write
       - name: Relatar golpes reales y corregir daño efectivo
         run: node scripts/enrich-mission-chronicle.mjs --write
+      - name: Aplicar campo de batalla 2.5D
+        run: node scripts/integrate-battle-lanes.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
           node scripts/integrate-mission-experience.mjs
           node scripts/enrich-mission-chronicle.mjs
           node scripts/integrate-goblin-stat-gacha.mjs
+          node scripts/integrate-battle-lanes.mjs
           git diff --check
       - name: Guardar maestro actualizado en main
         run: |
