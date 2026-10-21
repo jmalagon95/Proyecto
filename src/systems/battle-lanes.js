@@ -16,7 +16,7 @@ function position(unit){
  const depth=laneOf(unit);
  const ally=!unit.enemy;
  const index=Math.max(0,Number(unit.index)||0);
- const stagger=index%5;
+ const stagger=unit.enemy?index%5:Math.max(0,Math.min(4,Number.isInteger(unit.slot)?unit.slot:index%5));
  const x=ally?12+stagger*7.5:64+stagger*6.4;
  const y=laneOffsets[depth]+((index%2)?2:-1);
  const scale=[.77,.91,1.06][depth]*(unit.enemy?.91:1);
