@@ -1004,6 +1004,17 @@ team.forEach((c,index)=>{
   }
   function performAttack(a,target,animate=true){
     if(!battle||battle.ended||!a||!target||target.hp<=0||a.hp<=0)return;
+    // The damage transaction is deferred until physical contact on screen.
+    // Non-animated offline simulations still resolve synchronously.
+    if(animate&&window.KamiBattleLanes?.onAttack){
+      window.KamiBattleLanes.onAttack(a,target,()=>{
+        if(!battle||battle.ended||a.hp<=0||target.hp<=0)return;
+        const before=target.hp;performAttack(a,target,false);
+        const dealt=Math.max(0,before-target.hp);
+        if(dealt>0)flyingNumber(target,dealt,target.enemy?'':'damage-ally');
+      });
+      return;
+    }
     let damage=combatMitigation(a.attack*(.78+Math.random()*.45),target.defense||0);
     /* KAMI_RACIAL_V4_SHIELD */
     if(!target.enemy&&window.KamiRacialSkills){
