@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 
 // El maestro es monolítico: reescribir las declaraciones reales evita que
 // queden razas/clases antiguas activas bajo los parches de compatibilidad.
@@ -32,7 +33,9 @@ function declaration(key) {
     }
   }
   if(end<0||html[end]!==';')throw new Error('No se ha podido delimitar '+key);
-  return {start,end:end+1, value:JSON.parse(html.slice(from,end))};
+  const literal=html.slice(from,end);
+  const value=key==='names'?runInNewContext('('+literal+')'):JSON.parse(literal);
+  return {start,end:end+1,value};
 }
 function updateObject(key,value) {
   const d=declaration(key);
