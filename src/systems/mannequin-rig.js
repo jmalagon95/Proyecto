@@ -1,3 +1,4 @@
+import {installRacialRig,tickRacialRig} from './racial-rig-renderer.js';
 // Universal 2D skeletal mannequin. Race-independent anatomy and sockets.
 // Visual only; combat engine remains authoritative for hits and damage.
 export const SKELETON=Object.freeze({
@@ -38,7 +39,7 @@ function piece(id,group){
     ' Q 0 '+(length+4)+' '+(w*.7)+' '+length+' Q '+(w+2)+' '+(length/2)+' '+w+' -4 Z',fill:pale});
  tag('circle',{cx:0,cy:0,r:3,fill:'#78bcff',stroke:'#275196','stroke-width':1.2},group);
 }
-export function createRigSvg({debug=false}={}){
+export function createRigSvg({debug=false,character=null}={}){
  const svg=tag('svg',{viewBox:'0 0 140 224',width:'100%',height:'100%',role:'img','aria-label':'Maniquí articulado 2D'});
  svg.classList.add('kami-rig-svg');svg.style.overflow='visible';
  const root=tag('g',{transform:'translate(70 107)'},svg);
@@ -51,7 +52,9 @@ export function createRigSvg({debug=false}={}){
      tag('circle',{'data-socket':socket,cx:0,cy:0,r:debug?4:0,fill:'#ffb95d'},g);
    for(const [child,info] of Object.entries(SKELETON))if(info[0]===id)make(child);
  }
- make('root');return {svg,nodes,root};
+ make('root');const racial=installRacialRig(nodes,character);
+ svg.setAttribute('data-rig-race',racial.race);
+ return {svg,nodes,root,racial};
 }
 export function sampleRigPose(mode='idle',t=0,progress=0){
  const p=clamp(progress,0,1),a={},movement={x:0,y:0};
@@ -93,7 +96,7 @@ export function attachRig(unit,{debug=false}={}){
  if(!unit?.node)return null;
  const host=unit.node.querySelector('.unit-body')||unit.node;
  const existing=rigs.get(unit);if(existing)return existing;
- const parts=createRigSvg({debug});host.append(parts.svg);host.classList.add('kami-rig-host');
+ const parts=createRigSvg({debug,character:unit.character||unit.ref||null});host.append(parts.svg);host.classList.add('kami-rig-host');
  const state={...parts,mode:'idle',clock:0,time:0,duration:0,rotations:{},previousHp:unit.hp};
  rigs.set(unit,state);return state;
 }
@@ -107,6 +110,7 @@ export function playRig(unit,mode,{duration}={}){
 export function tickRig(unit,dt){
  const s=rigs.get(unit);if(!s||dt<=0)return;
  s.clock+=dt;s.time+=dt;
+ tickRacialRig(s.racial,s.clock);
  if(unit.hp<=0&&s.mode!=='death')playRig(unit,'death');
  else if(unit.hp>0&&unit.hp<s.previousHp&&s.mode!=='hit')playRig(unit,'hit');
  s.previousHp=unit.hp;
