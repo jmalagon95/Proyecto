@@ -34,21 +34,6 @@ try{
  await page.locator('[data-load="0"]').click();
  assert.deepEqual(await page.evaluate(()=>window.eval('state.missionPositions.test02')),{lane:0,slot:4});
  await page.locator('#startMission').click();
- await page.waitForTimeout(2600);
- const battleState=await page.evaluate(()=>{
-  const screen=document.querySelector('#battle');
-  const slots=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')]
-   .map(el=>({lane:el.dataset.lane,unit:el.dataset.unit,top:el.style.top,left:el.style.left}));
-  return {active:screen?.classList.contains('on'),heroes:slots.length,slots,
-    entries:document.querySelectorAll('#kamiChronicleEntries .entry').length,
-    time:document.querySelector('#timer')?.textContent,
-    chronicle:document.querySelector('#kamiChronicle')?.textContent?.slice(0,120)};
- });
- console.log('BATTLE_CHECK',JSON.stringify(battleState));
- assert.ok(battleState.active,'No se abrió la pantalla de combate');
- assert.equal(battleState.heroes,2,'No aparecen los dos héroes seleccionados');
- assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
- assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
  await page.waitForFunction(()=>Boolean(window.KamiBattleFocus&&document.querySelector('#battleField .fighter.enemy')));
  const focusStatus=await page.evaluate(()=>{
    document.querySelector('#battleField .fighter:not(.enemy)')?.click();
@@ -67,6 +52,21 @@ try{
  await page.locator('#kamiClearFocus').click();
  assert.equal(await page.evaluate(()=>window.KamiBattleFocus.assigned.size),0);
 
+ await page.waitForTimeout(2600);
+ const battleState=await page.evaluate(()=>{
+  const screen=document.querySelector('#battle');
+  const slots=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')]
+   .map(el=>({lane:el.dataset.lane,unit:el.dataset.unit,top:el.style.top,left:el.style.left}));
+  return {active:screen?.classList.contains('on'),heroes:slots.length,slots,
+    entries:document.querySelectorAll('#kamiChronicleEntries .entry').length,
+    time:document.querySelector('#timer')?.textContent,
+    chronicle:document.querySelector('#kamiChronicle')?.textContent?.slice(0,120)};
+ });
+ console.log('BATTLE_CHECK',JSON.stringify(battleState));
+ assert.ok(battleState.active,'No se abrió la pantalla de combate');
+ assert.equal(battleState.heroes,2,'No aparecen los dos héroes seleccionados');
+ assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
+ assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
  assert.ok(await page.locator('#kamiResultSummary').count(),'Falta el panel de resultados de daño y MVP');
  assert.ok(await page.locator('#resultRows').count(),'Falta la clasificación de resultado');
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
