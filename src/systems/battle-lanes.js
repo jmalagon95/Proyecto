@@ -6,11 +6,9 @@ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function getField(){return document.getElementById('battleField')}
 function laneOf(unit){return clamp(Number(unit.lane)||0,0,2)}
 function laneFor(character,index=0){
- const role=String(character?.role||'').toLowerCase();
- if(/tanque|defens|prote|coloso|bruiser|primera línea/.test(role))return 2;
- if(/sanaci|healer|support|apoyo|invoc|mágico|magia|control|ranger|distancia/.test(role))return 0;
- if(/dps|duelista|guerrero|martillo|esgrimista/.test(role))return 1;
- return index%3;
+ // Los carriles son posiciones espaciales, no roles de frente/retaguardia.
+ // La elección manual guardada tiene prioridad; la reserva es neutra.
+ return Math.max(0,Number(index)||0)%3;
 }
 function position(unit){
  const depth=laneOf(unit);
@@ -37,7 +35,7 @@ function createArena(field){
   field.append(lane);
  }
  const legend=document.createElement('div');legend.className='kami-lane-legend';
- legend.innerHTML='<span>TRASERO</span><span>MEDIO</span><span>FRONTAL</span>';
+ legend.innerHTML='<span>CARRIL 1</span><span>CARRIL 2</span><span>CARRIL 3</span>';
  field.append(legend);
 }
 function place(unit,node,field=getField()){
@@ -124,13 +122,13 @@ function chooseTarget(attacker,candidates){
  if(!alive.length)return null;
  const lane=laneOf(attacker);
  const role=String(attacker.character?.role||attacker.ref?.role||'').toLowerCase();
- // Defensa: proteger el frente antes de intentar llegar al carril trasero.
+ // La proximidad entre carriles es espacial; ninguno es una línea defensiva obligatoria.
  const threat=e=>{
   const dist=Math.abs(lane-laneOf(e));
   const life=e.hp/Math.max(1,e.maxHp);
   const enemyRole=String(e.character?.role||e.ref?.role||'').toLowerCase();
   let score=30-dist*19+(1-life)*15;
-  if(/tanque|defens|prote/.test(role))score+=e.enemy?5:!e.enemy?8:0;
+  if(/tanque|defens|prote/.test(role))score+=dist===0?7:0;
   if(/ranger|tirador|mag|dps|duelista/.test(role))score+=(1-life)*16;
   if(attacker.enemy&&/sanador|apoyo|healer/.test(enemyRole))score+=dist===0?13:0;
   if(attacker.enemy&&/tanque|defens/.test(enemyRole))score+=dist===0?14:0;
