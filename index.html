@@ -864,7 +864,7 @@ function displayMissionStats(b){
        star,level,stats,hp:combatStatHp(stats,level),maxHp:0,
        attack:combatStatDamage(stats,level,star),defense:combatStatDefense(stats),
        index,lane:index%3,cooldown:1.1+Math.random()*2.2,kills:0,damage:0};
-    e.maxHp=e.hp;battle.enemies.push(e);unitDom(e);
+    e.maxHp=e.hp;battle.enemies.push(e);unitDom(e);if(battle&&Array.isArray(battle.pendingChronicle)&&battle.pendingChronicle.length<16)battle.pendingChronicle.push('Aparece '+e.name+' ★'+(e.star||1)+' con '+Math.ceil(e.hp)+' PV.');
     e.node.querySelector('.unit-body').onclick=()=>{if(battle&&!battle.auto&&e.hp>0&&Date.now()-battle.lastManual>460){battle.lastManual=Date.now();const attacker=battle.allies.filter(x=>x.hp>0).sort((a,b)=>b.hp-a.hp)[0];if(attacker)performAttack(attacker,e)}};
     return e;
   }
@@ -927,7 +927,13 @@ team.forEach((c,index)=>{
     if(!target.enemy&&window.KamiRacialSkills){
       const guard=window.KamiRacialSkills.absorb(target,damage);damage=guard.remaining;
     }
-    target.hp=Math.max(0,target.hp-damage);a.damage+=damage;
+    /* KAMI_CHRONICLE_COMBAT_EVENTS_V1 */
+const effectiveDamage=Math.min(Math.max(0,target.hp),Math.max(0,damage));
+target.hp=Math.max(0,target.hp-effectiveDamage);a.damage+=effectiveDamage;
+if(battle&&Array.isArray(battle.pendingChronicle)&&effectiveDamage>0&&battle.pendingChronicle.length<16){
+battle.pendingChronicle.push(a.name+' golpea a '+target.name+' e inflige '+Math.round(effectiveDamage)+' de daño ('+
+Math.ceil(target.hp)+'/'+Math.ceil(target.maxHp)+' PV restantes).');
+}
     if(animate){swipe(a,target);flyingNumber(target,damage,target.enemy?'':'damage-ally')}
     if(target.hp<=0){if(target.enemy){battle.kills++;a.kills++;if(animate)logBattle(a.name+' derrota a un goblin.')}else if(animate)logBattle(target.name+' queda fuera de combate.');}
   }
