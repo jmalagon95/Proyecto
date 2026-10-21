@@ -20,6 +20,8 @@ on:
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
       - 'src/systems/battle-lanes.js'
+      - 'src/systems/mannequin-rig.js'
+      - 'scripts/test-mannequin-rig.mjs'
       - 'src/systems/battle-focus.js'
       - 'scripts/integrate-battle-focus.mjs'
       - 'scripts/integrate-battle-lanes.mjs'
@@ -62,6 +64,7 @@ jobs:
           node scripts/test-racial-techniques.mjs
           node scripts/test-combat.mjs
           node scripts/test-combat-cooldowns.mjs
+          node scripts/test-mannequin-rig.mjs
           node scripts/test-goblin-gacha.mjs
       - name: Integrar dentro de index.html
         run: node scripts/integrate-racial-master.mjs --write
@@ -96,6 +99,7 @@ jobs:
           node scripts/test-manual-formations.mjs
           node scripts/audit-mission-ui.mjs
           node scripts/audit-lobby-ui.mjs
+          node --check src/systems/mannequin-rig.js
           node --check src/systems/battle-lanes.js
           node --check src/systems/master-racial-bridge.js
           node scripts/integrate-mission-experience.mjs
