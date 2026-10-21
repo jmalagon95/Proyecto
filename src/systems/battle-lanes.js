@@ -1,3 +1,4 @@
+import {weaponRangeMeters,distanceMeters,isMelee,ARENA_METERS,skillRangeMeters} from './combat-reach.js';
 import {attachRig,playRig,tickRig,rigState} from './mannequin-rig.js';
 import {playKairakhBasicAttack} from './kairakh-sprite-attack.js';
 // Kami No Challenge · Campo 2.5D por carriles.
@@ -72,37 +73,13 @@ function flash(x,y,kind){
  burst.style.left=x+'%';burst.style.top=y+'%';
  field.append(burst);setTimeout(()=>burst.remove(),440);
 }
-// Reach is a weapon attribute, expressed in battlefield percentage points.
-// Items may explicitly set alcance/range/reach, including {value: number}.
-// The classification is a fallback for legacy inventories without reach metadata.
-const RANGE_DEFAULTS=Object.freeze({unarmed:3,dagger:3.8,sword:5,axe:5,mace:5,spear:9,staff:8,bow:65,gun:65,magic:70});
-function weaponReach(unit){
- const c=unit?.character||unit?.ref||{};
- const eq=c.equipment||{};
- const weapon=c.weapon||eq.weapon||eq.mainHand||eq.mainhand||eq.arma||eq.weaponMain||
-   Object.entries(eq).find(([k])=>/weapon|arma|main.?hand|mano.?principal/i.test(k))?.[1]||{};
- const raw=weapon?.alcance??weapon?.reach??weapon?.range??c?.alcance??c?.reach;
- const explicit=Number(typeof raw==='object'?(raw?.value??raw?.valor):raw);
- if(raw!=null&&Number.isFinite(explicit)&&explicit>0)return clamp(explicit,2,85);
- const identity=[weapon?.name,weapon?.type,weapon?.family,weapon?.weaponFamilyId,
-  typeof weapon==='string'?weapon:'',c.className,c.role].filter(Boolean).join(' ').toLowerCase();
- if(/arco|bow|ballesta|crossbow|rifle|pistola|gun|tirador|arquero/.test(identity))return RANGE_DEFAULTS.bow;
- if(/magia|magic|mago|hechic|taumaturgo|invoc|conjur/.test(identity))return RANGE_DEFAULTS.magic;
- if(/lanza|spear|pica|alabarda|halberd/.test(identity))return RANGE_DEFAULTS.spear;
- if(/bastón|baston|staff|vara/.test(identity))return RANGE_DEFAULTS.staff;
- if(/daga|dagger|cuchillo/.test(identity))return RANGE_DEFAULTS.dagger;
- if(/hacha|axe/.test(identity))return RANGE_DEFAULTS.axe;
- if(/maza|martillo|mace|hammer/.test(identity))return RANGE_DEFAULTS.mace;
- if(/espada|sword|blade|mandoble/.test(identity))return RANGE_DEFAULTS.sword;
- return RANGE_DEFAULTS.unarmed;
-}
-function worldDistance(a,b){
- return Math.hypot(a.x-b.x,(a.y-b.y)*.8);
-}
+// All weapon reach values are measured in actual arena metres.
+const weaponReach=weaponRangeMeters;
+const worldDistance=distanceMeters;
 function onAttack(actor,target){
  if(!actor?.node||!target?.node||actor.hp<=0||target.hp<=0)return;
  const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
- const reach=weaponReach(actor),distance=worldDistance(a,b),melee=reach<=12;
+ const reach=weaponReach(actor),distance=worldDistance(a,b),melee=isMelee(actor);
  const node=actor.node,field=getField();
  // One movement sequence per actor; replacing it cancels pending impact safely.
  const previous=node._kamiReachSequence;
@@ -128,9 +105,10 @@ function onAttack(actor,target){
  }
  // Approach to the edge of the weapon reach, with correct x AND depth movement.
  const dx=b.x-a.x,dy=b.y-a.y,len=Math.max(.001,Math.hypot(dx,dy));
- const stop=Math.max(2,reach*.74);
- const x=b.x-dx/len*stop,y=b.y-dy/len*stop;
- const moveMs=clamp(Math.round(distance*22),280,1050),strikeMs=350;
+ const stop=Math.max(.8,reach*.87);
+ const lengthMeters=Math.max(.001,Math.hypot(dx*ARENA_METERS.width/100,dy*ARENA_METERS.height/100));
+ const x=b.x-(dx/lengthMeters)*stop,y=b.y-(dy/lengthMeters)*stop;
+ const moveMs=clamp(Math.round(Math.max(0,distance-reach)*125),280,1600),strikeMs=350;
  node.classList.add('kami-approaching');
  node.style.transition='left '+moveMs+'ms linear,top '+moveMs+'ms linear,transform .25s ease';
  node.style.left=x+'%';node.style.top='calc('+y+'% - 45px)';
@@ -251,4 +229,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,rigState,version:6};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:7};
