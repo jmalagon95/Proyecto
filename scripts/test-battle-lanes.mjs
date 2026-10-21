@@ -23,7 +23,7 @@ assert.equal(lanes.chooseTarget(warrior,[front,rear]),front,'El luchador debe pr
 const mage={lane:0,character:{role:'DPS mágico'}};
 assert.equal(lanes.chooseTarget(mage,[front,rear]),rear,'El mago debe valorar su carril');
 const html=readFileSync('index.html','utf8');
-for(const symbol of ['KAMI_BATTLE_25D_LANES_V1','KAMI_BATTLE_ROLE_LANES_V1','KamiBattleLanes?.place','KamiBattleLanes?.laneFor','KamiBattleLanes.chooseTarget']){
+for(const symbol of ['KAMI_BATTLE_25D_LANES_V1','KAMI_BATTLE_ROLE_LANES_V1','KamiBattleLanes?.place','normalizeFormation()[c.id]?.lane','KamiBattleLanes.chooseTarget']){
  assert.ok(html.includes(symbol),'Falta la conexión '+symbol);
 }
 const js=readFileSync('src/systems/battle-lanes.js','utf8');
