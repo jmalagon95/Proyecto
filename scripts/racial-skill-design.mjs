@@ -110,7 +110,21 @@ export function buildRacialSkills(cls,targets){
      origin,familyId:'RF-'+slug+'-'+String(family).padStart(4,'0'),
      evolvesFrom:last||null,
      weaponRequirement:weapon,
-     mechanics:{target:mechanics.target,tags:[style,cls.group],cooldownSeconds:Math.max(2,round(11-tier*.35+(i%5))),timeCostSeconds:round(1.6+tier*.18),effects:mechanics.effects},
+     mechanics:{target:mechanics.target,tags:[style,cls.group],
+       cooldownSeconds:(()=>{
+         const e=mechanics.effects;
+         const impact=e.reduce((n,x)=>n+
+           (x.op==='damage'||x.op==='summon_strike'?Math.log10(Math.max(1,(x.multiplier||1)*(x.hits||1))):0)+
+           (x.op==='bonus_damage_pct_max_hp'?1.5:0),0);
+         // Los definitivos potentes necesitan mayor recuperación, pero un U rápido
+         // puede conservar CD bajo si su impacto real es reducido.
+         const castPower=Math.max(0,impact-1);
+         return round(Math.min(120,Math.max(2,3+(tier*.85)+(i%6)+castPower*castPower*1.5)));
+       })(),
+       timeCostSeconds:round(Math.min(9,.5+(tier*.13)+(i%4)*.25+
+         mechanics.effects.filter(x=>x.op==='damage'||x.op==='summon_strike')
+           .reduce((n,x)=>n+Math.log10(Math.max(1,x.multiplier||1))*.32,0))),
+       effects:mechanics.effects},
      functional:true,resolverCompatible:true,implementedInAutoCombat:true,
      learnCondition:origin==='evolutiva'&&last?{type:'master_previous',skillId:last}:{type:'combat_discovery',rank,rareEncounter:tier>=6},
      description:cls.name+': '+(origin==='evolutiva'?'evolución de una senda consolidada. ':'técnica nativa de rango '+rank+'. ')+
