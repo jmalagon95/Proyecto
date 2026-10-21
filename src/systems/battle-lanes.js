@@ -43,6 +43,7 @@ function place(unit,node,field=getField()){
  if(!field||!node)return;
  createArena(field);
  const p=position(unit);
+ const prior=visual.get(unit);
  node.classList.add('kami-fighter');
  node.dataset.lane=String(p.depth);
  node.style.setProperty('--kami-scale',String(p.scale));
@@ -51,6 +52,8 @@ function place(unit,node,field=getField()){
  node.style.transform='scale('+p.scale+')';
  visual.set(unit,{x:p.x,y:p.y,scale:p.scale,active:false});
  attachRig(unit);
+ if(prior&&(Math.abs(prior.x-p.x)>.2||Math.abs(prior.y-p.y)>.2))
+  playRig(unit,'run',{duration:.4});
  // Combat units are articulated models, never flat race portraits or enemy artwork.
  node.dataset.combatRenderer='skeletal';
 }
