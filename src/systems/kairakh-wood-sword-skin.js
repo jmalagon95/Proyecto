@@ -50,7 +50,7 @@ function paint(node,id){
 }
 export function isWoodSwordKairakh(character){
  if(!character||String(character.race||'').toLowerCase()!=='kairakh')return false;
- const rarity=Number(character.currentStar??character.star??1);
+ const rarity=Number(character.currentStar??character.star??0);
  if(rarity!==1)return false;
  const explicit=JSON.stringify(character.equipment||character.weapon||{}).toLowerCase();
  // Primer combatiente Kairakh ★1 sin equipamiento especial: espada pobre de entrenamiento.
