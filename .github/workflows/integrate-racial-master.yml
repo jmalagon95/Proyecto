@@ -24,6 +24,7 @@ on:
       - 'scripts/integrate-manual-formations.mjs'
       - 'scripts/test-manual-formations.mjs'
       - 'scripts/audit-mission-ui.mjs'
+      - 'scripts/test-mission-ui-e2e.mjs'
       - 'scripts/test-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
       - 'src/systems/effects.js'
@@ -81,6 +82,13 @@ jobs:
           node scripts/integrate-battle-lanes.mjs
           node scripts/integrate-manual-formations.mjs
           git diff --check
+      - name: Probar menú de misión en navegador móvil real
+        run: |
+          npm install --no-save --no-package-lock playwright-core
+          node scripts/ensure-content.mjs
+          python3 -m http.server 5173 >/tmp/kami-server.log 2>&1 &
+          sleep 2
+          node scripts/test-mission-ui-e2e.mjs
       - name: Guardar maestro actualizado en main
         run: |
           git config user.name "kami-automation[bot]"
