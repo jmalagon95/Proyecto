@@ -76,7 +76,7 @@ function flash(x,y,kind){
 // All weapon reach values are measured in actual arena metres.
 const weaponReach=weaponRangeMeters;
 const worldDistance=distanceMeters;
-function onAttack(actor,target){
+function onAttack(actor,target,onContact=null){
  if(!actor?.node||!target?.node||actor.hp<=0||target.hp<=0)return;
  const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
  const reach=weaponReach(actor),distance=worldDistance(a,b),melee=isMelee(actor);
@@ -88,6 +88,7 @@ function onAttack(actor,target){
  const after=(fn,ms)=>seq.timers.push(setTimeout(()=>{if(!seq.cancelled&&node.isConnected)fn()},ms));
  const impact=()=>{
   if(!target.node?.isConnected||target.hp<=0)return;
+  if(typeof onContact==='function')onContact();
   playRig(target,'hit');
   target.node.classList.remove('kami-impact');void target.node.offsetWidth;
   target.node.classList.add('kami-impact');
@@ -98,7 +99,7 @@ function onAttack(actor,target){
  node.dataset.weaponReach=String(reach);
  node.classList.remove('kami-lunge');
  // Ranged combat retains its firing position. Close combat closes the actual gap.
- if(!melee||distance<=reach){
+ if(!melee||distance<=reach+0.25){
   const illustrated=playKairakhBasicAttack(actor,{onImpact:impact});
   if(!illustrated){playRig(actor,'attack');after(impact,190)}
   return;
