@@ -114,69 +114,192 @@
   ],
   "kairakh": [
     {
-      "name": "Proyector de Venas",
-      "role": "DPS / distancia",
+      "name": "Nexo de las Siete Venas",
+      "role": "Tanque / protección compartida",
       "weapons": [
-        "Guanteletes de canalización",
-        "Cañones de antebrazo",
-        "Catalizadores de energía"
+        "Guanteletes",
+        "Catalizador"
       ],
-      "description": "Convierte sus venas energéticas en una red de proyección para ráfagas, disparos concentrados y canales sostenidos.",
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "catalyst_1h"
+      ],
+      "description": "Conecta su circulación energética con dos aliados; absorbe una parte de los impactos que reciben y convierte cada protección en resistencia para el siguiente golpe.",
+      "combatIdentity": "guardian_link",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Lancero del Cuerno Primordial",
-      "role": "DPS / alcance",
+      "name": "Cuerno de la Última Muralla",
+      "role": "Tanque / contraataque",
       "weapons": [
-        "Lanza larga a dos manos",
-        "Alabarda",
-        "Lanza ritual"
+        "Lanza",
+        "Maza"
       ],
-      "description": "Combina el alcance de la lanza con cargas y penetración apoyadas por el cuerno frontal Kairakh.",
+      "weaponFamilyIds": [
+        "spear_1h",
+        "mace_1h"
+      ],
+      "description": "Su único cuerno concentra la energía de impactos recibidos; devuelve una embestida poderosa después de soportar una secuencia de ataques.",
+      "combatIdentity": "counter_wall",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Resonador Kairakh",
-      "role": "Mágico / apoyo",
+      "name": "Arpista de Arterias",
+      "role": "Apoyo / tempo de ataques",
       "weapons": [
-        "Bastón de resonancia",
-        "Tótem catalizador"
+        "Catalizador",
+        "Bastón"
       ],
-      "description": "Manipula resonancias de energía corporal para amplificar aliados y lanzar pulsos de energía.",
+      "weaponFamilyIds": [
+        "catalyst_1h",
+        "staff_2h"
+      ],
+      "description": "Modula el pulso de sus venas para acelerar el siguiente ataque de un aliado y retrasar el suyo; distribuye turnos en vez de curar.",
+      "combatIdentity": "pulse_tempo",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Depredador de las Cumbres",
-      "role": "Asesino / móvil",
+      "name": "Sacrificador del Pulso Blanco",
+      "role": "DPS / riesgo vital",
       "weapons": [
-        "Garras gemelas",
-        "Dagas curvas",
-        "Armas de puño"
+        "Guanteletes",
+        "Daga"
       ],
-      "description": "Cazador extremadamente móvil que explota altura, flancos y objetivos aislados.",
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "dagger_1h"
+      ],
+      "description": "Convierte una fracción de su propia vida en un golpe amplificado; cuanto más cerca está de caer, más debe calcular cuándo atacar.",
+      "combatIdentity": "hp_burst",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Guardián del Cuerno Ancestral",
-      "role": "Defensor",
+      "name": "Verdugo de Tres Latidos",
+      "role": "DPS / remate secuencial",
       "weapons": [
-        "Lanza de una mano",
-        "Escudo tótem",
-        "Maza y escudo"
+        "Lanza larga",
+        "Alabarda"
       ],
-      "description": "Defensor frontal que utiliza energía Kairakh para estabilizar, interceptar y proteger.",
+      "weaponFamilyIds": [
+        "spear_2h",
+        "halberd_2h"
+      ],
+      "description": "Marca al mismo enemigo con dos impactos rápidos y ejecuta un tercer golpe de penetración si ambos acertaron; reinicia la secuencia al cambiar de objetivo.",
+      "combatIdentity": "triple_finisher",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    }
+  ],
+  "humanos": [
+    {
+      "name": "Director de Fuego Cruzado",
+      "role": "Apoyo / coordinación ofensiva",
+      "weapons": [
+        "Ballesta",
+        "Espada"
+      ],
+      "weaponFamilyIds": [
+        "crossbow_2h",
+        "sword_1h"
+      ],
+      "description": "Señala un objetivo prioritario; los aliados que ya iban a atacarlo reciben precisión adicional sin alterar su posición.",
+      "combatIdentity": "focus_fire",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Pistolero del Último Cartucho",
+      "role": "DPS / apuesta de precisión",
+      "weapons": [
+        "Ballesta",
+        "Cañón"
+      ],
+      "weaponFamilyIds": [
+        "crossbow_2h",
+        "cannon_2h"
+      ],
+      "description": "Prepara disparos cada vez más exactos, pero el último sacrifica cadencia para buscar un impacto excepcional.",
+      "combatIdentity": "last_round",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Cirujano de Campaña",
+      "role": "Sanador / triaje",
+      "weapons": [
+        "Cetro",
+        "Daga"
+      ],
+      "weaponFamilyIds": [
+        "scepter_1h",
+        "dagger_1h"
+      ],
+      "description": "Cura al aliado con peor proporción de vida y convierte el exceso de sanación en una pequeña protección inmediata.",
+      "combatIdentity": "triage_heal",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Tasador de Fallos",
+      "role": "Especialista / debilitación defensiva",
+      "weapons": [
+        "Estoque",
+        "Tomo"
+      ],
+      "weaponFamilyIds": [
+        "rapier_1h",
+        "tome_1h"
+      ],
+      "description": "Cada impacto observa la guardia enemiga y reduce brevemente su defensa frente al siguiente atacante; no inflige daño periódico.",
+      "combatIdentity": "weakness_assess",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Artillero de Doble Recámara",
+      "role": "DPS / ráfagas alternas",
+      "weapons": [
+        "Cañón",
+        "Ballesta"
+      ],
+      "weaponFamilyIds": [
+        "cannon_2h",
+        "crossbow_2h"
+      ],
+      "description": "Alterna un disparo de preparación con otro de gran penetración; cambia potencia por regularidad, sin depender del escenario.",
+      "combatIdentity": "double_chamber",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
@@ -185,68 +308,95 @@
   ],
   "elfos": [
     {
-      "name": "Arquero de la Arboleda Primigenia",
-      "role": "Ranger",
+      "name": "Relojero de Luciérnagas",
+      "role": "Apoyo / anticipación",
       "weapons": [
-        "Arco largo viviente",
-        "Arco espiritual"
+        "Varita",
+        "Tomo"
       ],
-      "description": "Arquero de altísima precisión, lectura del terreno y dominio de largas distancias.",
+      "weaponFamilyIds": [
+        "wand_1h",
+        "tome_1h"
+      ],
+      "description": "Ve el instante del próximo ataque enemigo y otorga una evasión puntual al aliado señalado; protege mediante predicción, no escudos.",
+      "combatIdentity": "foresee_evade",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Cantor de Raíces",
-      "role": "Apoyo / naturaleza",
+      "name": "Bailarín de las Siete Hojas",
+      "role": "DPS / precisión creciente",
       "weapons": [
-        "Bastón de madera viva",
-        "Bastón druídico"
-      ],
-      "description": "Canaliza raíces y crecimiento para sostener aliados y modificar el campo.",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Danzante de la Luna",
-      "role": "DPS móvil",
-      "weapons": [
-        "Espadas curvas gemelas",
         "Chakrams",
-        "Dagas"
+        "Daga"
       ],
-      "description": "Duelista móvil que encadena pasos, cortes y cambios de posición con cadencia elegante.",
+      "weaponFamilyIds": [
+        "chakrams_pair",
+        "dagger_1h"
+      ],
+      "description": "Encadena golpes que ganan probabilidad de crítico mientras no falle; un fallo devuelve la secuencia a su inicio.",
+      "combatIdentity": "hit_streak",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Guardián Silvano",
-      "role": "Defensor",
+      "name": "Custodio del Último Brote",
+      "role": "Sanador / recuperación de emergencia",
       "weapons": [
-        "Lanza viviente",
-        "Escudo",
-        "Espada élfica y escudo"
+        "Bastón",
+        "Cetro"
       ],
-      "description": "Protector que controla zonas y castiga a quien intenta romper su línea.",
+      "weaponFamilyIds": [
+        "staff_2h",
+        "scepter_1h"
+      ],
+      "description": "Reserva una curación de emergencia para el primer aliado que caiga bajo un umbral de vida; no puede activarla libremente.",
+      "combatIdentity": "emergency_heal",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Tejedor de Espíritus",
-      "role": "Mago / invocación",
+      "name": "Arconte de los Gemelos Astrales",
+      "role": "Invocador / compañero único",
       "weapons": [
-        "Varita espiritual",
         "Tomo",
-        "Bastón espiritual"
+        "Catalizador"
       ],
-      "description": "Interactúa con ecos espirituales mediante vínculos sobrenaturales de apoyo y control.",
+      "weaponFamilyIds": [
+        "tome_1h",
+        "catalyst_1h"
+      ],
+      "description": "Mantiene una única entidad espiritual que alterna automáticamente entre ataque y asistencia después de cada acción del maestro.",
+      "combatIdentity": "alternate_companion",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Tirador de la Quietud",
+      "role": "DPS / disparo condicionado",
+      "weapons": [
+        "Arco",
+        "Ballesta"
+      ],
+      "weaponFamilyIds": [
+        "bow_2h",
+        "crossbow_2h"
+      ],
+      "description": "Dispara menos veces, pero obtiene más precisión y daño si no ha cambiado de objetivo desde el ataque anterior.",
+      "combatIdentity": "patient_shot",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
@@ -255,68 +405,192 @@
   ],
   "kijins": [
     {
-      "name": "Lanzador de Calamidades",
-      "role": "DPS / media distancia",
+      "name": "Deudor de Cien Golpes",
+      "role": "Tanque / devolución de daño",
       "weapons": [
-        "Jabalinas gigantes",
-        "Hachas arrojadizas"
+        "Kanabō",
+        "Maza"
       ],
-      "description": "Desata proyectiles de gran impacto para quebrar la formación enemiga antes del choque.",
+      "weaponFamilyIds": [
+        "heavy_club_2h",
+        "mace_1h"
+      ],
+      "description": "Recibe voluntariamente el primer golpe destinado al aliado con menos vida; su siguiente kanabō devuelve parte de la presión acumulada.",
+      "combatIdentity": "debt_counter",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Destructor Kijin",
-      "role": "DPS pesado",
+      "name": "Demonio del Séptimo Impacto",
+      "role": "DPS / ciclo explosivo",
       "weapons": [
-        "Kanabō a dos manos",
         "Gran martillo",
-        "Maza pesada"
+        "Kanabō"
       ],
-      "description": "Especialista en ruptura frontal, golpes demoledores y presión física.",
+      "weaponFamilyIds": [
+        "hammer_2h",
+        "heavy_club_2h"
+      ],
+      "description": "Cada sexto golpe alimenta los cuernos; el séptimo rompe parte de la defensa enemiga y reinicia la cuenta.",
+      "combatIdentity": "seventh_impact",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Devorador de Maldiciones",
-      "role": "Bruiser / maldiciones",
+      "name": "Censor de Juramentos Rotos",
+      "role": "Especialista / castigo condicional",
       "weapons": [
-        "Guanteletes malditos",
-        "Maza ritual",
-        "Escudo maldito"
+        "Abanico ritual",
+        "Tomo"
       ],
-      "description": "Absorbe, contiene y transforma maldiciones en herramientas de combate.",
+      "weaponFamilyIds": [
+        "fan_1h",
+        "tome_1h"
+      ],
+      "description": "Señala al enemigo más ofensivo; si vuelve a atacar al aliado marcado, recibe una represalia instantánea.",
+      "combatIdentity": "vow_retribution",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Monje de los Cuernos",
-      "role": "DPS / control",
+      "name": "Portador de Dos Veredictos",
+      "role": "DPS / elección de ejecución",
       "weapons": [
-        "Guanteletes rituales",
+        "Espada",
+        "Lanza larga"
+      ],
+      "weaponFamilyIds": [
+        "sword_1h",
+        "spear_2h"
+      ],
+      "description": "Alterna tajos de precisión y golpes de fuerza: al repetir una modalidad pierde potencia, al alternar obtiene bonificaciones.",
+      "combatIdentity": "dual_verdict",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Monje de las Marcas Gemelas",
+      "role": "Apoyo / intercambios de atributo",
+      "weapons": [
+        "Guanteletes",
         "Bastón"
       ],
-      "description": "Une disciplina física, sellos y control preciso de energía Kijin.",
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "staff_2h"
+      ],
+      "description": "Sus dos cuernos rigen un intercambio temporal: entrega parte de su daño a un aliado y recibe una bonificación defensiva equivalente.",
+      "combatIdentity": "stat_exchange",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    }
+  ],
+  "hombres_bestia": [
+    {
+      "name": "Alfa de la Mordida Compartida",
+      "role": "DPS / ataque asistido",
+      "weapons": [
+        "Guanteletes",
+        "Daga"
+      ],
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "dagger_1h"
+      ],
+      "description": "Al asestar un crítico emite una señal instintiva que puede provocar un ataque básico inmediato del compañero designado.",
+      "combatIdentity": "pack_followup",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Señor de los Cien Demonios",
-      "role": "Invocador / mágico",
+      "name": "Médium del Aullido Hueco",
+      "role": "Apoyo / reacción colectiva",
       "weapons": [
-        "Bastón de invocación",
-        "Abanico ritual",
-        "Tomo de sellos"
+        "Bastón",
+        "Abanico ritual"
       ],
-      "description": "Especialista en pactos, sellos y entidades demoníacas vinculadas.",
+      "weaponFamilyIds": [
+        "staff_2h",
+        "fan_1h"
+      ],
+      "description": "Un aullido propio de su linaje aumenta la probabilidad de esquivar el siguiente golpe recibido por la manada.",
+      "combatIdentity": "pack_dodge",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Toro de la Primera Colisión",
+      "role": "Tanque / apertura",
+      "weapons": [
+        "Gran martillo",
+        "Hacha"
+      ],
+      "weaponFamilyIds": [
+        "hammer_2h",
+        "axe_1h"
+      ],
+      "description": "Interviene al iniciar la oleada y atrae el primer ataque de los enemigos; obtiene protección solo durante esa apertura.",
+      "combatIdentity": "opening_guard",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Zorro de los Mil Amagos",
+      "role": "DPS / engaño",
+      "weapons": [
+        "Daga",
+        "Chakrams"
+      ],
+      "weaponFamilyIds": [
+        "dagger_1h",
+        "chakrams_pair"
+      ],
+      "description": "Alterna golpes reales y amagos rápidos; cada amago exitoso incrementa la precisión del siguiente golpe sin generar clones físicos.",
+      "combatIdentity": "feint_accuracy",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Cuidador del Cachorro de Guerra",
+      "role": "Invocador / bestia vinculada",
+      "weapons": [
+        "Cetro",
+        "Bastón"
+      ],
+      "weaponFamilyIds": [
+        "scepter_1h",
+        "staff_2h"
+      ],
+      "description": "Combate junto a una sola cría espiritual de su linaje; sus ataques evolucionan con la supervivencia del maestro dentro de cada combate.",
+      "combatIdentity": "bonded_cub",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
@@ -325,70 +599,95 @@
   ],
   "vampiros": [
     {
-      "name": "Hemolancero",
-      "role": "DPS / alcance",
-      "weapons": [
-        "Lanza física",
-        "Jabalinas",
-        "Catalizador hemático"
-      ],
-      "description": "Especialista en ataques perforantes y control lineal, capaz de desarrollar técnicas de sangre.",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Sanguinario Noble",
-      "role": "Duelista",
+      "name": "Coleccionista de Últimos Suspiros",
+      "role": "DPS / ejecución",
       "weapons": [
         "Estoque",
-        "Espadas gemelas",
-        "Sable"
+        "Daga"
       ],
-      "description": "Combina refinamiento aristocrático con un estilo ofensivo preciso y agresivo.",
+      "weaponFamilyIds": [
+        "rapier_1h",
+        "dagger_1h"
+      ],
+      "description": "Cuanto más baja es la vida del objetivo, mayor es la precisión de su estoque; no absorbe vida ni aplica sangrado periódico.",
+      "combatIdentity": "execute_precision",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Señor de los Murciélagos",
-      "role": "Invocador",
+      "name": "Mayordomo del Trono Vacío",
+      "role": "Apoyo / protección selectiva",
       "weapons": [
-        "Bastón de invocación",
-        "Tomo de sangre",
-        "Cetro"
-      ],
-      "description": "Dirige familiares y enjambres vinculados desde el centro de la formación.",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Tejedor Carmesí",
-      "role": "Mago / control",
-      "weapons": [
-        "Guanteletes hemománticos",
-        "Varita",
+        "Cetro",
         "Tomo"
       ],
-      "description": "Especialista en sellos, patrones y técnicas de sangre cuando las aprende.",
+      "weaponFamilyIds": [
+        "scepter_1h",
+        "tome_1h"
+      ],
+      "description": "Selecciona al aliado con más daño potencial como su señor y dedica sus habilidades a potenciarlo y protegerlo en momentos críticos.",
+      "combatIdentity": "single_patron",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Caballero de la Sed Eterna",
-      "role": "Defensor / DPS",
+      "name": "Confesor de Sangre Fría",
+      "role": "Control / represalia mental",
       "weapons": [
-        "Espada larga y escudo",
-        "Mandoble",
-        "Espada bastarda"
+        "Tomo",
+        "Varita"
       ],
-      "description": "Caballero resistente que combina armadura, presión frontal y técnicas vampíricas.",
+      "weaponFamilyIds": [
+        "tome_1h",
+        "wand_1h"
+      ],
+      "description": "Después de recibir un ataque directo, impone al agresor una penalización breve de precisión durante su siguiente acción.",
+      "combatIdentity": "revenge_accuracy",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Caballero del Ataúd Abierto",
+      "role": "Tanque / supervivencia límite",
+      "weapons": [
+        "Mandoble",
+        "Espada"
+      ],
+      "weaponFamilyIds": [
+        "greatsword_2h",
+        "sword_1h"
+      ],
+      "description": "Al descender a un umbral crítico de vida obtiene una defensa extraordinaria frente a un único golpe; tiene un tiempo de reutilización prolongado.",
+      "combatIdentity": "near_death_guard",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Esgrimista de la Rosa Negra",
+      "role": "DPS / duelos de crítico",
+      "weapons": [
+        "Estoque",
+        "Espada"
+      ],
+      "weaponFamilyIds": [
+        "rapier_1h",
+        "sword_1h"
+      ],
+      "description": "Cuanto más tiempo combate contra el mismo rival, más probabilidad tiene de responder a sus ataques con una estocada crítica.",
+      "combatIdentity": "duel_focus",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
@@ -397,71 +696,95 @@
   ],
   "insectoides": [
     {
-      "name": "Artillero Quitinoso",
-      "role": "DPS / distancia",
+      "name": "Matriarca de la Segunda Crisálida",
+      "role": "Support / protección recuperadora",
       "weapons": [
-        "Cañón biológico de antebrazo",
-        "Lanzador de espinas",
-        "Cañón de quitina"
+        "Catalizador",
+        "Bastón"
       ],
-      "description": "Convierte estructuras biológicas en armamento de proyectiles.",
+      "weaponFamilyIds": [
+        "catalyst_1h",
+        "staff_2h"
+      ],
+      "description": "Envuelve brevemente al aliado de menor vida con una membrana que reduce el siguiente impacto y recupera parte de su vida cuando se rompe.",
+      "combatIdentity": "cocoon_guard",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Emperador de la Colmena",
-      "role": "Apoyo / invocador",
+      "name": "Martillo de Élitra",
+      "role": "Tanque / resistencia física",
       "weapons": [
-        "Bastón de colmena",
-        "Tótem orgánico",
-        "Catalizador de feromonas"
+        "Maza",
+        "Guanteletes"
       ],
-      "description": "Coordina aliados y criaturas mediante señales de colmena y control territorial.",
+      "weaponFamilyIds": [
+        "mace_1h",
+        "gauntlets_pair"
+      ],
+      "description": "Cierra sus élitros como defensa natural; reduce daño físico directo pero reduce su propia frecuencia de ataque mientras lo hace.",
+      "combatIdentity": "elytra_stance",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Segador Mantídeo",
-      "role": "DPS / barrido",
+      "name": "Aguijón de la Cuenta Regresiva",
+      "role": "DPS / golpe diferido",
       "weapons": [
-        "Guadaña larga",
-        "Guadañas gemelas",
+        "Cuchillas de antebrazo",
+        "Lanza"
+      ],
+      "weaponFamilyIds": [
+        "arm_blades_pair",
+        "spear_1h"
+      ],
+      "description": "Cada impacto carga un aguijonazo; al completar una cuenta fija libera un único daño instantáneo reforzado, sin venenos periódicos.",
+      "combatIdentity": "sting_counter",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Obrero de las Cien Pinzas",
+      "role": "DPS / golpes múltiples",
+      "weapons": [
+        "Arma biológica mutable",
         "Cuchillas de antebrazo"
       ],
-      "description": "Especialización de cortes amplios, alcance medio y movilidad depredadora.",
+      "weaponFamilyIds": [
+        "bio_weapon_pair",
+        "arm_blades_pair"
+      ],
+      "description": "Divide un ataque en varias presiones breves con menor daño individual, favoreciendo efectos que se activan al acertar.",
+      "combatIdentity": "multi_strike",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Bastión Escarabajo",
-      "role": "Defensor",
+      "name": "Coronel de Antenas Partidas",
+      "role": "Support / órdenes alternas",
       "weapons": [
-        "Gran escudo de quitina",
-        "Maza y escudo",
-        "Escudo a dos manos"
+        "Catalizador",
+        "Abanico ritual"
       ],
-      "description": "Tanque biológico centrado en coraza, bloqueo y resistencia prolongada.",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Maestro de la Metamorfosis",
-      "role": "Adaptativo",
-      "weapons": [
-        "Armas biológicas mutables",
-        "Garras",
-        "Pinzas",
-        "Lanzadores orgánicos"
+      "weaponFamilyIds": [
+        "catalyst_1h",
+        "fan_1h"
       ],
-      "description": "Adapta estructuras corporales para responder a amenazas y ramas evolutivas distintas.",
+      "description": "Envía señales de antenas que alternan entre una orden de ataque y otra de defensa a dos compañeros distintos.",
+      "combatIdentity": "antenna_orders",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
@@ -470,68 +793,95 @@
   ],
   "reptro": [
     {
-      "name": "Garra Fulminante",
-      "role": "DPS cuerpo a cuerpo / movilidad",
+      "name": "Trenzador de Rayos Gemelos",
+      "role": "DPS / cadena eléctrica",
       "weapons": [
-        "Garras retráctiles",
-        "Guanteletes ligeros"
+        "Catalizador",
+        "Guanteletes"
       ],
-      "description": "Explota velocidad, garras retráctiles y descargas instantáneas al entrar y salir del combate.",
+      "weaponFamilyIds": [
+        "catalyst_1h",
+        "gauntlets_pair"
+      ],
+      "description": "Hace pasar sus descargas de un objetivo a otro; cada salto causa menos daño, pero nunca requiere una cola física.",
+      "combatIdentity": "chain_lightning",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Azote de Cola Eléctrica",
-      "role": "DPS / alcance medio",
+      "name": "Latigador de Cola de Plasma",
+      "role": "DPS / contraataque eléctrico",
       "weapons": [
-        "Cola eléctrica natural",
-        "Catalizadores de descarga"
+        "Guanteletes",
+        "Lanza"
       ],
-      "description": "Moldea la cola formada únicamente por electricidad como un látigo flexible capaz de atacar desde ángulos difíciles.",
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "spear_1h"
+      ],
+      "description": "Usa únicamente su cola eléctrica para responder a ataques enemigos cercanos con una descarga de alcance medio.",
+      "combatIdentity": "tail_retaliation",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Ojo del Pedregal",
-      "role": "Ranger / cazador",
+      "name": "Calibrador de Frecuencia",
+      "role": "Apoyo / velocidad ofensiva",
       "weapons": [
-        "Arco corto",
-        "Jabalinas",
-        "Ballesta ligera"
+        "Bastón",
+        "Catalizador"
       ],
-      "description": "Aprovecha su visión reptiliana, el camuflaje rocoso y las posiciones elevadas para cazar objetivos.",
+      "weaponFamilyIds": [
+        "staff_2h",
+        "catalyst_1h"
+      ],
+      "description": "Sincroniza pulsos de su cabello eléctrico con un aliado para mejorar la velocidad de su siguiente ataque a cambio de reducir la propia.",
+      "combatIdentity": "frequency_exchange",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Bastión de Escama Seca",
-      "role": "Defensor / primera línea",
+      "name": "Pararrayos Errante",
+      "role": "DPS / descarga recibida",
       "weapons": [
-        "Escudo pesado",
-        "Lanza y escudo",
-        "Maza y escudo"
+        "Guanteletes",
+        "Maza"
       ],
-      "description": "Endurece sus escamas y convierte el terreno seco y rocoso en ventaja defensiva.",
+      "weaponFamilyIds": [
+        "gauntlets_pair",
+        "mace_1h"
+      ],
+      "description": "Acumula energía al recibir daño directo y convierte las cargas en una ráfaga instantánea contra un objetivo.",
+      "combatIdentity": "charge_burst",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Conductor del Sol Árido",
-      "role": "DPS mágico / electricidad",
+      "name": "Gemelo de Chispa",
+      "role": "Invocador / eco energético",
       "weapons": [
-        "Bastón conductor",
-        "Catalizador solar",
-        "Guanteletes conductores"
+        "Tomo",
+        "Catalizador"
       ],
-      "description": "Acumula energía bajo el sol intenso y la transforma en descargas eléctricas devastadoras.",
+      "weaponFamilyIds": [
+        "tome_1h",
+        "catalyst_1h"
+      ],
+      "description": "Moldea parte de su electricidad en un eco flotante de vida limitada que replica una fracción de sus ataques básicos.",
+      "combatIdentity": "electric_echo",
+      "combatStatus": "diseñada; habilidades especiales pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
