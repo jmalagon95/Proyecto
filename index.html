@@ -767,14 +767,14 @@ function drawSquads(){
    '<button data-clear="'+i+'" '+(!p?'disabled':'')+'>×</button></div>';
  }).join('');
  $('kamiPresetRows').querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{
-  const p=missionSquads()[Number(b.dataset.load)];if(p){state.team=availableSquad(p.ids);save();renderTeam()}
+  const p=missionSquads()[Number(b.dataset.load)];if(p){state.team=availableSquad(p.ids);state.missionPositions={...(p.positions||{})};save();renderTeam()}
  });
  $('kamiPresetRows').querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{
   const i=Number(b.dataset.save),ids=availableSquad(state.team);
   if(!ids.length){toast('Elige al menos un personaje.');return}
   const p=missionSquads()[i];if(p&&!confirm('¿Sobrescribir '+p.name+'?'))return;
   const name=prompt('Nombre de la formación',p?.name||'Equipo '+(i+1));if(name===null)return;
-  missionSquads()[i]={name:(name.trim()||'Equipo '+(i+1)).slice(0,30),ids};save();drawSquads();
+  missionSquads()[i]={name:(name.trim()||'Equipo '+(i+1)).slice(0,30),ids,positions:Object.fromEntries(ids.map(id=>[id,{...normalizeFormation()[id]}]))};save();drawSquads();
  });
  $('kamiPresetRows').querySelectorAll('[data-clear]').forEach(b=>b.onclick=()=>{
   if(!confirm('¿Eliminar formación?'))return;
@@ -825,6 +825,83 @@ function displayMissionStats(b){
  };
  summary.querySelectorAll('[data-stats]').forEach(btn=>btn.onclick=()=>render(btn.dataset.stats));render('damage');
 }
+
+/* KAMI_MANUAL_FORMATIONS_V1 */
+function formationPositions(){
+ if(!state.missionPositions||typeof state.missionPositions!=='object'||Array.isArray(state.missionPositions))
+  state.missionPositions={};
+ return state.missionPositions;
+}
+function formationTeam(){
+ return availableSquad(state.team);
+}
+function formationInitial(id,index){
+ const rec=formationPositions()[id];
+ if(rec&&[0,1,2].includes(Number(rec.lane))&&Number.isInteger(Number(rec.slot))&&rec.slot>=0&&rec.slot<5)
+  return {lane:Number(rec.lane),slot:Number(rec.slot)};
+ const char=state.characters.find(c=>c.id===id);
+ const lane=window.KamiBattleLanes?.laneFor(char,index)??index%3;
+ return {lane,slot:index};
+}
+function normalizeFormation(){
+ const ids=formationTeam(),occupied=new Set(),positions=formationPositions();
+ for(let i=0;i<ids.length;i++){
+  const id=ids[i];let pos=formationInitial(id,i);
+  if(occupied.has(pos.lane+':'+pos.slot)){
+   outer:for(let lane=0;lane<3;lane++)for(let slot=0;slot<5;slot++){
+    if(!occupied.has(lane+':'+slot)){pos={lane,slot};break outer}
+   }
+  }
+  occupied.add(pos.lane+':'+pos.slot);positions[id]=pos;
+ }
+ return positions;
+}
+let selectedFormationHero=null;
+const formationBox=document.createElement('section');
+formationBox.id='kamiFormationPicker';
+formationBox.innerHTML='<div class="kami-formation-head"><strong>COLOCA TU EQUIPO</strong><small>Selecciona un héroe y toca la casilla que prefieras</small></div><div id="kamiFormationHeroes"></div><div id="kamiFormationGrid"></div>';
+$('teamSlots').before(formationBox);
+const formationStyle=document.createElement('style');
+formationStyle.textContent='#kamiFormationPicker{padding:12px;margin:12px 0;border:1px solid #c3a3757c;border-radius:16px;background:linear-gradient(135deg,#131d2d,#0a121e);color:#e5e5ee}.kami-formation-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.kami-formation-head strong{font-size:12px;color:#e5c58e}.kami-formation-head small{font-size:10px;color:#9eaec0}.kami-formation-heroes{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.kami-formation-hero{border:1px solid #a8aabd55;color:#e6e9f2;background:#1a2a3f;border-radius:9px;padding:8px;min-height:39px;font-size:11px;cursor:pointer}.kami-formation-hero.selected{background:#80643d;border-color:#ffda97;color:#fff;box-shadow:0 0 9px #d3a66677}.kami-formation-lane{display:flex;gap:5px;align-items:center;margin-top:7px}.kami-formation-lane-label{width:52px;flex-shrink:0;color:#a9b5c8;font-size:10px}.kami-formation-slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;flex:1}.kami-formation-slot{min-height:49px;max-width:100%;border-radius:8px;border:1px dashed #9faaba55;background:#172238;color:#eff1fa;font-size:10px;line-height:1.2;word-break:break-word;padding:3px;cursor:pointer;touch-action:manipulation}.kami-formation-slot.occupied{border-style:solid;border-color:#b69c6888;background:#433c32}.kami-formation-slot.selected{border-color:#ffe2a7;background:#76542d}.kami-formation-legend{color:#95a5bb;font-size:10px;margin-top:9px}';
+document.head.append(formationStyle);
+function renderFormation(){
+ if(!document.getElementById('kamiFormationGrid'))return;
+ const ids=formationTeam(),positions=normalizeFormation();
+ if(!ids.includes(selectedFormationHero))selectedFormationHero=ids[0]||null;
+ const heroes=document.getElementById('kamiFormationHeroes');
+ heroes.className='kami-formation-heroes';
+ heroes.innerHTML=ids.map(id=>{
+  const ch=state.characters.find(c=>c.id===id);
+  return '<button type="button" class="kami-formation-hero '+(selectedFormationHero===id?'selected':'')+'" data-formation-hero="'+esc(id)+'">'+esc(ch?.name||'Héroe')+'</button>';
+ }).join('');
+ const grid=document.getElementById('kamiFormationGrid');
+ const labels=['TRASERO','MEDIO','FRONTAL'];
+ grid.innerHTML=labels.map((name,lane)=>{
+  let cells='';
+  for(let slot=0;slot<5;slot++){
+   const id=ids.find(id=>positions[id]?.lane===lane&&positions[id]?.slot===slot);
+   const hero=state.characters.find(c=>c.id===id);
+   cells+='<button type="button" data-formation-lane="'+lane+'" data-formation-slot="'+slot+'" class="kami-formation-slot '+(id?'occupied ':'')+(id===selectedFormationHero?'selected':'')+'">'+(hero?esc(hero.name):'+')+'</button>';
+  }
+  return '<div class="kami-formation-lane"><span class="kami-formation-lane-label">'+name+'</span><div class="kami-formation-slots">'+cells+'</div></div>';
+ }).join('')+'<p class="kami-formation-legend">Los cinco héroes pueden ocupar cualquier carril o columna. Al seleccionar una casilla ocupada, intercambian posiciones. El combate sigue siendo automático.</p>';
+ heroes.querySelectorAll('[data-formation-hero]').forEach(btn=>btn.onclick=()=>{
+  selectedFormationHero=btn.dataset.formationHero;renderFormation();
+ });
+ grid.querySelectorAll('[data-formation-lane]').forEach(btn=>btn.onclick=()=>{
+  if(!selectedFormationHero)return;
+  const lane=Number(btn.dataset.formationLane),slot=Number(btn.dataset.formationSlot);
+  const current=positions[selectedFormationHero];
+  const other=ids.find(id=>id!==selectedFormationHero&&positions[id]?.lane===lane&&positions[id]?.slot===slot);
+  if(other)positions[other]={lane:current.lane,slot:current.slot};
+  positions[selectedFormationHero]={lane,slot};
+  save();renderFormation();
+ });
+}
+const renderManualTeam=renderTeam;
+renderTeam=function(){renderManualTeam();renderFormation()};
+renderFormation();
+
   $('startMission').onclick=()=>{
     if(!state.team.length){toast('Necesitas al menos un héroe.');return}
     const m=missionFor(state.selectedMission);
@@ -892,7 +969,7 @@ function displayMissionStats(b){
      $('speedBtn').hidden=true;$('speedBtn').disabled=true;
      $('autoBtn').hidden=true;$('autoBtn').disabled=true;
 team.forEach((c,index)=>{
-      let u={id:c.id,name:c.name,character:c,enemy:false,hp:Math.max(1,c.hp||Math.ceil(maxHP(c)*.2)),maxHp:maxHP(c),attack:combatStatDamage(c.stats,c.level,c.star),defense:combatStatDefense(c.stats),index,lane:(window.KamiBattleLanes?.laneFor(c,index)??index%3),cooldown:.4+index*.18,damage:0,kills:0};
+      let u={id:c.id,name:c.name,character:c,enemy:false,hp:Math.max(1,c.hp||Math.ceil(maxHP(c)*.2)),maxHp:maxHP(c),attack:combatStatDamage(c.stats,c.level,c.star),defense:combatStatDefense(c.stats),index,lane:(normalizeFormation()[c.id]?.lane??index%3),slot:(normalizeFormation()[c.id]?.slot??index),cooldown:.4+index*.18,damage:0,kills:0};
       battle.allies.push(u);unitDom(u);
     });
     for(let i=0;i<Math.min(3,1+m.difficulty);i++)addGoblin();
