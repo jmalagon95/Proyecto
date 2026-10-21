@@ -21,6 +21,7 @@ on:
       - 'src/systems/master-racial-bridge.js'
       - 'src/systems/battle-lanes.js'
       - 'scripts/integrate-battle-lanes.mjs'
+      - 'scripts/test-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
       - 'src/systems/effects.js'
       - 'scripts/racial-skill-design.mjs'
@@ -64,6 +65,9 @@ jobs:
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
+          node scripts/test-battle-lanes.mjs
+          node --check src/systems/battle-lanes.js
+          node --check src/systems/master-racial-bridge.js
           node scripts/integrate-mission-experience.mjs
           node scripts/enrich-mission-chronicle.mjs
           node scripts/integrate-goblin-stat-gacha.mjs
