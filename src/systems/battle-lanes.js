@@ -74,14 +74,22 @@ function flash(x,y,kind){
 function onAttack(actor,target){
  if(!actor?.node||!target?.node)return;
  const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
- playRig(actor,'attack');playRig(target,'hit');
+ // Wind-up -> hit -> recovery. El daño se sigue calculando en el motor,
+ // pero el VFX y la reacción se muestran en el fotograma de contacto.
+ playRig(actor,'attack');
  const node=actor.node;
  node.style.setProperty('--kami-step-x',clamp((b.x-a.x)*.16,-11,11)+'vw');
  node.classList.remove('kami-lunge');void node.offsetWidth;node.classList.add('kami-lunge');
- target.node.classList.remove('kami-impact');void target.node.offsetWidth;target.node.classList.add('kami-impact');
- flash(b.x,b.y,actor.character?.role?.toLowerCase().includes('mág')?'magic':'hit');
- shake(getField(),2.5);
- setTimeout(()=>{node.classList.remove('kami-lunge');target.node?.classList.remove('kami-impact')},380);
+ const hitTarget=target,hitPosition=b;
+ setTimeout(()=>{
+  if(!hitTarget?.node?.isConnected)return;
+  playRig(hitTarget,'hit');
+  hitTarget.node.classList.remove('kami-impact');void hitTarget.node.offsetWidth;
+  hitTarget.node.classList.add('kami-impact');
+  flash(hitPosition.x,hitPosition.y,actor.character?.role?.toLowerCase().includes('mág')?'magic':'hit');
+  shake(getField(),2.5);
+ },175);
+ setTimeout(()=>{node.classList.remove('kami-lunge');target.node?.classList.remove('kami-impact')},420);
 }
 function onSkill(actor,target,skill,kind){
  if(!actor?.node)return;
