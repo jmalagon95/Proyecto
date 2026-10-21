@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {buildRacialSkills,RACIAL_SKILL_DESIGN_VERSION} from './racial-skill-design.mjs';
 
 const ROOT=process.cwd();
 const classes=JSON.parse(fs.readFileSync(path.join(ROOT,'data/classes.json'),'utf8'));
@@ -192,12 +193,12 @@ function buildSkillsForClass(cls){
 const passives=buildPassives();
 fs.writeFileSync(path.join(outDir,'passives.json'),JSON.stringify({schemaVersion:targets.schemaVersion,total:passives.length,items:passives}));
 
-const manifest={schemaVersion:targets.schemaVersion,generatedAt:new Date().toISOString(),passives:passives.length,classes:{},skillType:'active',combatEngineIntegration:'pending'};
+const manifest={schemaVersion:targets.schemaVersion,generatedAt:new Date().toISOString(),passives:passives.length,classes:{},skillType:'active',racialSkillDesignVersion:RACIAL_SKILL_DESIGN_VERSION,combatEngineIntegration:'modular'};
 for(const cls of classEntries){
-  const items=buildSkillsForClass(cls);
+  const items=cls.group==='generic'?buildSkillsForClass(cls):buildRacialSkills(cls,targets);
   const file=slug(cls.name)+'.json';
   fs.writeFileSync(path.join(skillsDir,file),JSON.stringify({schemaVersion:targets.schemaVersion,className:cls.name,total:items.length,items}));
-  manifest.classes[cls.name]={file:'skills/'+file,total:items.length,group:cls.group,rankCounts:targets.skills.rankCountsPerClass};
+  manifest.classes[cls.name]={file:'skills/'+file,total:items.length,group:cls.group,rankCounts:targets.skills.rankCountsPerClass,designVersion:cls.group==='generic'?3:RACIAL_SKILL_DESIGN_VERSION};
 }
 manifest.totalSkills=Object.values(manifest.classes).reduce((a,b)=>a+b.total,0);
 if(manifest.totalSkills!==classEntries.length*targets.skills.minimumPerClass)throw new Error('Mismatch skill count');
