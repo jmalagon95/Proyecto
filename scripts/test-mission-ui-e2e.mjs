@@ -49,6 +49,22 @@ try{
  assert.equal(battleState.heroes,2,'No aparecen los dos héroes seleccionados');
  assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
  assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
+ await page.waitForFunction(()=>Boolean(window.KamiBattleFocus&&document.querySelector('#battleField .fighter.enemy')));
+ await page.locator('#battleField .fighter:not(.enemy)').first().click();
+ await page.locator('#battleField .fighter.enemy').first().click();
+ const focusStatus=await page.evaluate(()=>({
+   selected:window.KamiBattleFocus?.selected,
+   assignments:[...window.KamiBattleFocus.assigned.entries()],
+   marked:document.querySelectorAll('#battleField .fighter.kami-focus-marked').length,
+   label:document.getElementById('kamiFocusLabel')?.textContent
+ }));
+ console.log('FOCUS_CHECK',JSON.stringify(focusStatus));
+ assert.equal(focusStatus.selected,'test01');
+ assert.equal(focusStatus.assignments.length,1);
+ assert.equal(focusStatus.marked,1);
+ await page.locator('#kamiClearFocus').click();
+ assert.equal(await page.evaluate(()=>window.KamiBattleFocus.assigned.size),0);
+
  assert.ok(await page.locator('#kamiResultSummary').count(),'Falta el panel de resultados de daño y MVP');
  assert.ok(await page.locator('#resultRows').count(),'Falta la clasificación de resultado');
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
