@@ -85,7 +85,7 @@ function displayMissionStats(b){
 `;
 inject("  $('startMission').onclick=",code);
 replace("function logBattle(msg){if($('battleLog'))$('battleLog').textContent=msg}","function logBattle(msg){if(battle&&Array.isArray(battle.pendingChronicle)&&!battle.ended)battle.pendingChronicle.push(String(msg));if($('battleLog'))$('battleLog').textContent=msg}");
-inject("     team.forEach((c,index)=>",String.raw`
+inject("team.forEach((c,index)=>",String.raw`
      battle.speed=1;battle.auto=true;
      battle.pendingChronicle=[];battle.chronicle=[];battle.lastNarratedSecond=0;
      $('kamiChronicleEntries').replaceChildren();
