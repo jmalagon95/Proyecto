@@ -28,7 +28,7 @@ if(!html.includes(marker)){
    "attack:combatStatDamage(c.stats,c.level,c.star),defense:combatStatDefense(c.stats)",'Poder de aliados');
  const start=html.indexOf('  function addGoblin(){');
  const end=html.indexOf('     e.maxHp=e.hp;battle.enemies.push(e);',start);
- if(start<0||end<0||end-start>1200)throw new Error('No se reconoce el constructor de goblins');
+ if(start<0||end<0||end-start>1200)throw new Error('No se reconoce el constructor de goblins: start='+start+', end='+end+', near='+html.slice(Math.max(0,html.indexOf('function addGoblin')-130),html.indexOf('function addGoblin')+1000).replace(/\\n/g,' '));
  const replacement=`  function addGoblin(){
      const m=battle.mission,index=battle.enemies.length;
      const star=1,level=1;
