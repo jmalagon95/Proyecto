@@ -24,6 +24,7 @@ on:
       - 'scripts/integrate-manual-formations.mjs'
       - 'scripts/test-manual-formations.mjs'
       - 'scripts/audit-mission-ui.mjs'
+      - 'scripts/audit-lobby-ui.mjs'
       - 'scripts/test-mission-ui-e2e.mjs'
       - 'scripts/fix-mission-runtime.mjs'
       - 'scripts/test-battle-lanes.mjs'
@@ -77,6 +78,7 @@ jobs:
           node scripts/test-battle-lanes.mjs
           node scripts/test-manual-formations.mjs
           node scripts/audit-mission-ui.mjs
+          node scripts/audit-lobby-ui.mjs
           node --check src/systems/battle-lanes.js
           node --check src/systems/master-racial-bridge.js
           node scripts/integrate-mission-experience.mjs
