@@ -12,6 +12,7 @@ class Node{
  getAttribute(k){return this.attrs[k]??null}
  hasAttribute(k){return k in this.attrs}
  appendChild(n){this.children.push(n);n.parentNode=this;return n}
+ append(n){return this.appendChild(n)}
  insertBefore(n,ref){if(!ref)return this.appendChild(n);const i=this.children.indexOf(ref);this.children.splice(i,0,n);n.parentNode=this;return n}
  remove(){this.parentNode?.children.splice(this.parentNode.children.indexOf(this),1)}
  querySelectorAll(selector){let out=[];for(const c of this.children){out.push(c,...c.querySelectorAll(selector))}
