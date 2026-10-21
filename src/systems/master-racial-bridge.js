@@ -1,3 +1,4 @@
+import {resolveDefense,showDefense} from './combat-defense.js';
 import {skillRangeMeters,weaponRangeMeters,distanceMeters,withinReach} from './combat-reach.js';
 import {racialTechniqueFor} from './racial-techniques.js';
 import {resolveSkill} from './effects.js';
@@ -50,7 +51,9 @@ function notify(hooks,a,t,title,amount,kind){
 }
 function hit(b,a,e,amount,hooks,title){
   if(!e||e.hp<=0)return 0;
-  const actual=Math.min(round(amount),e.hp);
+  const defense=resolveDefense(a,e,amount);
+  showDefense(e,defense);
+  const actual=Math.min(round(defense.damage),e.hp);
   e.hp=Math.max(0,e.hp-actual);
   a.damage=(a.damage||0)+actual;
   if(e.hp===0){b.kills=(b.kills||0)+1;a.kills=(a.kills||0)+1}
