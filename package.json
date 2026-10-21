@@ -15,7 +15,8 @@
     "test:sexes": "node scripts/test-sex-variants.mjs",
     "predev": "node scripts/ensure-content.mjs",
     "prebuild": "node scripts/ensure-content.mjs",
-    "test:skill-catalog": "node scripts/test-skill-catalog.mjs"
+    "test:skill-catalog": "node scripts/test-skill-catalog.mjs",
+    "test:racial-combat": "node scripts/test-racial-techniques.mjs"
   },
   "dependencies": {
     "pixi.js": "^8.8.1"
