@@ -33,10 +33,10 @@ function svg(name,attrs,parent){
 }
 function insert(node,tag,attributes){
  // Keep skeleton children underneath the illustrated limb artwork.
- const firstBone=[...node.children].find(n=>n.hasAttribute('data-bone'));
+ const firstBone=[...node.children].find(n=>n.hasAttribute?.('data-bone')||n.attrs?.['data-bone']);
  const a=document.createElementNS(NS,tag);
  for(const [k,v] of Object.entries(attributes))a.setAttribute(k,String(v));
- node.insertBefore(a,firstBone||null);
+ if(node.insertBefore)node.insertBefore(a,firstBone||null);else node.appendChild(a);
  return a;
 }
 function paint(node,id){
@@ -61,7 +61,7 @@ export function installWoodSwordKairakh({nodes,svg:root},character){
  for(const [bone,node] of Object.entries(nodes)){
   // Retain nested bone groups, sockets and anatomical pivots, but replace
   // mannequin silhouette; avoid painting the default mannequin over cloth.
-  [...node.children].filter(n=>['path','ellipse','rect','circle'].includes(n.tagName.toLowerCase())).forEach(n=>n.remove());
+  [...node.children].filter(n=>['path','ellipse','rect','circle'].includes(n.tagName.toLowerCase())).forEach(n=>{if(n.remove)n.remove();else node.children.splice(node.children.indexOf(n),1)});
   paint(node,bone);
  }
  const arm=nodes.wristR;
@@ -81,8 +81,8 @@ export function installWoodSwordKairakh({nodes,svg:root},character){
 
 // Visual keyframes, never changing actual combat damage or cooldowns.
 export function tickWoodSwordKairakh(rig){
- if(rig?.svg?.getAttribute('data-combat-skin')!=='kairakh-star1-wood-sword')return;
- const arc=rig.svg.querySelector('[data-wood-strike-arc]');if(!arc)return;
+ if((rig?.svg?.getAttribute?.('data-combat-skin')||rig?.svg?.attrs?.['data-combat-skin'])!=='kairakh-star1-wood-sword')return;
+ const arc=rig.svg.querySelector?.('[data-wood-strike-arc]');if(!arc)return;
  const progress=rig.duration>0?Math.max(0,Math.min(1,rig.time/rig.duration)):0;
  const visible=rig.mode==='attack'&&progress>.31&&progress<.72;
  arc.setAttribute('opacity',visible?String(Math.sin((progress-.31)/.41*Math.PI)*.9):'0');
