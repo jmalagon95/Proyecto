@@ -1,4 +1,5 @@
 import {attachRig,playRig,tickRig,rigState} from './mannequin-rig.js';
+import {playKairakhBasicAttack} from './kairakh-sprite-attack.js';
 // Kami No Challenge · Campo 2.5D por carriles.
 // Renderer ligero: conserva la simulación existente y reacciona a eventos reales.
 const visual=new WeakMap();
@@ -74,6 +75,16 @@ function flash(x,y,kind){
 function onAttack(actor,target){
  if(!actor?.node||!target?.node)return;
  const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
+ const illustrated=playKairakhBasicAttack(actor,{onImpact:()=>{
+   if(!target?.node?.isConnected)return;
+   playRig(target,'hit');
+   target.node.classList.remove('kami-impact');void target.node.offsetWidth;
+   target.node.classList.add('kami-impact');
+   flash(b.x,b.y,'hit');shake(getField(),2.5);
+   setTimeout(()=>target.node?.classList.remove('kami-impact'),310);
+ }});
+ if(illustrated)return;
+
  // Wind-up -> hit -> recovery. El daño se sigue calculando en el motor,
  // pero el VFX y la reacción se muestran en el fotograma de contacto.
  playRig(actor,'attack');
