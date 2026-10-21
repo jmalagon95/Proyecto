@@ -177,6 +177,7 @@ function tick(b,dt){
  if(!b||b.ended)return;
  const field=getField();if(!field)return;
  createArena(field);
+ coordinateEnemyFocus(b,dt);
  // Solamente posiciones visuales: no se teletransportan durante un ataque.
  for(const unit of [...b.allies,...b.enemies]){
   if(!unit.node)continue;
@@ -187,25 +188,77 @@ function tick(b,dt){
   if(unit.hp>0)unit.node.classList.toggle('kami-low-hp',unit.hp/unit.maxHp<.25);
  }
 }
+// Enemy tactical focus: stable squad targets, threat assessment and finishing pressure.
+const enemyFocus=new WeakMap();
+const targetPressure=new WeakMap();
+let focusClock=0;
+function unitPosition(u){return visual.get(u)||position(u)}
+function threatScore(attacker,target){
+ const life=target.hp/Math.max(1,target.maxHp);
+ const distance=worldDistance(unitPosition(attacker),unitPosition(target));
+ const role=String(target.character?.role||target.ref?.role||'').toLowerCase();
+ const heal=/sanador|curador|apoyo|healer|hierofante|custodio/.test(role);
+ const ranged=/mago|magia|ranger|tirador|arquero|invoc|dps/.test(role);
+ const tank=/tanque|defens|protector/.test(role);
+ const pressure=targetPressure.get(target)||0;
+ // Same scale for every enemy: weak targets, support units, reachable victims.
+ return (1-life)*35+(heal?19:0)+(ranged?11:0)-(tank?9:0)
+  -Math.min(26,distance*1.2)+Math.min(17,pressure*6);
+}
 function chooseTarget(attacker,candidates){
  const alive=candidates.filter(e=>e.hp>0);
  if(!alive.length)return null;
- const lane=laneOf(attacker);
- const role=String(attacker.character?.role||attacker.ref?.role||'').toLowerCase();
- // La proximidad entre carriles es espacial; ninguno es una línea defensiva obligatoria.
- const threat=e=>{
-  const dist=Math.abs(lane-laneOf(e));
-  const life=e.hp/Math.max(1,e.maxHp);
-  const enemyRole=String(e.character?.role||e.ref?.role||'').toLowerCase();
-  let score=30-dist*19+(1-life)*15;
-  if(/tanque|defens|prote/.test(role))score+=dist===0?7:0;
-  if(/ranger|tirador|mag|dps|duelista/.test(role))score+=(1-life)*16;
-  if(attacker.enemy&&/sanador|apoyo|healer/.test(enemyRole))score+=dist===0?13:0;
-  if(attacker.enemy&&/tanque|defens/.test(enemyRole))score+=dist===0?14:0;
-  return score;
- };
- return alive.sort((a,b)=>threat(b)-threat(a)||a.hp-b.hp)[0];
+ if(!attacker.enemy){
+  const lane=laneOf(attacker);
+  const role=String(attacker.character?.role||attacker.ref?.role||'').toLowerCase();
+  const threat=e=>{
+   const dist=Math.abs(lane-laneOf(e)),life=e.hp/Math.max(1,e.maxHp);
+   let score=30-dist*19+(1-life)*15;
+   if(/tanque|defens|prote/.test(role))score+=dist===0?7:0;
+   if(/ranger|tirador|mag|dps|duelista/.test(role))score+=(1-life)*16;
+   return score;
+  };
+  return alive.sort((a,b)=>threat(b)-threat(a)||a.hp-b.hp)[0];
+ }
+ // Focus survives attack cooldowns. A dead/removed target is invalid immediately.
+ const old=enemyFocus.get(attacker),current=old&&alive.find(u=>u===old.target);
+ const ranked=[...alive].sort((a,b)=>threatScore(attacker,b)-threatScore(attacker,a)||a.hp-b.hp);
+ const best=ranked[0],bestScore=threatScore(attacker,best);
+ if(current){
+  const currentScore=threatScore(attacker,current);
+  // Switch only for a considerably better opportunity and after a commitment window.
+  if(focusClock<old.lockUntil||best===current||bestScore<currentScore+22)return current;
+ }
+ enemyFocus.set(attacker,{target:best,lockUntil:focusClock+4});
+ return best;
 }
+function coordinateEnemyFocus(b,dt){
+ focusClock+=Math.max(0,Number(dt)||0);
+ if(!b?.enemies||!b?.allies)return;
+ const foes=b.enemies.filter(u=>u.hp>0),heroes=b.allies.filter(u=>u.hp>0);
+ if(!foes.length||!heroes.length)return;
+ // Actual squad-wide focus groups: max 3 attackers per target before spreading,
+ // unless there is only one surviving hero.
+ const counts=new Map(heroes.map(u=>[u,0]));
+ for(const foe of foes){
+  const locked=enemyFocus.get(foe);
+  if(locked&&heroes.includes(locked.target))counts.set(locked.target,counts.get(locked.target)+1);
+ }
+ for(const foe of foes){
+  const old=enemyFocus.get(foe);
+  if(old&&heroes.includes(old.target))continue;
+  const ordered=[...heroes].sort((a,c)=>{
+   const sa=threatScore(foe,a)-(counts.get(a)>=3&&heroes.length>1?28:0);
+   const sc=threatScore(foe,c)-(counts.get(c)>=3&&heroes.length>1?28:0);
+   return sc-sa||a.hp-c.hp;
+  });
+  const target=ordered[0];
+  enemyFocus.set(foe,{target,lockUntil:focusClock+4});
+  counts.set(target,counts.get(target)+1);
+ }
+ for(const h of heroes)targetPressure.set(h,counts.get(h));
+}
+
 // El rig es ahora el único cuerpo visible en combate: no hay modo de
 // sustituirlo por imágenes estáticas. Los retratos del lobby no se alteran.
 const css=document.createElement('style');css.id='kami-lanes-style';
@@ -239,4 +292,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:8};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:9};
