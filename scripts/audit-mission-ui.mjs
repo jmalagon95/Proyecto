@@ -7,3 +7,9 @@ for(const term of lookups){
  console.log('\n### '+term+' hits='+found.length);
  for(const at of found.slice(0,3))console.log(html.slice(Math.max(0,at-140),Math.min(html.length,at+850)).replace(/\n/g,' ').slice(0,1020));
 }
+
+
+for(const t of ["portalBody.innerHTML","portalBody","$('portalModal').querySelector","/* KAMI_MISSION_EXPERIENCE_V1 */","/* KAMI_MANUAL_FORMATIONS_V1 */","const renderManualTeam=renderTeam","const oldTeamRender=renderTeam","renderTeam=function","function renderTeam(){","function openModal(","openModal=function","portalModal.querySelector",".innerHTML=`<div class="mission"]){
+ console.log('@@@ '+t+' position='+html.indexOf(t)+' count='+html.split(t).length);
+ const pos=html.indexOf(t);if(pos>=0)console.log(html.slice(Math.max(0,pos-420),pos+1400).replace(/\n/g,' ').slice(0,1800));
+}
