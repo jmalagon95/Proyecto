@@ -138,6 +138,7 @@ export function simulateSurvivalMission(team,mission){
     }
     for(const a of living){
       if(!activeEnemies.length)break;
+      if(a.actionState.pending)continue; // Ejecutando una habilidad: no ataca a la vez.
       a.attackAccumulator+=Math.max(.01,a.attack.attacksPerFiveSeconds/5);
       while(a.attackAccumulator>=1&&activeEnemies.length){
         a.attackAccumulator-=1;
