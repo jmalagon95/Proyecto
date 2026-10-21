@@ -20,6 +20,8 @@ on:
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
       - 'src/systems/battle-lanes.js'
+      - 'src/systems/battle-focus.js'
+      - 'scripts/integrate-battle-focus.mjs'
       - 'scripts/integrate-battle-lanes.mjs'
       - 'scripts/integrate-manual-formations.mjs'
       - 'scripts/neutralize-lane-labels.mjs'
@@ -81,9 +83,13 @@ jobs:
         run: node scripts/neutralize-lane-labels.mjs --write
       - name: Aplicar rediseño premium a todos los menús
         run: node scripts/integrate-premium-lobby.mjs --write
+      - name: Integrar Focus individual en combate automático
+        run: node scripts/integrate-battle-focus.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
+          node scripts/integrate-battle-focus.mjs
+          node --check src/systems/battle-focus.js
           node scripts/integrate-premium-lobby.mjs
           node --check src/ui/kami-premium-lobby.js
           node scripts/test-battle-lanes.mjs
