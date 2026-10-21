@@ -416,7 +416,7 @@ function renderItems(){$('items').innerHTML=state.inventory.map(([n,q],i)=>`<div
 $('saveUsername').onclick=()=>{state.username=$('usernameInput').value||'Jugador';save();renderLobby();toast('Nombre guardado.')};$('saveGame').onclick=()=>{save();toast('Partida guardada.')};$('titleBtn').onclick=()=>{closeModal('menuModal');show('cover')};
 // Battle
 function renderBattle(){let field=$('battleField');field.querySelectorAll('.fighter').forEach(x=>x.remove());let team=state.team.map(id=>state.characters.find(c=>c.id===id)).filter(Boolean).slice(0,5);let lanes=[.16,.49,.82];team.forEach((c,i)=>{let d=document.createElement('div');d.className='fighter';d.dataset.name=c.name;d.style.backgroundImage=`url('${ASSETS[c.race]}')`;d.style.left=(8+(i%2)*10)+'%';d.style.top=`calc(${lanes[i%3]*100}% - 45px)`;field.append(d)});for(let i=0;i<10;i++){let d=document.createElement('div');d.className='fighter enemy';d.dataset.name='Goblin';d.style.right=(4+(i%4)*8)+'%';d.style.top=`calc(${lanes[i%3]*100}% - 45px)`;field.append(d)}$('timer').textContent='03:00'}
-$('repositionBtn').onclick=()=>{let fs=[...$('battleField').querySelectorAll('.fighter:not(.enemy)')];if(fs.length>1){let a=fs[0].style.top;fs[0].style.top=fs[1].style.top;fs[1].style.top=a}};$('simulateBattle').onclick=()=>{let line=$('attackline');line.style.left='25%';line.style.top='48%';line.style.width='50%';line.classList.remove('flash');void line.offsetWidth;line.classList.add('flash');$('timer').textContent='00:00';setTimeout(showBattleResults,900)};$('retreat').onclick=()=>{renderLobby();show('lobby')};
+$('repositionBtn').onclick=()=>{let fs=[...$('battleField').querySelectorAll('.fighter:not(.enemy)')];if(fs.length>1){let a=fs[0].style.top;fs[0].style.top=fs[1].style.top;fs[1].style.top=a}};$('simulateBattle').onclick=()=>{return;let line=$('attackline');line.style.left='25%';line.style.top='48%';line.style.width='50%';line.classList.remove('flash');void line.offsetWidth;line.classList.add('flash');$('timer').textContent='00:00';setTimeout(showBattleResults,900)};$('retreat').onclick=()=>{renderLobby();show('lobby')};
 function showBattleResults(){let alive=state.team.map(id=>state.characters.find(c=>c.id===id)).filter(Boolean);$('resultMissionText').textContent=`Misión simulada con ${alive.length} personajes. Sistema: 3 carriles invisibles, profundidad ligera y ataques diagonales.`;$('resultRows').innerHTML=alive.map((c,i)=>`<div class="result-row"><span>${c.name} ★${c.star}</span><b>${i===alive.length-1?'Herido':'Vivo'}</b><span>${Math.floor(120+Math.random()*700)} daño</span></div>`).join('');show('battleResults')}
 $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+=5;save();renderLobby();show('lobby')};
 // Init
@@ -748,6 +748,83 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     $('startMission').disabled=state.team.length<1;
     renderMissions();
   };
+
+/* KAMI_MISSION_EXPERIENCE_V1 */
+function missionSquads(){if(!Array.isArray(state.missionPresets))state.missionPresets=[];while(state.missionPresets.length<5)state.missionPresets.push(null);return state.missionPresets}
+function availableSquad(ids){return [...new Set((ids||[]).filter(id=>state.characters.some(c=>c.id===id&&!c.dead)))].slice(0,5)}
+const presetBox=document.createElement('section');presetBox.id='kamiPresetBox';
+presetBox.innerHTML='<strong>⚔ EQUIPOS GUARDADOS (5)</strong><div id="kamiPresetRows"></div>';
+$('teamSlots').before(presetBox);
+const css=document.createElement('style');css.textContent='#kamiPresetBox{margin:10px 0;padding:12px;background:#101a2b;border:1px solid #d9b57455;border-radius:14px}.kami-preset{display:flex;align-items:center;gap:5px;padding:8px 0;border-bottom:1px solid #ffffff1b}.kami-preset span{flex:1;font-size:11px;min-width:0}.kami-preset small{display:block;opacity:.7}.kami-preset button,.kami-res-tab{font-size:11px;padding:7px;color:#f0d3a2;background:#ffffff0c;border:1px solid #d7b87966;border-radius:8px}.kami-preset button:disabled{opacity:.3}#kamiChronicle{margin:10px 0;padding:10px;border:1px solid #d7b87966;border-radius:13px;background:#091321;max-height:280px;overflow:auto;font-size:11px}#kamiChronicle .entry{padding:5px 0;border-bottom:1px solid #ffffff14}#kamiChronicle b{color:#e6c186}.kami-result-tabs{display:flex;gap:8px;margin:12px 0}.kami-damagebar{height:7px;background:#ffffff18;border-radius:9px;overflow:hidden;margin-bottom:9px}.kami-damagebar i{display:block;height:100%;background:linear-gradient(90deg,#ab8241,#f0c984)}.kami-mvp{border:1px solid #d8b370;padding:15px;border-radius:14px;background:#201d23}';document.head.append(css);
+function drawSquads(){
+ $('kamiPresetRows').innerHTML=missionSquads().slice(0,5).map((p,i)=>{
+  const ids=p?availableSquad(p.ids):[];
+  const names=ids.map(id=>state.characters.find(c=>c.id===id)?.name).filter(Boolean);
+  return '<div class="kami-preset"><span><b>'+esc(p?.name||'Equipo '+(i+1))+'</b><small>'+
+   esc(p?names.join(' · '):'Sin guardar')+' · '+ids.length+'/5</small></span>'+
+   '<button data-load="'+i+'" '+(!ids.length?'disabled':'')+'>Usar</button>'+
+   '<button data-save="'+i+'">Guardar</button>'+
+   '<button data-clear="'+i+'" '+(!p?'disabled':'')+'>×</button></div>';
+ }).join('');
+ $('kamiPresetRows').querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{
+  const p=missionSquads()[Number(b.dataset.load)];if(p){state.team=availableSquad(p.ids);save();renderTeam()}
+ });
+ $('kamiPresetRows').querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{
+  const i=Number(b.dataset.save),ids=availableSquad(state.team);
+  if(!ids.length){toast('Elige al menos un personaje.');return}
+  const p=missionSquads()[i];if(p&&!confirm('¿Sobrescribir '+p.name+'?'))return;
+  const name=prompt('Nombre de la formación',p?.name||'Equipo '+(i+1));if(name===null)return;
+  missionSquads()[i]={name:(name.trim()||'Equipo '+(i+1)).slice(0,30),ids};save();drawSquads();
+ });
+ $('kamiPresetRows').querySelectorAll('[data-clear]').forEach(b=>b.onclick=()=>{
+  if(!confirm('¿Eliminar formación?'))return;
+  missionSquads()[Number(b.dataset.clear)]=null;save();drawSquads();
+ });
+}
+const oldTeamRender=renderTeam;
+renderTeam=function(){oldTeamRender();drawSquads()};
+const chronicle=document.createElement('div');chronicle.id='kamiChronicle';
+chronicle.setAttribute('role','log');chronicle.setAttribute('aria-live','off');
+chronicle.innerHTML='<b>CRÓNICA DEL COMBATE · TIEMPO REAL</b><div id="kamiChronicleEntries"></div>';
+$('battleLog').after(chronicle);
+function narrateMissionSecond(b,sec){
+ if(!b||b.ended)return;
+ const entries=b.pendingChronicle.splice(0);
+ if(!entries.length){
+  const alive=b.allies.filter(u=>u.hp>0).length,enemies=b.enemies.filter(u=>u.hp>0).length;
+  entries.push(enemies?alive+' combatientes mantienen la posición ante '+enemies+' goblins.':
+   'El escuadrón vigila el campo y espera a sus próximos adversarios.');
+ }
+ const msg=entries.join(' ').slice(0,700);
+ const stamp=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+ b.chronicle.push({sec,text:msg});
+ const el=document.createElement('div');el.className='entry';
+ const time=document.createElement('b');time.textContent='['+stamp+'] ';
+ el.append(time,document.createTextNode(msg));$('kamiChronicleEntries').append(el);
+ chronicle.scrollTop=chronicle.scrollHeight;
+ $('battleLog').textContent='['+stamp+'] '+msg;
+}
+const summary=document.createElement('section');summary.id='kamiResultSummary';$('resultRows').after(summary);
+function displayMissionStats(b){
+ const units=[...b.allies].sort((a,z)=>(z.damage||0)-(a.damage||0)||(z.kills||0)-(a.kills||0));
+ const total=units.reduce((n,u)=>n+Math.max(0,u.damage||0),0);
+ summary.innerHTML='<div class="kami-result-tabs"><button class="kami-res-tab" data-stats="damage">Daño</button><button class="kami-res-tab" data-stats="mvp">MVP</button></div><div id="kamiStatsBody"></div>';
+ const render=page=>{
+  summary.querySelectorAll('[data-stats]').forEach(x=>x.style.background=x.dataset.stats===page?'#775a30':'#ffffff0c');
+  if(page==='mvp'){
+   const u=units[0];$('kamiStatsBody').innerHTML=u?'<div class="kami-mvp"><b>✦ MVP DE LA EXPEDICIÓN</b><h3>'+esc(u.name)+'</h3><p>'+
+    Math.round(u.damage||0).toLocaleString('es-ES')+' daño · '+(u.kills||0)+' bajas · '+(total?(u.damage/total*100).toFixed(1):'0')+'% del equipo</p></div>':'Sin miembros';
+  }else{
+   $('kamiStatsBody').innerHTML=units.map((u,i)=>{
+    const pct=total?Math.max(0,u.damage||0)/total*100:0;
+    return '<div class="result-row"><span>#'+(i+1)+' '+esc(u.name)+'</span><b>'+Math.round(u.damage||0).toLocaleString('es-ES')+
+     ' daño · '+pct.toFixed(1)+'%</b><span>'+(u.kills||0)+' bajas · '+(u.hp>0?'En pie':'Caído')+'</span></div>'+
+     '<div class="kami-damagebar"><i style="width:'+pct+'%"></i></div>';
+   }).join('');
+  }
+ };
+ summary.querySelectorAll('[data-stats]').forEach(btn=>btn.onclick=()=>render(btn.dataset.stats));render('damage');
+}
   $('startMission').onclick=()=>{
     if(!state.team.length){toast('Necesitas al menos un héroe.');return}
     const m=missionFor(state.selectedMission);
@@ -770,7 +847,7 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
   field.after(under);under.insertAdjacentHTML('afterend','<div class="battle-log" id="battleLog" aria-live="polite">Prepara tu formación.</div>');
   $('simulateBattle').textContent='Resolver ahora';$('autoBtn').textContent='AUTO';$('speedBtn').textContent='×1';
   const titleEl=$('battle').querySelector('.battle-top .eyebrow');
-  function logBattle(msg){if($('battleLog'))$('battleLog').textContent=msg}
+  function logBattle(msg){if(battle&&Array.isArray(battle.pendingChronicle)&&!battle.ended)battle.pendingChronicle.push(String(msg));if($('battleLog'))$('battleLog').textContent=msg}
   const goblinSprite=`<svg viewBox="0 0 110 135" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="goblinSkin" x2="1" y2="1"><stop stop-color="#b2ba64"/><stop offset=".55" stop-color="#708b47"/><stop offset="1" stop-color="#314d34"/></linearGradient><linearGradient id="goblinCloth" x2="1" y2="1"><stop stop-color="#6c4f3a"/><stop offset="1" stop-color="#252a28"/></linearGradient></defs><ellipse cx="59" cy="127" rx="29" ry="5" fill="#172b1b" opacity=".5"/><path d="M42 96 L31 128 L45 130 L56 103 L66 131 L81 128 L71 94Z" fill="#343b30"/><path d="M30 74 Q53 56 77 74 L83 117 L66 110 L48 113 L33 109Z" fill="url(#goblinCloth)" stroke="#1a2829" stroke-width="2"/><path d="M36 79 L23 112 L31 115 L46 87 M75 79 L93 106 L84 114 L65 89" fill="url(#goblinSkin)" stroke="#243c2b" stroke-width="2"/><path d="M26 107 L18 123 M89 107 L97 122" stroke="#644936" stroke-width="7" stroke-linecap="round"/><path d="M97 122 L98 84" stroke="#8b8d85" stroke-width="6"/><path d="M98 83 L103 76 L108 100 L98 101Z" fill="#9c8566" stroke="#6e5e50" stroke-width="2"/><path d="M30 35 L5 24 L14 51 L32 48 M78 35 L106 22 L97 55 L79 47" fill="#728e4b" stroke="#283f30" stroke-width="3"/><path d="M22 43 Q16 12 52 11 Q93 8 88 50 L76 74 Q56 84 37 72Z" fill="url(#goblinSkin)" stroke="#273e2d" stroke-width="3"/><path d="M29 42 L49 39 L43 47 L30 47Z M61 40 L82 42 L80 48 L64 46Z" fill="#e5b76f" stroke="#302c1b" stroke-width="2"/><circle cx="38" cy="43" r="2" fill="#151f1b"/><circle cx="72" cy="43" r="2" fill="#151f1b"/><path d="M52 44 L46 58 L58 56Z" fill="#486637"/><path d="M43 65 Q55 70 67 62 L63 72 Q54 76 46 71Z" fill="#342d28"/><path d="M47 68 L50 75 L54 69 M61 67 L64 74 L66 65" fill="#f2e4bf"/><path d="M39 8 L46 3 L50 10 M61 8 L66 0 L70 11" stroke="#2f4730" stroke-width="5"/><path d="M35 91 L72 101" stroke="#ac8954" stroke-width="4"/></svg>`;
   function unitDom(u){
     const node=document.createElement('div');node.className='fighter'+(u.enemy?' enemy':'');node.dataset.unit=u.id;
@@ -807,7 +884,14 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
     const m=missionFor(state.selectedMission);
     battle={mission:m,elapsed:0,timeLeft:m.duration,auto:true,speed:state.settings.battleSpeed||1,enemies:[],allies:[],kills:0,nextGoblin:9,healAt:25,ended:false,lastManual:0};
     const team=state.team.map(id=>state.characters.find(c=>c.id===id)).filter(c=>c&&!c.dead).slice(0,5);
-    team.forEach((c,index)=>{
+
+     battle.speed=1;battle.auto=true;
+     battle.pendingChronicle=[];battle.chronicle=[];battle.lastNarratedSecond=0;
+     $('kamiChronicleEntries').replaceChildren();
+     $('simulateBattle').hidden=true;$('simulateBattle').disabled=true;
+     $('speedBtn').hidden=true;$('speedBtn').disabled=true;
+     $('autoBtn').hidden=true;$('autoBtn').disabled=true;
+team.forEach((c,index)=>{
       let u={id:c.id,name:c.name,character:c,enemy:false,hp:Math.max(1,c.hp||Math.ceil(maxHP(c)*.2)),maxHp:maxHP(c),attack:combatStatDamage(c.stats,c.level,c.star),defense:combatStatDefense(c.stats),index,lane:index%3,cooldown:.4+index*.18,damage:0,kills:0};
       battle.allies.push(u);unitDom(u);
     });
@@ -879,12 +963,15 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
       battle.allies.forEach(a=>{if(a.hp>0){const healed=Math.min(a.maxHp-a.hp,8+2*(a.character.stats.CON||1));a.hp+=healed;if(animate&&healed>0)flyingNumber(a,healed,'heal')}});
       battle.healAt+=24;
     }
-    if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}
+
+     const reached=Math.min(180,Math.floor(battle.elapsed));
+     while(battle.lastNarratedSecond<reached){battle.lastNarratedSecond++;narrateMissionSecond(battle,battle.lastNarratedSecond)}
+if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}
     if(battle.timeLeft<=0)finishBattle(true,false);
   }
   function battleFrame(timestamp){
     if(!battle||battle.ended)return;
-    if(battler.last){const dt=Math.min(.09,(timestamp-battler.last)/1000)*battle.speed;
+    if(battler.last){const dt=Math.min(.09,(timestamp-battler.last)/1000);
       stepLogic(dt,true);
       if(!battle||battle.ended)return;
       if(timestamp-battler.frameUi>=140){updateBars();battler.frameUi=timestamp}
@@ -894,7 +981,7 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
   $('autoBtn').onclick=()=>{if(!battle)return;battle.auto=!battle.auto;$('autoBtn').textContent=battle.auto?'AUTO ✓':'MANUAL';logBattle(battle.auto?'Los héroes vuelven a atacar automáticamente.':'Modo manual: toca un goblin para atacar.')};
   $('speedBtn').onclick=()=>{if(!battle)return;battle.speed=battle.speed===1?2:battle.speed===2?3:1;state.settings.battleSpeed=battle.speed;$('speedBtn').textContent='×'+battle.speed;save()};
   $('repositionBtn').onclick=()=>{if(!battle)return;for(const u of battle.allies){if(u.hp<=0)continue;u.lane=(u.lane+1)%3;u.node.style.top=`calc(${[16,44,71][u.lane]}% - 45px)`}logBattle('El equipo se mueve al siguiente carril.')};
-  $('simulateBattle').onclick=()=>{
+  $('simulateBattle').onclick=()=>{return;
     if(!battle||battle.ended)return;
     // Advance the SAME combat algorithm (no fabricated victory or fake damage).
     battle.auto=true;let guard=0;
@@ -923,7 +1010,8 @@ $('backLobbyResult').onclick=()=>{state.resources.gold+=60;state.resources.wood+
       u.character.maxHp=maxHP(u.character);
       if(victory)levelUp(u.character,m.rewards.exp);
     });
-    let rewards=[];
+         displayMissionStats(end);
+let rewards=[];
     if(victory){
       state.resources.gold+=m.rewards.gold;state.resources.wood+=m.rewards.wood;
       addItem('wood','Madera vieja',m.rewards.wood,'Materiales','🪵','Madera para construir y reparar.');
