@@ -43,9 +43,41 @@ if(!html.includes(shieldMarker)){
     }
 `+strike,'Absorber golpes mediante barreras');
 }
+// Sincroniza selección racial del HTML monolítico sin reescribir las pantallas.
+const catalogMarker='/* KAMI_RACIAL_V4_CLASS_CATALOG */';
+if(!html.includes(catalogMarker)){
+ const races=JSON.parse(fs.readFileSync(path.join(root,'data/races.json'),'utf8'));
+ const classes=JSON.parse(fs.readFileSync(path.join(root,'data/classes.json'),'utf8'));
+ const payload=races.map(r=>({
+   id:r.id,name:r.name,tag:r.tag,desc:r.description,history:r.history,origin:r.origin,image:r.image,
+   classes:(classes[r.id]||[]).map(c=>({name:c.name,weapons:c.weapons,desc:c.description}))
+ }));
+ if(payload.length!==6||payload.some(r=>r.classes.length<5))throw Error('Catálogo racial inconsistente: maestro intacto.');
+ const boot=\`\${catalogMarker}
+const KAMI_RACIAL_V4_CATALOG=\${JSON.stringify(payload)};
+for(const r of KAMI_RACIAL_V4_CATALOG){
+ RACES[r.name]={tag:r.tag,desc:r.desc,history:r.history,origin:r.origin};
+ CLASSES[r.name]=r.classes;
+ if(!ASSETS[r.name]&&r.image)ASSETS[r.name]=r.image;
+}
+for(const name of Object.keys(RACES)){
+ if(!KAMI_RACIAL_V4_CATALOG.some(r=>r.name===name))delete RACES[name];
+}
+for(const name of Object.keys(CLASSES)){
+ if(!KAMI_RACIAL_V4_CATALOG.some(r=>r.name===name))delete CLASSES[name];
+}
+\`;
+ once('let state=',boot+'let state=','Sincronizar las seis razas y 31 clases raciales');
+}
+if(html.includes('Math.floor(Math.random()*8)')){
+ once('Math.floor(Math.random()*8)','Math.floor(Math.random()*Object.keys(RACES).length)','Gacha: seis razas');
+}
+if(html.includes('CLASSES[r][Math.floor(Math.random()*5)]')){
+ once('CLASSES[r][Math.floor(Math.random()*5)]','CLASSES[r][Math.floor(Math.random()*CLASSES[r].length)]','Gacha: seis clases Kairakh');
+}
 if(edits&&process.argv.includes('--write')){
  fs.writeFileSync(file,html);
  console.log('✅ Prototipo maestro integrado ('+edits+' modificaciones): '+file);
 }else if(edits)console.log('✅ Preparada integración (simulación, sin escritura): '+edits+' modificaciones');
 else console.log('✅ El prototipo maestro ya está integrado.');
-if(!html.includes(marker)||!html.includes(shieldMarker)||!html.includes(tag))throw Error('La integración ha quedado incompleta.');
+if(!html.includes(marker)||!html.includes(shieldMarker)||!html.includes(tag)||!html.includes(catalogMarker))throw Error('La integración ha quedado incompleta.');
