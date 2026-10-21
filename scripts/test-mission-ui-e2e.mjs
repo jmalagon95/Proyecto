@@ -78,6 +78,18 @@ try{
  assert.equal(rigCheck.rigged,2,'Los maniquíes no están instalados en los dos héroes');
  assert.equal(rigCheck.skeletonNodes,19,'El esqueleto dibujado no está completo');
  assert.ok(rigCheck.enabled&&rigCheck.toggle,'No funciona el modo maniquí');
+ const raceCheck=await page.evaluate(async()=>{
+  const {createRigSvg}=await import('/src/systems/mannequin-rig.js');
+  return ['Kairakh','Elfos','Kijins','Vampiros','Insectoides','Reptro'].map(race=>{
+   const {svg}=createRigSvg({character:{race}});
+   return {race,rig:svg.dataset.rigRace,bones:svg.querySelectorAll('[data-bone]').length,
+     features:svg.querySelectorAll('[data-feature]').length};
+  });
+ });
+ console.log('RACE_RIGS',JSON.stringify(raceCheck));
+ assert.ok(raceCheck.every(r=>r.rig===r.race.toLowerCase()&&r.bones===19&&r.features>0),
+  'Una raza no conserva esqueleto o rasgos anatómicos');
+
  await page.evaluate(()=>document.querySelector('#kamiRigToggle')?.click());
  assert.equal(await page.evaluate(()=>document.querySelector('#battleField').classList.contains('kami-show-rig')),false);
  await page.evaluate(()=>document.querySelector('#kamiRigToggle')?.click());
