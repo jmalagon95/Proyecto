@@ -101,6 +101,7 @@ inject("let rewards=[];","     displayMissionStats(end);\n");
 html=html.split("$('simulateBattle').onclick=()=>{").join("$('simulateBattle').onclick=()=>{return;");
 replace("Math.min(.09,(timestamp-battler.last)/1000)*battle.speed","Math.min(.09,(timestamp-battler.last)/1000)");
 }
+html=html.replace(/^[ \\t]+$/gm,'');
 if(!html.includes(marker)||!html.includes('displayMissionStats(end)')||!html.includes('narrateMissionSecond(battle,battle.lastNarratedSecond)'))throw Error('Parche incompleto');
 for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))if(m[1].trim())new vm.Script(m[1]);
 if(process.argv.includes('--write'))fs.writeFileSync('index.html',html);
