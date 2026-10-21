@@ -260,7 +260,7 @@ button{cursor:pointer}button:focus-visible,[tabindex]:focus-visible,input:focus-
 <div id="storeModal" class="modal"><div class="sheet"><div class="sheet-head"><div><h2>Almacén</h2><small>Solo objetos · 50 espacios iniciales</small></div><button class="close" data-close="storeModal">Cerrar</button></div><div class="sheet-body"><div class="inv-tabs"><button class="tab sel">Materiales</button><button class="tab">Equipo</button><button class="tab">Consumibles</button><button class="tab">Especiales</button></div><div id="items" class="items"></div></div></div></div>
 <div id="menuModal" class="modal"><div class="sheet"><div class="sheet-head"><div><h2>Menú</h2><small>Partida local del prototipo</small></div><button class="close" data-close="menuModal">Cerrar</button></div><div class="sheet-body"><div class="subpanel"><h3>Ajustes rápidos</h3><label class="muted">Nombre de usuario</label><div class="namebar"><input id="usernameInput" value="Jugador"><button id="saveUsername" class="btn gold">Guardar</button></div><div class="class-actions"><button id="saveGame" class="btn">Guardar partida</button><button id="titleBtn" class="btn ghost">Pantalla de título</button></div></div></div></div></div>
 <!-- BATTLE -->
-<section id="battle" class="screen"><div class="battle-wrap"><div class="battle-top"><div><div class="eyebrow">Supervivencia I</div><div class="serif gold" style="font-size:31px">Campo de 3 carriles invisibles</div></div><div><button id="autoBtn" class="btn">AUTO</button> <button id="speedBtn" class="btn">×2</button> <span id="timer" class="res">03:00</span></div></div><div id="battleField" class="battle-field"><span class="lane-label l1">Superior</span><span class="lane-label l2">Central</span><span class="lane-label l3">Inferior</span><div id="attackline" class="attackline"></div></div><div class="battle-controls"><button id="repositionBtn" class="btn">Reposicionar</button><button id="simulateBattle" class="btn gold">Simular batalla</button><button id="retreat" class="btn ghost">Retirarse</button></div></div></section>
+<section id="battle" class="screen"><div class="battle-wrap"><div class="battle-top"><div><div class="eyebrow">Supervivencia I</div><div class="serif gold" style="font-size:31px">Campo de tres carriles</div></div><div><button id="autoBtn" class="btn">AUTO</button> <button id="speedBtn" class="btn">×2</button> <span id="timer" class="res">03:00</span></div></div><div id="battleField" class="battle-field"><span class="lane-label l1">Superior</span><span class="lane-label l2">Central</span><span class="lane-label l3">Inferior</span><div id="attackline" class="attackline"></div></div><div class="battle-controls"><button id="repositionBtn" class="btn">Reposicionar</button><button id="simulateBattle" class="btn gold">Simular batalla</button><button id="retreat" class="btn ghost">Retirarse</button></div></div></section>
 <section id="battleResults" class="screen"><div class="reveal-wrap"><div class="panel results"><div class="eyebrow">Resultado de misión</div><h2>Supervivencia I</h2><p id="resultMissionText" class="muted"></p><div id="resultRows" class="result-table"></div><div class="class-actions" style="justify-content:center"><button id="backLobbyResult" class="btn gold">Volver al lobby</button></div></div></div></section>
 
 <!-- v0.16 — Full-screen summoning ritual integrated in the master -->
@@ -842,7 +842,7 @@ function formationInitial(id,index){
  if(rec&&[0,1,2].includes(Number(rec.lane))&&Number.isInteger(Number(rec.slot))&&rec.slot>=0&&rec.slot<5)
   return {lane:Number(rec.lane),slot:Number(rec.slot)};
  const char=state.characters.find(c=>c.id===id);
- const lane=window.KamiBattleLanes?.laneFor(char,index)??index%3;
+ const lane=index%3;
  return {lane,slot:index};
 }
 function normalizeFormation(){
@@ -877,7 +877,7 @@ function renderFormation(){
   return '<button type="button" class="kami-formation-hero '+(selectedFormationHero===id?'selected':'')+'" data-formation-hero="'+esc(id)+'">'+esc(ch?.name||'Héroe')+'</button>';
  }).join('');
  const grid=document.getElementById('kamiFormationGrid');
- const labels=['TRASERO','MEDIO','FRONTAL'];
+ const labels=['CARRIL 1','CARRIL 2','CARRIL 3'];
  grid.innerHTML=labels.map((name,lane)=>{
   let cells='';
   for(let slot=0;slot<5;slot++){
@@ -920,7 +920,7 @@ renderFormation();
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openModal(b.dataset.open));
   // Add live battle HUD, movement, attacks, enemy waves and a real timer.
   const field=$('battleField');
-  field.querySelectorAll('.lane-label').forEach(x=>x.textContent=['Línea norte','Línea media','Línea sur'][[...field.querySelectorAll('.lane-label')].indexOf(x)]);
+  field.querySelectorAll('.lane-label').forEach(x=>x.textContent=['Carril 1','Carril 2','Carril 3'][[...field.querySelectorAll('.lane-label')].indexOf(x)]);
   const foreground=document.createElement('div');foreground.className='battle-foreground';field.prepend(foreground);
   const under=document.createElement('div');under.className='battle-hud-bottom';under.innerHTML='<div class="battle-metric">OLEADA <strong id="battleWave">1</strong></div><div class="battle-metric">ENEMIGOS ABATIDOS <strong id="battleKills">0</strong></div><div class="battle-metric">HÉROES EN PIE <strong id="battleAlive">0</strong></div>';
   field.after(under);under.insertAdjacentHTML('afterend','<div class="battle-log" id="battleLog" aria-live="polite">Prepara tu formación.</div>');
