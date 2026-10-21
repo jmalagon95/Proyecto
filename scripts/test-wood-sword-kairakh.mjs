@@ -19,6 +19,8 @@ class Node{
  if(selector==='[data-bone]')return out.filter(x=>x.hasAttribute('data-bone'));
  if(selector==='[data-equipped-item]')return out.filter(x=>x.hasAttribute('data-equipped-item'));
  if(selector==='[data-wood-strike-arc]')return out.filter(x=>x.hasAttribute('data-wood-strike-arc'));
+ if(selector==='[data-secondary-motion="hair"]')return out.filter(x=>x.getAttribute('data-secondary-motion')==='hair');
+ if(selector==='[data-secondary-motion="sash"]')return out.filter(x=>x.getAttribute('data-secondary-motion')==='sash');
  if(selector.startsWith(':scope > '))return this.children.filter(x=>['path','ellipse','rect'].includes(x.tagName));
  return [];}
  querySelector(selector){if(selector==='.unit-body')return null;return this.querySelectorAll(selector)[0]??null}
@@ -29,6 +31,8 @@ assert.equal(svg.getAttribute('data-combat-skin'),'kairakh-star1-wood-sword');
 assert.equal(Object.keys(nodes).length,19);
 assert.equal(svg.querySelectorAll('[data-equipped-item]').length,1);
 assert.equal(svg.querySelectorAll('[data-wood-strike-arc]').length,1);
+assert.equal(svg.querySelectorAll('[data-secondary-motion="hair"]').length,1);
+assert.equal(svg.querySelectorAll('[data-secondary-motion="sash"]').length,1);
 const unit={id:'pilot',character:hero,hp:35,maxHp:35,node:new Node('div')};
 attachRig(unit);assert.equal(rigState(unit),'idle');
 playRig(unit,'attack',{duration:.5});
@@ -41,4 +45,10 @@ assert.ok(Number(during)>0,'El destello de contacto debe aparecer en el golpe');
 for(let i=0;i<28;i++)tickRig(unit,1/60);
 assert.equal(rigState(unit),'idle');
 assert.equal(unit.node.querySelector('[data-wood-strike-arc]').getAttribute('opacity'),'0');
+assert.ok(unit.node.querySelector('[data-secondary-motion="hair"]').getAttribute('transform').includes('rotate('));
+assert.ok(unit.node.querySelector('[data-secondary-motion="sash"]').getAttribute('transform').includes('rotate('));
+assert.ok(playRig(unit,'attack',{duration:.5}));
+assert.ok(unit.node.querySelector('[data-wood-strike-arc]'));
+for(let i=0;i<36;i++)tickRig(unit,1/60);
+assert.equal(rigState(unit),'idle');
 console.log('✅ Kairakh ★1: 19 huesos, arma de madera, piezas articuladas y golpe básico de tres fases');
