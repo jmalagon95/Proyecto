@@ -128,6 +128,7 @@ function tick(b,dt,hooks={}){
         }
       }
     }
+    if(state.pending)u.cooldown=Math.max(Number(u.cooldown)||0,state.castRemaining);
     if(!active(b).length||state.pending||state.global>0)continue;
     const skills=learnedFor(u.character);
     const racial=racialTechniqueFor(u.character);
@@ -144,6 +145,7 @@ function tick(b,dt,hooks={}){
     // El enfriamiento individual comienza al iniciar el lanzamiento;
     // el impacto se aplica únicamente cuando acaba el tiempo de ejecución.
     if(startAction(state,chosen,u.character,{racial:false})){
+      u.cooldown=Math.max(Number(u.cooldown)||0,state.castRemaining);
       hooks.log?.(u.name+' prepara '+chosen.name+'.');
     }
   }
