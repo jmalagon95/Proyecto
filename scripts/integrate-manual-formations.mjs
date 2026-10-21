@@ -22,8 +22,12 @@ if(!html.includes(marker)){
 }
 if(!html.includes(marker)||!html.includes('slot:(normalizeFormation()[c.id]?.slot??index)'))
  throw Error('Integración incompleta del editor de formación');
-for(const m of html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g))
- if(m[1].trim())new vm.Script(m[1]);
+for(const chunk of html.split('<script').slice(1)){
+ const header=chunk.slice(0,chunk.indexOf('>'));
+ if(header.includes('src='))continue;
+ const source=chunk.slice(chunk.indexOf('>')+1).split('</script>')[0];
+ if(source.trim())new vm.Script(source);
+}
 html=html.replace(/^[ \\t]+$/gm,'');
 if(process.argv.includes('--write'))fs.writeFileSync('index.html',html);
 console.log('✅ Formación manual: 3 carriles × 5 casillas, intercambio y cinco presets con posiciones.');
