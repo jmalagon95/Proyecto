@@ -25,7 +25,7 @@ assert.equal(result.frames.at(-1).enemiesDefeated,result.enemiesDefeated);
 const state={characters:party,resources:{gold:0,wood:0,stone:0},missionProgress:{}};
 applyMissionResult(state,result);
 assert.equal(state.resources.gold,result.completed?result.rewards.gold:0);
-const impossible=simulateSurvivalMission([hero('weak',{CON:1,DEF:1})],{...mission,enemyHp:100000,enemyAttackMin:10000,enemyAttackMax:10000,enemyPressure:100,waves:[100]});
+const impossible=simulateSurvivalMission([hero('weak',{CON:1,DEF:1})],{...mission,enemyPressure:100,waves:[100],enemyFactory:()=>({name:'Goblin de prueba',star:1,currentStar:1,level:1,role:'Guerrero',stats:{FUE:500,AGI:500,CON:50,DEF:100,INT:10,VOL:10},equipment:{}})});
 assert.equal(impossible.completed,false);
 assert.equal(impossible.rewards.gold,0);
 assert.equal(impossible.xpMetrics.reduce((t,x)=>t+x.xp,0),0);
