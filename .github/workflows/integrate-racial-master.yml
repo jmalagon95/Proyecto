@@ -22,6 +22,7 @@ on:
       - 'src/systems/battle-lanes.js'
       - 'scripts/integrate-battle-lanes.mjs'
       - 'scripts/integrate-manual-formations.mjs'
+      - 'scripts/neutralize-lane-labels.mjs'
       - 'scripts/test-manual-formations.mjs'
       - 'scripts/audit-mission-ui.mjs'
       - 'scripts/audit-lobby-ui.mjs'
@@ -76,6 +77,8 @@ jobs:
         run: node scripts/integrate-battle-lanes.mjs --write
       - name: Aplicar formaciones manuales guardadas
         run: node scripts/integrate-manual-formations.mjs --write
+      - name: Carriles numerados, sin posiciones por rol
+        run: node scripts/neutralize-lane-labels.mjs --write
       - name: Aplicar rediseño premium a todos los menús
         run: node scripts/integrate-premium-lobby.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
@@ -95,6 +98,7 @@ jobs:
           node scripts/integrate-goblin-stat-gacha.mjs
           node scripts/integrate-battle-lanes.mjs
           node scripts/integrate-manual-formations.mjs
+          node scripts/neutralize-lane-labels.mjs
           git diff --check
       - name: Probar menú de misión en navegador móvil real
         run: |
