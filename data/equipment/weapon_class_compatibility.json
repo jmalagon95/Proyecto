@@ -6,143 +6,155 @@
       "Guerrero",
       "Defensor",
       "Pícaro",
-      "Danzante de la Luna",
-      "Guardián Silvano",
-      "Sanguinario Noble",
-      "Caballero de la Sed Eterna"
+      "Director de Fuego Cruzado",
+      "Portador de Dos Veredictos",
+      "Caballero del Ataúd Abierto",
+      "Esgrimista de la Rosa Negra"
     ],
     "greatsword_2h": [
-      "Caballero de la Sed Eterna"
+      "Caballero del Ataúd Abierto"
     ],
     "rapier_1h": [
-      "Sanguinario Noble"
+      "Tasador de Fallos",
+      "Coleccionista de Últimos Suspiros",
+      "Esgrimista de la Rosa Negra"
     ],
     "dagger_1h": [
       "Pícaro",
-      "Depredador de las Cumbres",
-      "Danzante de la Luna"
+      "Sacrificador del Pulso Blanco",
+      "Cirujano de Campaña",
+      "Bailarín de las Siete Hojas",
+      "Alfa de la Mordida Compartida",
+      "Zorro de los Mil Amagos",
+      "Coleccionista de Últimos Suspiros"
     ],
     "axe_1h": [
-      "Guerrero"
+      "Guerrero",
+      "Toro de la Primera Colisión"
     ],
-    "throwing_axe": [
-      "Lanzador de Calamidades"
-    ],
+    "throwing_axe": [],
     "mace_1h": [
       "Guerrero",
       "Defensor",
-      "Guardián del Cuerno Ancestral",
-      "Devorador de Maldiciones",
-      "Bastión Escarabajo",
-      "Bastión de Escama Seca"
+      "Cuerno de la Última Muralla",
+      "Deudor de Cien Golpes",
+      "Martillo de Élitra",
+      "Pararrayos Errante"
     ],
     "heavy_club_2h": [
-      "Destructor Kijin"
+      "Deudor de Cien Golpes",
+      "Demonio del Séptimo Impacto"
     ],
     "hammer_2h": [
-      "Destructor Kijin"
+      "Demonio del Séptimo Impacto",
+      "Toro de la Primera Colisión"
     ],
     "spear_1h": [
       "Defensor",
-      "Lancero del Cuerno Primordial",
-      "Guardián del Cuerno Ancestral",
-      "Guardián Silvano",
-      "Hemolancero",
-      "Bastión de Escama Seca"
+      "Cuerno de la Última Muralla",
+      "Aguijón de la Cuenta Regresiva",
+      "Latigador de Cola de Plasma"
     ],
     "spear_2h": [
-      "Lancero del Cuerno Primordial"
+      "Verdugo de Tres Latidos",
+      "Portador de Dos Veredictos"
     ],
     "halberd_2h": [
-      "Lancero del Cuerno Primordial"
+      "Verdugo de Tres Latidos"
     ],
-    "javelin": [
-      "Lanzador de Calamidades",
-      "Hemolancero",
-      "Ojo del Pedregal"
-    ],
+    "javelin": [],
     "scythe_2h": [
-      "Segador",
-      "Segador Mantídeo"
+      "Segador"
     ],
     "bow_2h": [
       "Ranger",
-      "Arquero de la Arboleda Primigenia",
-      "Ojo del Pedregal"
+      "Tirador de la Quietud"
     ],
     "crossbow_2h": [
       "Ranger",
-      "Ojo del Pedregal"
+      "Director de Fuego Cruzado",
+      "Pistolero del Último Cartucho",
+      "Artillero de Doble Recámara",
+      "Tirador de la Quietud"
     ],
     "staff_2h": [
       "Mago",
       "Invocador",
       "Apoyo",
-      "Resonador Kairakh",
-      "Cantor de Raíces",
-      "Tejedor de Espíritus",
-      "Monje de los Cuernos",
-      "Señor de los Cien Demonios",
-      "Señor de los Murciélagos",
-      "Emperador de la Colmena",
-      "Conductor del Sol Árido"
+      "Arpista de Arterias",
+      "Custodio del Último Brote",
+      "Monje de las Marcas Gemelas",
+      "Médium del Aullido Hueco",
+      "Cuidador del Cachorro de Guerra",
+      "Matriarca de la Segunda Crisálida",
+      "Calibrador de Frecuencia"
     ],
     "wand_1h": [
       "Mago",
-      "Tejedor de Espíritus",
-      "Tejedor Carmesí"
+      "Relojero de Luciérnagas",
+      "Confesor de Sangre Fría"
     ],
     "tome_1h": [
       "Mago",
       "Invocador",
       "Apoyo",
-      "Tejedor de Espíritus",
-      "Señor de los Cien Demonios",
-      "Señor de los Murciélagos",
-      "Tejedor Carmesí"
+      "Tasador de Fallos",
+      "Relojero de Luciérnagas",
+      "Arconte de los Gemelos Astrales",
+      "Censor de Juramentos Rotos",
+      "Mayordomo del Trono Vacío",
+      "Confesor de Sangre Fría",
+      "Gemelo de Chispa"
     ],
     "scepter_1h": [
       "Apoyo",
-      "Señor de los Murciélagos"
+      "Cirujano de Campaña",
+      "Custodio del Último Brote",
+      "Cuidador del Cachorro de Guerra",
+      "Mayordomo del Trono Vacío"
     ],
     "catalyst_1h": [
       "Invocador",
-      "Proyector de Venas",
-      "Resonador Kairakh",
-      "Hemolancero",
-      "Emperador de la Colmena",
-      "Azote de Cola Eléctrica",
-      "Conductor del Sol Árido"
+      "Nexo de las Siete Venas",
+      "Arpista de Arterias",
+      "Arconte de los Gemelos Astrales",
+      "Matriarca de la Segunda Crisálida",
+      "Coronel de Antenas Partidas",
+      "Trenzador de Rayos Gemelos",
+      "Calibrador de Frecuencia",
+      "Gemelo de Chispa"
     ],
     "gauntlets_pair": [
       "Pícaro",
-      "Proyector de Venas",
-      "Depredador de las Cumbres",
-      "Devorador de Maldiciones",
-      "Monje de los Cuernos",
-      "Tejedor Carmesí",
-      "Garra Fulminante",
-      "Conductor del Sol Árido"
+      "Nexo de las Siete Venas",
+      "Sacrificador del Pulso Blanco",
+      "Monje de las Marcas Gemelas",
+      "Alfa de la Mordida Compartida",
+      "Martillo de Élitra",
+      "Trenzador de Rayos Gemelos",
+      "Latigador de Cola de Plasma",
+      "Pararrayos Errante"
     ],
     "chakrams_pair": [
-      "Danzante de la Luna"
+      "Bailarín de las Siete Hojas",
+      "Zorro de los Mil Amagos"
     ],
     "cannon_2h": [
-      "Proyector de Venas",
-      "Artillero Quitinoso"
+      "Pistolero del Último Cartucho",
+      "Artillero de Doble Recámara"
     ],
     "fan_1h": [
-      "Señor de los Cien Demonios"
+      "Censor de Juramentos Rotos",
+      "Médium del Aullido Hueco",
+      "Coronel de Antenas Partidas"
     ],
-    "spike_launcher": [
-      "Artillero Quitinoso",
-      "Maestro de la Metamorfosis"
-    ],
+    "spike_launcher": [],
     "arm_blades_pair": [
-      "Segador Mantídeo"
+      "Aguijón de la Cuenta Regresiva",
+      "Obrero de las Cien Pinzas"
     ],
     "bio_weapon_pair": [
-      "Maestro de la Metamorfosis"
+      "Obrero de las Cien Pinzas"
     ]
   }
 }
