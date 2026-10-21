@@ -114,95 +114,152 @@
   ],
   "kairakh": [
     {
-      "name": "Primogénito de la Masacre Honorable",
-      "role": "DPS / furia disciplinada",
-      "weaponFamilyIds": [
-        "heavy_club_2h",
-        "axe_1h"
-      ],
+      "name": "Taumaturgo Bélico",
+      "role": "DPS mágico / ofensiva encadenada",
       "weapons": [
-        "Kanabō",
-        "Hacha"
+        "Bastón",
+        "Catalizador",
+        "Guanteletes"
       ],
-      "combatIdentity": "honorable_fury",
-      "description": "Heredero del dios de la guerra salvaje. Cada golpe acertado aumenta su ferocidad, pero únicamente obtiene su máxima potencia si combate de frente y sostiene el duelo contra el mismo rival. Si cambia continuamente de objetivo, pierde su ímpetu; no utiliza daño periódico.",
-      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
+      "weaponFamilyIds": [
+        "staff_2h",
+        "catalyst_1h",
+        "gauntlets_pair"
+      ],
+      "description": "Canaliza la energía de su linaje divino en impactos mágicos directos. Sus ojos sobrenaturales leen las aperturas del rival; su cuerno y venas amplifican descargas de guerra. Alterna conjuros rápidos y golpes mágicos concentrados.",
+      "combatIdentity": "war_magic_combo",
+      "primaryStats": [
+        "INT",
+        "VOL"
+      ],
+      "combatStatus": "diseñada; habilidades propias pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Cornamenta del Juicio",
-      "role": "Tanque / embestida y desafío",
-      "weaponFamilyIds": [
-        "spear_1h",
-        "mace_1h"
-      ],
+      "name": "Invocador de Avatares",
+      "role": "Invocador / DPS de apoyo",
       "weapons": [
+        "Bastón",
+        "Tomo",
+        "Catalizador"
+      ],
+      "weaponFamilyIds": [
+        "staff_2h",
+        "tome_1h",
+        "catalyst_1h"
+      ],
+      "description": "Vincula una manifestación espiritual de guerreros ancestrales Kairakh. Combate al lado de una única entidad que puede especializarse en atacar o proteger según las habilidades aprendidas; no depende de terreno.",
+      "combatIdentity": "ancestral_avatar",
+      "primaryStats": [
+        "VOL",
+        "INT"
+      ],
+      "combatStatus": "diseñada; habilidades propias pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Hierofante de Guerra",
+      "role": "Sanador / apoyo de primera línea",
+      "weapons": [
+        "Cetro",
         "Lanza",
-        "Maza"
+        "Guanteletes"
       ],
-      "combatIdentity": "horn_challenge",
-      "description": "Su único cuerno frontal es arma divina y estandarte de honor. Desafía al adversario más peligroso, concentra sobre sí sus ataques y responde con una brutal embestida de cuerno tras resistir un número de golpes. No depende de la sangre ni de alterar el escenario.",
-      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
+      "weaponFamilyIds": [
+        "scepter_1h",
+        "spear_1h",
+        "gauntlets_pair"
+      ],
+      "description": "Considera sagrado mantener vivos a los camaradas dignos. Con la voluntad heredada del dios de la guerra, restaura vida y refuerza a los aliados mientras combate cerca de ellos. Cuerno, ojos y venas son rasgos compartidos de su linaje.",
+      "combatIdentity": "battle_healer",
+      "primaryStats": [
+        "VOL",
+        "CON"
+      ],
+      "combatStatus": "diseñada; habilidades propias pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Ojo de la Última Guerra",
-      "role": "DPS / lectura de ataque y contraataque",
-      "weaponFamilyIds": [
-        "rapier_1h",
-        "sword_1h"
-      ],
-      "weapons": [
-        "Estoque",
-        "Espada"
-      ],
-      "combatIdentity": "war_gaze_counter",
-      "description": "Sus ojos sobrenaturales perciben el instante de intención homicida. Cuando esquiva o desvía un ataque, ejecuta una réplica precisa contra el agresor; en ataques normales prioriza el enemigo con mayor capacidad ofensiva. No es un mago ni un sanador.",
-      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
-      "availableSexes": [
-        "masculino",
-        "femenino"
-      ]
-    },
-    {
-      "name": "Quebrador de Juramentos",
-      "role": "DPS / verdugo de defensores",
-      "weaponFamilyIds": [
-        "hammer_2h",
-        "greatsword_2h"
-      ],
+      "name": "Quebrantador de Asedios",
+      "role": "Tanque / control y contraimpacto",
       "weapons": [
         "Gran martillo",
-        "Mandoble"
+        "Maza",
+        "Lanza"
       ],
-      "combatIdentity": "oath_breaker",
-      "description": "El ejecutor de la antigua ley de guerra Kairakh. Rompe escudos, guardias y mitigaciones mediante golpes de gran peso; si el objetivo se protege o intercepta por otro, su siguiente golpe obtiene penetración. No aplica estados persistentes ni efectos de escenario.",
-      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
+      "weaponFamilyIds": [
+        "hammer_2h",
+        "mace_1h",
+        "spear_1h"
+      ],
+      "description": "Se mantiene en primera línea, intercepta golpes y devuelve impactos capaces de quebrar defensas. Su ferocidad está al servicio del grupo; utiliza su fuerza física y herencia divina en conjunto.",
+      "combatIdentity": "siege_breaker",
+      "primaryStats": [
+        "DEF",
+        "CON",
+        "FUE"
+      ],
+      "combatStatus": "diseñada; habilidades propias pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
       ]
     },
     {
-      "name": "Heraldo del Rugido Primordial",
-      "role": "Support / ímpetu bélico colectivo",
-      "weaponFamilyIds": [
-        "gauntlets_pair",
-        "spear_2h"
-      ],
+      "name": "Exterminador Primordial",
+      "role": "Ranger / daño perforante",
       "weapons": [
-        "Guanteletes",
-        "Lanza larga"
+        "Arco",
+        "Jabalina",
+        "Ballesta"
       ],
-      "combatIdentity": "ancestral_war_cry",
-      "description": "Invoca la memoria de su ancestro, dios de la guerra, mediante un rugido y el fulgor simultáneo de sus ojos, cuerno y venas. Concede a los aliados una bonificación corta de precisión y fuerza de ataque; cuando un compañero cae, fortalece momentáneamente la voluntad de quienes sobreviven. No invoca criaturas.",
-      "combatStatus": "diseñada; mecánicas especiales pendientes de implementación",
+      "weaponFamilyIds": [
+        "bow_2h",
+        "javelin",
+        "crossbow_2h"
+      ],
+      "description": "Cazador bélico que aprovecha los ojos Kairakh para identificar puntos débiles. Alterna disparos rápidos y proyectiles de gran penetración con el mismo código de honor guerrero que sus hermanos de primera línea.",
+      "combatIdentity": "primal_marksman",
+      "primaryStats": [
+        "AGI",
+        "FUE"
+      ],
+      "combatStatus": "diseñada; habilidades propias pendientes de implementación",
+      "availableSexes": [
+        "masculino",
+        "femenino"
+      ]
+    },
+    {
+      "name": "Monarca de la Espada Indómita",
+      "role": "DPS / coloso marcial, resistencia y aura",
+      "weapons": [
+        "Mandoble",
+        "Espada",
+        "Kanabō"
+      ],
+      "weaponFamilyIds": [
+        "greatsword_2h",
+        "sword_1h",
+        "heavy_club_2h"
+      ],
+      "description": "Clase Kairakh inspirada en el ideal del guerrero que alcanza poder casi divino por disciplina, duelos y supervivencia, no por un don exclusivo al nacer. Combina fuerza monstruosa, maestría del arma y una aura guerrera que se condensa tras resistir y acertar golpes. Sus ojos, cuerno y venas participan juntos en cada técnica. A rareza ★1 es un aprendiz con equipo humilde: el aura superior se desbloquea mediante progresión. No reproduce técnicas, nombres ni armas exclusivas de personajes ajenos.",
+      "combatIdentity": "unyielding_blade_aura",
+      "primaryStats": [
+        "FUE",
+        "CON",
+        "VOL"
+      ],
+      "combatStatus": "diseñada; habilidades propias pendientes de implementación",
       "availableSexes": [
         "masculino",
         "femenino"
