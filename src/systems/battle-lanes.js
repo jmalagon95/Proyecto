@@ -72,36 +72,88 @@ function flash(x,y,kind){
  burst.style.left=x+'%';burst.style.top=y+'%';
  field.append(burst);setTimeout(()=>burst.remove(),440);
 }
-function onAttack(actor,target){
- if(!actor?.node||!target?.node)return;
- const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
- const illustrated=playKairakhBasicAttack(actor,{onImpact:()=>{
-   if(!target?.node?.isConnected)return;
-   playRig(target,'hit');
-   target.node.classList.remove('kami-impact');void target.node.offsetWidth;
-   target.node.classList.add('kami-impact');
-   flash(b.x,b.y,'hit');shake(getField(),2.5);
-   setTimeout(()=>target.node?.classList.remove('kami-impact'),310);
- }});
- if(illustrated)return;
-
- // Wind-up -> hit -> recovery. El daño se sigue calculando en el motor,
- // pero el VFX y la reacción se muestran en el fotograma de contacto.
- playRig(actor,'attack');
- const node=actor.node;
- node.style.setProperty('--kami-step-x',clamp((b.x-a.x)*.16,-11,11)+'vw');
- node.classList.remove('kami-lunge');void node.offsetWidth;node.classList.add('kami-lunge');
- const hitTarget=target,hitPosition=b;
- setTimeout(()=>{
-  if(!hitTarget?.node?.isConnected)return;
-  playRig(hitTarget,'hit');
-  hitTarget.node.classList.remove('kami-impact');void hitTarget.node.offsetWidth;
-  hitTarget.node.classList.add('kami-impact');
-  flash(hitPosition.x,hitPosition.y,actor.character?.role?.toLowerCase().includes('mág')?'magic':'hit');
-  shake(getField(),2.5);
- },175);
- setTimeout(()=>{node.classList.remove('kami-lunge');target.node?.classList.remove('kami-impact')},420);
+// Reach is a weapon attribute, expressed in battlefield percentage points.
+// Items may explicitly set alcance/range/reach, including {value: number}.
+// The classification is a fallback for legacy inventories without reach metadata.
+const RANGE_DEFAULTS=Object.freeze({unarmed:3,dagger:3.8,sword:5,axe:5,mace:5,spear:9,staff:8,bow:65,gun:65,magic:70});
+function weaponReach(unit){
+ const c=unit?.character||unit?.ref||{};
+ const eq=c.equipment||{};
+ const weapon=c.weapon||eq.weapon||eq.mainHand||eq.mainhand||eq.arma||eq.weaponMain||
+   Object.entries(eq).find(([k])=>/weapon|arma|main.?hand|mano.?principal/i.test(k))?.[1]||{};
+ const raw=weapon?.alcance??weapon?.reach??weapon?.range??c?.alcance??c?.reach;
+ const explicit=Number(typeof raw==='object'?(raw?.value??raw?.valor):raw);
+ if(raw!=null&&Number.isFinite(explicit)&&explicit>0)return clamp(explicit,2,85);
+ const identity=[weapon?.name,weapon?.type,weapon?.family,weapon?.weaponFamilyId,
+  typeof weapon==='string'?weapon:'',c.className,c.role].filter(Boolean).join(' ').toLowerCase();
+ if(/arco|bow|ballesta|crossbow|rifle|pistola|gun|tirador|arquero/.test(identity))return RANGE_DEFAULTS.bow;
+ if(/magia|magic|mago|hechic|taumaturgo|invoc|conjur/.test(identity))return RANGE_DEFAULTS.magic;
+ if(/lanza|spear|pica|alabarda|halberd/.test(identity))return RANGE_DEFAULTS.spear;
+ if(/bastón|baston|staff|vara/.test(identity))return RANGE_DEFAULTS.staff;
+ if(/daga|dagger|cuchillo/.test(identity))return RANGE_DEFAULTS.dagger;
+ if(/hacha|axe/.test(identity))return RANGE_DEFAULTS.axe;
+ if(/maza|martillo|mace|hammer/.test(identity))return RANGE_DEFAULTS.mace;
+ if(/espada|sword|blade|mandoble/.test(identity))return RANGE_DEFAULTS.sword;
+ return RANGE_DEFAULTS.unarmed;
 }
+function worldDistance(a,b){
+ return Math.hypot(a.x-b.x,(a.y-b.y)*.8);
+}
+function onAttack(actor,target){
+ if(!actor?.node||!target?.node||actor.hp<=0||target.hp<=0)return;
+ const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
+ const reach=weaponReach(actor),distance=worldDistance(a,b),melee=reach<=12;
+ const node=actor.node,field=getField();
+ // One movement sequence per actor; replacing it cancels pending impact safely.
+ const previous=node._kamiReachSequence;
+ if(previous){previous.cancelled=true;for(const id of previous.timers)clearTimeout(id)}
+ const seq={cancelled:false,timers:[]};node._kamiReachSequence=seq;
+ const after=(fn,ms)=>seq.timers.push(setTimeout(()=>{if(!seq.cancelled&&node.isConnected)fn()},ms));
+ const impact=()=>{
+  if(!target.node?.isConnected||target.hp<=0)return;
+  playRig(target,'hit');
+  target.node.classList.remove('kami-impact');void target.node.offsetWidth;
+  target.node.classList.add('kami-impact');
+  const p=melee?{x:b.x,y:b.y}:b;
+  flash(p.x,p.y,reach>12?'magic':'hit');shake(field,2.5);
+  after(()=>target.node?.classList.remove('kami-impact'),310);
+ };
+ node.dataset.weaponReach=String(reach);
+ node.classList.remove('kami-lunge');
+ // Ranged combat retains its firing position. Close combat closes the actual gap.
+ if(!melee||distance<=reach){
+  const illustrated=playKairakhBasicAttack(actor,{onImpact:impact});
+  if(!illustrated){playRig(actor,'attack');after(impact,190)}
+  return;
+ }
+ // Approach to the edge of the weapon reach, with correct x AND depth movement.
+ const dx=b.x-a.x,dy=b.y-a.y,len=Math.max(.001,Math.hypot(dx,dy));
+ const stop=Math.max(2,reach*.74);
+ const x=b.x-dx/len*stop,y=b.y-dy/len*stop;
+ const moveMs=clamp(Math.round(distance*22),280,1050),strikeMs=350;
+ node.classList.add('kami-approaching');
+ node.style.transition='left '+moveMs+'ms linear,top '+moveMs+'ms linear,transform .25s ease';
+ node.style.left=x+'%';node.style.top='calc('+y+'% - 45px)';
+ node.style.zIndex=String(85+laneOf(actor)*10);
+ playRig(actor,'run',{duration:moveMs/1000});
+ after(()=>{
+  if(target.hp<=0){restore();return}
+  node.classList.remove('kami-approaching');node.classList.add('kami-in-range');
+  // Remain on the contact spot until the hit animation reaches its strike frame.
+  const illustrated=playKairakhBasicAttack(actor,{onImpact:impact});
+  if(!illustrated){playRig(actor,'attack');after(impact,Math.round(strikeMs*.55))}
+  after(restore,illustrated?950:strikeMs+170);
+ },moveMs+35);
+ function restore(){
+  if(seq.cancelled)return;
+  node.classList.remove('kami-in-range','kami-approaching');
+  node.style.left=a.x+'%';node.style.top='calc('+a.y+'% - 45px)';
+  node.style.zIndex=String(20+a.depth*20+(actor.enemy?2:5)+a.x/20);
+  node.style.transition='left .35s ease,top .35s ease,transform .26s ease';
+  after(()=>{if(node._kamiReachSequence===seq)node._kamiReachSequence=null},400);
+ }
+}
+
 function onSkill(actor,target,skill,kind){
  if(!actor?.node)return;
  playRig(actor,kind==='block'?'block':'cast');
@@ -199,4 +251,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,rigState,version:5};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,rigState,version:6};
