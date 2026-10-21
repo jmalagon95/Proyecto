@@ -20,6 +20,7 @@ on:
       - 'scripts/test-racial-techniques.mjs'
       - 'src/systems/master-racial-bridge.js'
       - 'src/systems/battle-lanes.js'
+      - 'scripts/remove-static-combat-art.mjs'
       - 'src/systems/mannequin-rig.js'
       - 'src/systems/racial-rig-profiles.js'
       - 'src/systems/racial-rig-renderer.js'
@@ -92,9 +93,12 @@ jobs:
         run: node scripts/integrate-premium-lobby.mjs --write
       - name: Integrar Focus individual en combate automático
         run: node scripts/integrate-battle-focus.mjs --write
+      - name: Sustituir imágenes estáticas de combatientes por rigs
+        run: node scripts/remove-static-combat-art.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
+          node scripts/remove-static-combat-art.mjs
           node scripts/integrate-battle-focus.mjs
           node --check src/systems/battle-focus.js
           node scripts/integrate-premium-lobby.mjs
