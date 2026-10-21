@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {RACIAL_SKILL_DESIGN_VERSION} from './racial-skill-design.mjs';
 const root=process.cwd();
 const classes=JSON.parse(fs.readFileSync(path.join(root,'data/classes.json'),'utf8'));
 const targets=JSON.parse(fs.readFileSync(path.join(root,'data/content_targets.json'),'utf8'));
@@ -10,7 +11,7 @@ let regenerate=true;
 if(fs.existsSync(manifestPath)){
   try{
     const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
-    regenerate=manifest.totalSkills!==expected||
+    regenerate=manifest.racialSkillDesignVersion!==RACIAL_SKILL_DESIGN_VERSION||manifest.totalSkills!==expected||
       Object.keys(manifest.classes||{}).length!==Object.values(classes).flat().length||
       Object.values(classes).flat().some(c=>!manifest.classes?.[c.name]||
         !fs.existsSync(path.join(root,'data/generated',manifest.classes[c.name].file))||
