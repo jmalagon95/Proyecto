@@ -4,6 +4,8 @@ import { attackProfile, characterMaxHp, damageAfterDefense } from './combat-stat
 import { createEnemyCharacter } from './stat-gacha.js';
 import { executeRacialTechnique } from './racial-techniques.js';
 import { resolveSkill } from './effects.js';
+import {racialTechniqueFor} from './racial-techniques.js';
+import {newActionState,advanceActionState,startAction,selectCombatSkill} from './combat-cooldowns.js';
 
 function roleBias(c){
   const role=(c.role||'').toLowerCase();
@@ -24,7 +26,7 @@ export function simulateSurvivalMission(team,mission){
     const attack=attackProfile(c),hp=characterMaxHp(c);
     return {
       ref:c,id:c.id,name:c.name,hp,maxHp:hp,damage:0,kills:0,alive:true,
-      bias:roleBias(c),attack,attackAccumulator:0,shield:0,nextSkillAt:0,nextRacialAt:0
+      bias:roleBias(c),attack,attackAccumulator:0,shield:0,nextSkillAt:0,nextRacialAt:0,actionState:newActionState()
     };
   });
 
@@ -59,24 +61,25 @@ export function simulateSurvivalMission(team,mission){
     let killsThisSecond=0;
     let damageThisSecond=0;
 
-    // Ejecuta las técnicas raciales y habilidades realmente aprendidas.
+    // Scheduler común: cada segundo descuenta GCD, preparación y CD propios.
     for(const actor of living){
-      if(!activeEnemies.length)break;
-      const racial=executeRacialTechnique(actor,chars,activeEnemies,sec);
-      if(racial){
-        actor.damage+=racial.damage;actor.kills+=racial.kills;
-        enemiesDefeated+=racial.kills;killsThisSecond+=racial.kills;damageThisSecond+=racial.damage;
-        activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
-        lines.push(actor.name+' usa '+racial.skill+'.');
-        type='combat';
-      }
-      if(!activeEnemies.length)break;
-      const learned=(actor.ref.skills||[]).find(sk=>sk?.functional&&sk?.mechanics?.effects?.length);
-      if(learned&&sec>=actor.nextSkillAt){
-        const action=resolveSkill(learned,actor.ref,activeEnemies[0]);
-        if(action.ok){
-          actor.nextSkillAt=sec+Math.max(1,Number(action.cooldownSeconds||6));
-          const penetration=action.results.find(e=>e.op==='penetration_pct')?.value||0;
+      if(!actor.alive)continue;
+      const st=actor.actionState;
+      const completed=advanceActionState(st,1);
+      if(completed&&activeEnemies.length){
+        if(completed.skill._racial){
+          const racial=executeRacialTechnique(actor,chars,activeEnemies,sec);
+          if(racial){
+            actor.damage+=racial.damage;actor.kills+=racial.kills;
+            enemiesDefeated+=racial.kills;killsThisSecond+=racial.kills;damageThisSecond+=racial.damage;
+            activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
+            lines.push(actor.name+' ejecuta '+racial.skill+'.');type='combat';
+          }
+        }else{
+          const learned=completed.skill;
+          const action=resolveSkill(learned,actor.ref,activeEnemies[0]);
+          if(action.ok){
+            const penetration=action.results.find(e=>e.op==='penetration_pct')?.value||0;
           for(const e of action.results){
             if(e.op==='damage'||e.op==='bonus_damage_pct_max_hp'){
               const targets=e.target==='area'?activeEnemies.slice(0,3):activeEnemies.slice(0,1);
@@ -114,10 +117,23 @@ export function simulateSurvivalMission(team,mission){
               }
             }
           }
-          activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
-          lines.push(actor.name+' ejecuta '+learned.name+'.');
-          type='combat';
+            activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
+            lines.push(actor.name+' ejecuta '+learned.name+'.');type='combat';
+          }
         }
+      }
+      if(!activeEnemies.length||st.pending||st.global>0)continue;
+      const rawSkills=(actor.ref.skills||[]).filter(sk=>sk?.functional&&sk?.mechanics?.effects?.length);
+      const descriptor=racialTechniqueFor(actor.ref);
+      const racial=descriptor&&st.racialRemaining<=0?{
+        ...descriptor,_racial:true,functional:true,
+        mechanics:{cooldownSeconds:descriptor.cooldownSeconds,timeCostSeconds:.75,
+          effects:[{op:descriptor.kind==='heal'?'heal':descriptor.kind==='guard'||descriptor.kind==='shield'||descriptor.kind==='evade'?'shield':'damage',multiplier:1}]}
+      }:null;
+      const skill=selectCombatSkill([...rawSkills,...(racial?[racial]:[])],
+        st,actor.ref,chars.filter(x=>x.alive),activeEnemies);
+      if(skill&&startAction(st,skill,actor.ref)){
+        lines.push(actor.name+' prepara '+skill.name+'.');type='combat';
       }
     }
     for(const a of living){
