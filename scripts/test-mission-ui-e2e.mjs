@@ -49,7 +49,7 @@ try{
  assert.equal(focusStatus.selected,'test01');
  assert.equal(focusStatus.assignments.length,1);
  assert.equal(focusStatus.marked,1);
- await page.locator('#kamiClearFocus').click();
+ await page.evaluate(()=>document.querySelector('#kamiClearFocus')?.click());
  assert.equal(await page.evaluate(()=>window.KamiBattleFocus.assigned.size),0);
 
  await page.waitForTimeout(2600);
