@@ -93,11 +93,11 @@ inject("team.forEach((c,index)=>",String.raw`
      $('speedBtn').hidden=true;$('speedBtn').disabled=true;
      $('autoBtn').hidden=true;$('autoBtn').disabled=true;
 `);
-inject("     if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}",String.raw`
+inject("if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}",String.raw`
      const reached=Math.min(180,Math.floor(battle.elapsed));
      while(battle.lastNarratedSecond<reached){battle.lastNarratedSecond++;narrateMissionSecond(battle,battle.lastNarratedSecond)}
 `);
-inject("     let rewards=[];","     displayMissionStats(end);\n");
+inject("let rewards=[];","     displayMissionStats(end);\n");
 replace("$('simulateBattle').onclick=()=>{","$('simulateBattle').onclick=()=>{return;");
 replace("Math.min(.09,(timestamp-battler.last)/1000)*battle.speed","Math.min(.09,(timestamp-battler.last)/1000)");
 }
