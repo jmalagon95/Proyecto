@@ -53,8 +53,8 @@ if(!html.includes(catalogMarker)){
    classes:(classes[r.id]||[]).map(c=>({name:c.name,weapons:c.weapons,desc:c.description}))
  }));
  if(payload.length!==6||payload.some(r=>r.classes.length<5))throw Error('Catálogo racial inconsistente: maestro intacto.');
- const boot=\`\${catalogMarker}
-const KAMI_RACIAL_V4_CATALOG=\${JSON.stringify(payload)};
+ const boot=`${catalogMarker}
+const KAMI_RACIAL_V4_CATALOG=${JSON.stringify(payload)};
 for(const r of KAMI_RACIAL_V4_CATALOG){
  RACES[r.name]={tag:r.tag,desc:r.desc,history:r.history,origin:r.origin};
  CLASSES[r.name]=r.classes;
@@ -66,7 +66,7 @@ for(const name of Object.keys(RACES)){
 for(const name of Object.keys(CLASSES)){
  if(!KAMI_RACIAL_V4_CATALOG.some(r=>r.name===name))delete CLASSES[name];
 }
-\`;
+`;
  once('let state=',boot+'let state=','Sincronizar las seis razas y 31 clases raciales');
 }
 if(html.includes('Math.floor(Math.random()*8)')){
