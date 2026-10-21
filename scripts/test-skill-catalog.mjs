@@ -24,7 +24,7 @@ for(const cls of classes){
     assert.equal(skill.className,cls.name);
     assert.equal(skill.type,'active');
     assert.equal(skill.resolverCompatible,true);
-    assert.equal(skill.implementedInAutoCombat,false);
+    assert.equal(skill.implementedInAutoCombat,entry.group!=='generic');
     assert.ok(!allIds.has(skill.id),'Identificador duplicado '+skill.id);
     allIds.add(skill.id);
     rankCounts[skill.rank]=(rankCounts[skill.rank]||0)+1;
@@ -32,10 +32,10 @@ for(const cls of classes){
     assert.ok(skill.mechanics.cooldownSeconds>0);
     assert.ok(skill.mechanics.timeCostSeconds>0);
     for(const e of skill.mechanics.effects){
-      assert.ok(['damage','heal','shield','penetration_pct'].includes(e.op),'Efecto no compatible: '+e.op);
-      if(e.op==='damage')assert.ok(['single','area'].includes(e.target));
+      assert.ok(['damage','heal','shield','penetration_pct','bonus_damage_pct_max_hp','summon_strike','vulnerability','haste'].includes(e.op),'Efecto no compatible: '+e.op);
+      if(['damage','summon_strike','bonus_damage_pct_max_hp'].includes(e.op))assert.ok(['single','area'].includes(e.target));
       if(e.op==='heal')assert.equal(e.target,'ally');
-      if(e.op==='shield')assert.equal(e.target,'self');
+      if(e.op==='shield')assert.ok(['self','ally'].includes(e.target));
     }
   }
   assert.deepEqual(rankCounts,target.skills.rankCountsPerClass,'Reparto incorrecto '+cls.name);
