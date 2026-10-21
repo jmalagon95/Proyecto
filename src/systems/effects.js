@@ -40,7 +40,16 @@ export function resolveSkill(skill,actor,target,ctx={}){
       const stat=Number(actor.stats?.[e.scalingStat]||0);
       let amount=Math.max(1,Math.round(stat*e.multiplier));
       amount=Math.round(amount*(1+(ctx.classDamagePct||0)/100)*(1+(ctx.skillTagDamagePct||0)/100));
-      results.push({op:'damage',amount,target:e.target||skill.mechanics.target});
+      results.push({op:'damage',amount,hits:Math.min(25,Math.max(1,e.hits||1)),ignoreDefensePct:Math.max(0,Math.min(100,e.ignoreDefensePct||0)),critMultiplier:Math.max(1,e.critMultiplier||1),executeBelowHpPct:e.executeBelowHpPct||0,executeBonusMultiplier:e.executeBonusMultiplier||1,target:e.target||skill.mechanics.target});
+    }else if(e.op==='summon_strike'){
+      const stat=Math.max(0,Number(actor.stats?.[e.scalingStat]||0));
+      results.push({op:'damage',amount:Math.max(1,Math.round(stat*e.multiplier)),hits:Math.min(25,Math.max(1,e.hits||1)),target:e.target||'single',source:'avatar'});
+    }else if(e.op==='bonus_damage_pct_max_hp'){
+      results.push({op:'bonus_damage_pct_max_hp',value:Math.max(0,e.value||0),target:e.target||'single'});
+    }else if(e.op==='vulnerability'){
+      results.push({op:'vulnerability',value:Math.max(0,e.value||0),durationSeconds:Math.max(1,e.durationSeconds||1),target:e.target||'single'});
+    }else if(e.op==='haste'){
+      results.push({op:'haste',value:Math.max(0,e.value||0),target:e.target||'ally'});
     }else if(e.op==='heal'){
       const stat=Number(actor.stats?.[e.scalingStat]||0);
       results.push({op:'heal',amount:Math.max(1,Math.round(stat*e.multiplier)),target:e.target||'ally'});
