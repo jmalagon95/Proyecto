@@ -98,6 +98,27 @@ try{
  console.log('WOOD_SWORD_CHECK',JSON.stringify(woodSwordCheck));
  assert.ok(woodSwordCheck.every(v=>v.skin==='kairakh-star1-wood-sword'&&v.weapons===1&&v.slash===1&&v.bones===19),
    'El sprite Kairakh ★1 o el arma de madera no están unidos al esqueleto');
+ const atlasResponse=await page.request.get('http://127.0.0.1:5173/assets/battle/kairakh_star1/attack_basic_30.webp');
+ assert.equal(atlasResponse.status(),200,'Falta el atlas real en el repositorio');
+ const started=await page.evaluate(()=>{
+  const hero=window.eval('battle.allies[0]');
+  const foe=window.eval('battle.enemies[0]');
+  if(!hero?.node||!foe?.node)return false;
+  window.KamiBattleLanes.onAttack(hero,foe);
+  return hero.node.classList.contains('kami-attack-sprite-playing');
+ });
+ assert.ok(started,'El ataque básico no reproduce los 30 fotogramas');
+ await page.waitForTimeout(340);
+ const midFrame=await page.evaluate(()=>{
+  const sprite=document.querySelector('#battleField .fighter:not(.enemy) .kami-star1-sword-attack');
+  return {frame:Number(sprite?.dataset.frame||0),url:sprite?.style.backgroundImage||'',width:sprite?.getBoundingClientRect().width||0};
+ });
+ console.log('KAIRAKH_30_FRAMES',JSON.stringify(midFrame));
+ assert.ok(midFrame.frame>=8&&midFrame.frame<=26,'Los fotogramas no avanzan con el tiempo');
+ assert.ok(midFrame.url.includes('attack_basic_30.webp'));
+ assert.ok(midFrame.width<=112,'El sprite está demasiado grande');
+ await page.waitForTimeout(550);
+ assert.equal(await page.evaluate(()=>document.querySelector('#battleField .fighter:not(.enemy)')?.classList.contains('kami-attack-sprite-playing')),false,'El ataque no finaliza');
  assert.ok(rigCheck.allSkeletal&&rigCheck.skeletonVisible&&rigCheck.backgroundsHidden&&rigCheck.spritesHidden,
    'Quedan imágenes estáticas visibles en la batalla');
  const races=await page.evaluate(async()=>{
