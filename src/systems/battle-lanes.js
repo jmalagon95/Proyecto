@@ -4,6 +4,7 @@ import {playKairakhBasicAttack} from './kairakh-sprite-attack.js';
 // Kami No Challenge · Campo 2.5D por carriles.
 // Renderer ligero: conserva la simulación existente y reacciona a eventos reales.
 const visual=new WeakMap();
+const engagements=new WeakMap();
 const laneOffsets=[19,47,75]; // trasero, medio, frontal: profundidad creciente
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function getField(){return document.getElementById('battleField')}
@@ -46,6 +47,7 @@ function place(unit,node,field=getField()){
  createArena(field);
  const p=position(unit);
  const prior=visual.get(unit);
+ // Formation changes reset the spatial anchor, but attacks never do.
  node.classList.add('kami-fighter');
  node.dataset.lane=String(p.depth);
  node.style.setProperty('--kami-scale',String(p.scale));
@@ -79,6 +81,7 @@ const worldDistance=distanceMeters;
 function onAttack(actor,target,onContact=null){
  if(!actor?.node||!target?.node||actor.hp<=0||target.hp<=0)return;
  const a=visual.get(actor)||position(actor),b=visual.get(target)||position(target);
+ // Once units have advanced, their next attacks start from their new positions.
  const reach=weaponReach(actor),distance=worldDistance(a,b),melee=isMelee(actor);
  const node=actor.node,field=getField();
  // One movement sequence per actor; replacing it cancels pending impact safely.
@@ -113,24 +116,29 @@ function onAttack(actor,target,onContact=null){
  node.classList.add('kami-approaching');
  node.style.transition='left '+moveMs+'ms linear,top '+moveMs+'ms linear,transform .25s ease';
  node.style.left=x+'%';node.style.top='calc('+y+'% - 45px)';
+ visual.set(actor,{x,y,scale:a.scale,depth:a.depth,active:true});
  node.style.zIndex=String(85+laneOf(actor)*10);
  playRig(actor,'run',{duration:moveMs/1000});
  after(()=>{
-  if(target.hp<=0){restore();return}
+  if(target.hp<=0){settle();return}
   node.classList.remove('kami-approaching');node.classList.add('kami-in-range');
   // Remain on the contact spot until the hit animation reaches its strike frame.
   const illustrated=playKairakhBasicAttack(actor,{onImpact:impact});
   if(!illustrated){playRig(actor,'attack');after(impact,Math.round(strikeMs*.55))}
-  after(restore,illustrated?950:strikeMs+170);
+  after(settle,illustrated?950:strikeMs+170);
  },moveMs+35);
- function restore(){
+ function settle(){
   if(seq.cancelled)return;
   node.classList.remove('kami-in-range','kami-approaching');
-  node.style.left=a.x+'%';node.style.top='calc('+a.y+'% - 45px)';
-  node.style.zIndex=String(20+a.depth*20+(actor.enemy?2:5)+a.x/20);
-  node.style.transition='left .35s ease,top .35s ease,transform .26s ease';
-  after(()=>{if(node._kamiReachSequence===seq)node._kamiReachSequence=null},400);
+  // Persist at the reached coordinates: no automatic trip back to formation.
+  const depth=clamp(Math.round((y-laneOffsets[0])/(laneOffsets[2]-laneOffsets[0])*2),0,2);
+  visual.set(actor,{x,y,scale:a.scale,depth,active:false});
+  engagements.set(actor,target);
+  node.style.zIndex=String(20+depth*20+(actor.enemy?2:5)+x/20);
+  node.style.transition='left .38s ease,top .38s ease,transform .26s ease';
+  if(node._kamiReachSequence===seq)node._kamiReachSequence=null;
  }
+
 }
 
 function onSkill(actor,target,skill,kind){
@@ -230,4 +238,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:7};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:8};
