@@ -112,6 +112,7 @@ function tick(b,dt,hooks={}){
   for(const u of b.allies){
     if(!u?.character||u.hp<=0)continue;
     const state=currentState(u),complete=advanceActionState(state,dt);
+    window.KamiBattleLanes?.showAction(u,state);
     if(complete){
       window.KamiBattleLanes?.onSkill(u,primaryTarget(b),complete.skill,'skill');
       // Si cae o desaparece el último enemigo durante la ejecución, se cancela
