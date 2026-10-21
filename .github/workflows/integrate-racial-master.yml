@@ -7,6 +7,12 @@ on:
       - 'scripts/integrate-racial-master.mjs'
       - 'scripts/clean-master-catalog.mjs'
       - 'scripts/test-master-canonical.mjs'
+      - 'scripts/integrate-goblin-stat-gacha.mjs'
+      - 'scripts/test-goblin-gacha.mjs'
+      - 'src/systems/stat-gacha.js'
+      - 'src/systems/combat-stats.js'
+      - 'src/systems/mission-simulator.js'
+      - 'data/missions.json'
       - 'data/classes.json'
       - 'data/races.json'
       - 'scripts/test-racial-techniques.mjs'
@@ -33,13 +39,17 @@ jobs:
           node scripts/test-racial-skill-design.mjs
           node scripts/test-racial-techniques.mjs
           node scripts/test-combat.mjs
+          node scripts/test-goblin-gacha.mjs
       - name: Integrar dentro de index.html
         run: node scripts/integrate-racial-master.mjs --write
       - name: Eliminar razas y clases obsoletas del maestro
         run: node scripts/clean-master-catalog.mjs --write
+      - name: Integrar el mismo gacha de estadísticas en goblins del maestro
+        run: node scripts/integrate-goblin-stat-gacha.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
+          node scripts/integrate-goblin-stat-gacha.mjs
           git diff --check
       - name: Guardar maestro actualizado en main
         run: |
@@ -47,7 +57,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if ! git diff --cached --quiet; then
-            git commit -m "fix(master): seis razas y 31 clases raciales vigentes, con migración de partidas"
+            git commit -m "feat(master): goblins con seis estadísticas y tiradas de gacha ★1 como los PJ"
             git push
           else
             echo "El index maestro ya estaba integrado."
