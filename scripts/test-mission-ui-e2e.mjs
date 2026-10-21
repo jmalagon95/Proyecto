@@ -86,6 +86,18 @@ try{
  assert.equal(rigCheck.heroRigs,2,'Los héroes no usan rigs');
  assert.ok(rigCheck.enemyRigs>0,'Los enemigos no usan rigs');
  assert.equal(rigCheck.bones,19);
+ const woodSwordCheck=await page.evaluate(()=>{
+  const heroes=[...document.querySelectorAll('#battleField .fighter:not(.enemy)')];
+  return heroes.map(hero=>({
+   skin:hero.querySelector('.kami-rig-svg')?.getAttribute('data-combat-skin'),
+   weapons:hero.querySelectorAll('[data-equipped-item="wooden-training-sword"]').length,
+   slash:hero.querySelectorAll('[data-wood-strike-arc]').length,
+   bones:hero.querySelectorAll('[data-bone]').length
+  }));
+ });
+ console.log('WOOD_SWORD_CHECK',JSON.stringify(woodSwordCheck));
+ assert.ok(woodSwordCheck.every(v=>v.skin==='kairakh-star1-wood-sword'&&v.weapons===1&&v.slash===1&&v.bones===19),
+   'El sprite Kairakh ★1 o el arma de madera no están unidos al esqueleto');
  assert.ok(rigCheck.allSkeletal&&rigCheck.skeletonVisible&&rigCheck.backgroundsHidden&&rigCheck.spritesHidden,
    'Quedan imágenes estáticas visibles en la batalla');
  const races=await page.evaluate(async()=>{
