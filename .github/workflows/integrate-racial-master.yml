@@ -26,6 +26,10 @@ on:
       - 'scripts/audit-mission-ui.mjs'
       - 'scripts/audit-lobby-ui.mjs'
       - 'scripts/test-mission-ui-e2e.mjs'
+      - 'scripts/integrate-premium-lobby.mjs'
+      - 'scripts/test-premium-lobby-e2e.mjs'
+      - 'src/ui/kami-premium-lobby.css'
+      - 'src/ui/kami-premium-lobby.js'
       - 'scripts/fix-mission-runtime.mjs'
       - 'scripts/test-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
@@ -72,9 +76,13 @@ jobs:
         run: node scripts/integrate-battle-lanes.mjs --write
       - name: Aplicar formaciones manuales guardadas
         run: node scripts/integrate-manual-formations.mjs --write
+      - name: Aplicar rediseño premium a todos los menús
+        run: node scripts/integrate-premium-lobby.mjs --write
       - name: Validar razas, clases, migraciones y JavaScript
         run: |
           node scripts/test-master-canonical.mjs
+          node scripts/integrate-premium-lobby.mjs
+          node --check src/ui/kami-premium-lobby.js
           node scripts/test-battle-lanes.mjs
           node scripts/test-manual-formations.mjs
           node scripts/audit-mission-ui.mjs
@@ -95,13 +103,14 @@ jobs:
           python3 -m http.server 5173 >/tmp/kami-server.log 2>&1 &
           sleep 2
           node scripts/test-mission-ui-e2e.mjs
+          node scripts/test-premium-lobby-e2e.mjs
       - name: Guardar maestro actualizado en main
         run: |
           git config user.name "kami-automation[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if ! git diff --cached --quiet; then
-            git commit -m "feat(master): cinco equipos guardados, supervivencia narrada y MVP"
+            git commit -m "feat(master): lobby y menús anime premium con navegación funcional"
             git push
           else
             echo "El index maestro ya estaba integrado."
