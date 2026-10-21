@@ -18,7 +18,7 @@ try{
  await page.evaluate(()=>{
   const hero=(id,name,role)=>({id,name,level:1,star:1,currentStar:1,race:'Kairakh',className:'Monarca de la Espada Indómita',role,
     stats:{FUE:4,AGI:4,CON:4,DEF:4,INT:4,VOL:4},hp:32,dead:false,equipment:{},skills:[]});
-  window.eval(`state.characters=[${JSON.stringify(hero('test01','Zarek','Tanque'))},${JSON.stringify(hero('test02','Kael','DPS'))}];state.team=['test01','test02'];renderTeam();`);
+  window.eval(`state.characters=[${JSON.stringify(hero('test01','Zarek','Tanque'))},${JSON.stringify(hero('test02','Kael','DPS'))}];state.team=['test01','test02'];renderTeam();openModal('portalModal');`);
  });
  await page.locator('[data-formation-hero="test02"]').click();
  await page.locator('[data-formation-lane="0"][data-formation-slot="4"]').click();
@@ -30,7 +30,7 @@ try{
  const saved=await page.evaluate(()=>window.eval('state.missionPresets[0]'));
  assert.ok(saved?.positions?.test02?.slot===4,'La formación no guarda posiciones');
  await page.reload({waitUntil:'domcontentloaded'});
- await page.evaluate(()=>window.eval('load();renderTeam()'));
+ await page.evaluate(()=>window.eval('load();renderTeam();openModal("portalModal")'));
  await page.locator('[data-load="0"]').click();
  assert.deepEqual(await page.evaluate(()=>window.eval('state.missionPositions.test02')),{lane:0,slot:4});
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
