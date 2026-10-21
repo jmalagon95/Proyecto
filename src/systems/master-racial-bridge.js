@@ -1,3 +1,4 @@
+import {skillRangeMeters,weaponRangeMeters,distanceMeters,withinReach} from './combat-reach.js';
 import {racialTechniqueFor} from './racial-techniques.js';
 import {resolveSkill} from './effects.js';
 import {loadSkillsForClass} from './content-loader.js';
@@ -31,7 +32,18 @@ function currentState(u){let st=runtime.get(u);if(!st){st={...newActionState(),s
 function active(b){return (b?.enemies||[]).filter(e=>e.hp>0)}
 function companions(b){return (b?.allies||[]).filter(x=>x.hp>0)}
 function primaryTarget(b,actor=null){return (actor&&window.KamiBattleFocus?.targetFor(actor,active(b)))||active(b).sort((a,c)=>a.hp-c.hp)[0]||null}
-function targetUnits(b,type,actor=null){const enemies=active(b);const focus=actor&&window.KamiBattleFocus?.targetFor(actor,enemies);if(focus){enemies.splice(enemies.indexOf(focus),1);enemies.unshift(focus)}return type==='area'?enemies.slice(0,3):enemies.slice(0,1)}
+function targetUnits(b,type,actor=null,skill=null){const enemies=active(b).filter(e=>!actor||!skill||inSkillRange(actor,e,skill));const focus=actor&&window.KamiBattleFocus?.targetFor(actor,enemies);if(focus){enemies.splice(enemies.indexOf(focus),1);enemies.unshift(focus)}return type==='area'?enemies.slice(0,3):enemies.slice(0,1)}
+function battlePoint(unit){
+ const el=unit?.node,style=el?.style;
+ if(!style)return null;
+ const x=parseFloat(style.left),y=parseFloat(style.top?.match(/[\\d.]+%/)?.[0]);
+ return Number.isFinite(x)&&Number.isFinite(y)?{x,y}:null;
+}
+function inSkillRange(actor,target,skill){
+ const a=battlePoint(actor),b=battlePoint(target);
+ if(!a||!b)return false;
+ return withinReach(a,b,skillRangeMeters(skill,actor));
+}
 function notify(hooks,a,t,title,amount,kind){
   if(!hooks?.animate)return;
   try{hooks.announce?.(a,t,title,round(amount),kind)}catch(error){console.warn('[Kami] Efecto visual:',error)}
@@ -50,7 +62,7 @@ function applyResults(b,a,skill,results,hooks){
   const penetration=results.find(e=>e.op==='penetration_pct')?.value||0;
   for(const effect of results){
     if(effect.op==='damage'||effect.op==='bonus_damage_pct_max_hp'){
-      for(const enemy of targetUnits(b,effect.target,a)){
+      for(const enemy of targetUnits(b,effect.target,a,skill)){
         for(let i=0;i<Math.min(25,Math.max(1,effect.hits||1))&&enemy.hp>0;i++){
           const base=effect.op==='bonus_damage_pct_max_hp'?
             (enemy.maxHp||enemy.hp)*effect.value/100:
@@ -70,7 +82,7 @@ function applyResults(b,a,skill,results,hooks){
       if(effect.op==='shield'){currentState(unit).shield+=amount;notify(hooks,a,unit,skill.name,amount,'shield')}
       if(effect.op==='haste'){unit.cooldown=Math.max(0,unit.cooldown-(effect.value||0));notify(hooks,a,unit,skill.name,0,'haste')}
     }else if(effect.op==='vulnerability'){
-      for(const enemy of targetUnits(b,effect.target)){
+      for(const enemy of targetUnits(b,effect.target,a,skill)){
         enemy.kamiVulnerabilityPct=Math.max(0,effect.value||0);
         enemy.kamiVulnerableUntil=b.elapsed+Math.max(1,effect.durationSeconds||1);
       }
@@ -114,21 +126,28 @@ function tick(b,dt,hooks={}){
     const state=currentState(u),complete=advanceActionState(state,dt);
     window.KamiBattleLanes?.showAction(u,state);
     if(complete){
-      window.KamiBattleLanes?.onSkill(u,primaryTarget(b),complete.skill,'skill');
-      // Si cae o desaparece el último enemigo durante la ejecución, se cancela
-      // sin producir daño inventado ni gastar una segunda habilidad.
-      if(active(b).length&&u.hp>0){
-        if(complete.skill._racial){
+      // A skill is resolved at its strike point. A melee skill must first close
+      // the gap; magic and ranged techniques keep their firing distance.
+      const target=primaryTarget(b,u),skill=complete.skill;
+      const reach=skillRangeMeters(skill,u);
+      const resolveAtContact=()=>{
+        if(!active(b).length||u.hp<=0)return;
+        if(reach>0&&target&&!inSkillRange(u,target,skill))return;
+        window.KamiBattleLanes?.onSkill(u,target,skill,'skill');
+        if(skill._racial){
           castRacial(b,u,hooks);
-          hooks.log?.(u.name+' activa '+complete.skill.name+'.');
+          hooks.log?.(u.name+' activa '+skill.name+'.');
         }else{
-          const result=resolveSkill(complete.skill,u.character,primaryTarget(b,u));
+          const result=resolveSkill(skill,u.character,primaryTarget(b,u));
           if(result.ok){
-            applyResults(b,u,complete.skill,result.results,hooks);
-            hooks.log?.(u.name+' ejecuta '+complete.skill.name+' ['+complete.skill.rank+'].');
+            applyResults(b,u,skill,result.results,hooks);
+            hooks.log?.(u.name+' ejecuta '+skill.name+' ['+skill.rank+'].');
           }
         }
-      }
+      };
+      if(target&&reach<=4&&!(inSkillRange(u,target,skill))){
+        window.KamiBattleLanes?.onAttack(u,target,resolveAtContact);
+      }else resolveAtContact();
     }
     if(state.pending)u.cooldown=Math.max(Number(u.cooldown)||0,state.castRemaining);
     if(!active(b).length||state.pending||state.global>0)continue;
@@ -158,5 +177,5 @@ function absorb(u,amount){
   r.shield-=absorbed;
   return {absorbed,remaining:Math.max(0,damage-absorbed)};
 }
-window.KamiRacialSkills={tick,absorb,getCatalog,version:4};
+window.KamiRacialSkills={tick,absorb,getCatalog,version:5};
 console.info('[Kami] Puente racial v4 listo para el combate maestro');
