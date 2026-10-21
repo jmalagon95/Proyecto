@@ -26,6 +26,9 @@ for(const race of names){
  const rig=createRigSvg({character:{race}});
  assert.equal(rig.svg.attrs['data-rig-race'],RACE_RIGS[race].id,race);
  assert.equal(Object.keys(rig.nodes).length,19);
+ assert.equal(rig.nodes.chest.children[0].attrs['data-anatomy-shape'],RACE_RIGS[race].id);
+ assert.ok(rig.nodes.chest.children[0].attrs.transform.startsWith('scale('));
+ assert.equal(rig.nodes.chest.attrs.transform,'translate(0 -28)','Visual morph must not move bone pivots');
  assert.ok(rig.svg.querySelectorAll('[data-feature]').length>0,race+' no tiene anatomía propia');
  for(const bone of Object.values(SOCKETS))assert.ok(rig.nodes[bone],race+' perdió socket '+bone);
  const unit={character:{race},hp:100,maxHp:100,node:new Node('div')};
