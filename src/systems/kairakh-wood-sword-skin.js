@@ -73,6 +73,17 @@ export function installWoodSwordKairakh({nodes,svg:root},character){
  svg('path',{d:'M -2 -34 L -2 -83',stroke:palette.woodLight,'stroke-width':1.2},weapon);
  svg('path',{d:'M -14 -29 L 14 -29',stroke:palette.ink,'stroke-width':4.5,'stroke-linecap':'round'},weapon);
  const arc=svg('path',{'data-wood-strike-arc':'1',d:'M -30 -95 Q 14 -117 37 -65',fill:'none',stroke:'#e7e4d4','stroke-width':3.2,'stroke-linecap':'round',opacity:0},arm);
+ // Capas de pelo y tela separadas de las articulaciones y de la espada.
+ const trailing=svg('g',{'data-secondary-motion':'hair'},nodes.head);
+ for(const d of [
+  'M -13 -30 Q -37 -31 -49 -12 Q -55 3 -44 18 Q -47 -5 -27 -16',
+  'M -7 -32 Q -34 -48 -43 -24 Q -29 -31 -14 -22',
+  'M 9 -34 Q 29 -33 38 -11 Q 46 7 37 27 Q 38 1 20 -19']){
+  svg('path',{d,fill:palette.hair,stroke:palette.hairShadow,'stroke-width':1.4,'stroke-linejoin':'round'},trailing);
+ }
+ const sash=svg('g',{'data-secondary-motion':'sash'},nodes.root);
+ svg('path',{d:'M -2 7 Q -12 26 -18 39 L -10 44 Q -1 29 7 15 Z',fill:palette.red,stroke:palette.ink,'stroke-width':1},sash);
+ svg('path',{d:'M 8 7 Q 13 23 24 29 L 19 35 Q 5 29 1 11 Z',fill:palette.linen,stroke:palette.ink,'stroke-width':1},sash);
  const ribbon=svg('g',{'data-rig-hair':'white'},nodes.head);
  for(const d of ['M -9 -30 Q -34 -21 -26 10 Q -38 2 -31 -20','M 7 -32 Q 26 -24 21 17 Q 33 3 17 -25']){
   svg('path',{d,fill:'none',stroke:palette.hair,'stroke-width':5,'stroke-linecap':'round'},ribbon);
@@ -88,4 +99,10 @@ export function tickWoodSwordKairakh(rig){
  const progress=rig.duration>0?Math.max(0,Math.min(1,rig.time/rig.duration)):0;
  const visible=rig.mode==='attack'&&progress>.31&&progress<.72;
  arc.setAttribute('opacity',visible?String(Math.sin((progress-.31)/.41*Math.PI)*.9):'0');
+ const hair=rig.svg.querySelector?.('[data-secondary-motion="hair"]');
+ const sash=rig.svg.querySelector?.('[data-secondary-motion="sash"]');
+ const bob=Math.sin(rig.clock*3.7);
+ const attack=rig.mode==='attack'?Math.sin(progress*Math.PI):0;
+ if(hair)hair.setAttribute('transform','rotate('+(-2.6+bob*1.9+attack*8).toFixed(2)+' -5 -29)');
+ if(sash)sash.setAttribute('transform','rotate('+(bob*2.5-attack*15).toFixed(2)+' 0 8)');
 }
