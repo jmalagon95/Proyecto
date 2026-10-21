@@ -54,7 +54,8 @@ function place(unit,node,field=getField()){
  node.style.left=p.x+'%';node.style.top='calc('+p.y+'% - 45px)';
  node.style.zIndex=String(20+p.depth*20+(unit.enemy?2:5)+p.x/20);
  node.style.transform='scale('+p.scale+')';
- visual.set(unit,{x:p.x,y:p.y,scale:p.scale,active:false});
+ visual.set(unit,{x:p.x,y:p.y,scale:p.scale,depth:p.depth,active:false});
+ slots.delete(unit);
  attachRig(unit);
  if(prior&&(Math.abs(prior.x-p.x)>.2||Math.abs(prior.y-p.y)>.2))
   playRig(unit,'run',{duration:.4});
@@ -75,6 +76,47 @@ function flash(x,y,kind){
  burst.style.left=x+'%';burst.style.top=y+'%';
  field.append(burst);setTimeout(()=>burst.remove(),440);
 }
+
+// Occupancy is measured in arena metres. Reservation happens when movement starts,
+// so simultaneous attackers cannot all select the same spot.
+const slots=new WeakMap();
+const COLLISION_RADIUS_M=0.72;
+function meters(p){return {x:p.x*ARENA_METERS.width/100,y:p.y*ARENA_METERS.height/100}}
+function percent(p){return {x:p.x/ARENA_METERS.width*100,y:p.y/ARENA_METERS.height*100}}
+function allOccupants(actor){
+ const b=window.KamiCurrentBattle||null;
+ // The arena roster is cached by tick and includes both teams.
+ return (arenaUnits||[]).filter(u=>u!==actor&&u.hp>0&&u.node?.isConnected);
+}
+let arenaUnits=[];
+function occupied(point,actor,target){
+ const pos=meters(point);
+ return allOccupants(actor).reduce((penalty,other)=>{
+  const known=slots.get(other)||unitPosition(other),p=meters(known);
+  const separation=Math.hypot(pos.x-p.x,pos.y-p.y);
+  const radius=other===target?0.68:COLLISION_RADIUS_M*2;
+  return penalty+Math.max(0,radius-separation)*120;
+ },0);
+}
+function approachSlot(actor,target,reach){
+ const from=unitPosition(actor),to=unitPosition(target),a=meters(from),b=meters(to);
+ const heading=Math.atan2(a.y-b.y,a.x-b.x);
+ const radius=Math.max(.8,Math.min(reach*.82,2.8));
+ let best=null;
+ // Search around the enemy, not just on a single straight line.
+ for(const offset of [0,.45,-.45,.9,-.9,1.35,-1.35,Math.PI,2.15,-2.15]){
+  const angle=heading+offset,raw={x:b.x+Math.cos(angle)*radius,y:b.y+Math.sin(angle)*radius};
+  const p={x:clamp(raw.x,1,ARENA_METERS.width-1),y:clamp(raw.y,1,ARENA_METERS.height-1)};
+  const percentPoint=percent(p);
+  const travel=Math.hypot(a.x-p.x,a.y-p.y);
+  const collision=occupied(percentPoint,actor,target);
+  const reachError=Math.max(0,Math.hypot(p.x-b.x,p.y-b.y)-reach+.15)*200;
+  const score=travel+collision+reachError+Math.abs(offset)*.35;
+  if(!best||score<best.score)best={...percentPoint,score};
+ }
+ return best||from;
+}
+
 // All weapon reach values are measured in actual arena metres.
 const weaponReach=weaponRangeMeters;
 const worldDistance=distanceMeters;
@@ -109,10 +151,9 @@ function onAttack(actor,target,onContact=null){
   return;
  }
  // Approach to the edge of the weapon reach, with correct x AND depth movement.
- const dx=b.x-a.x,dy=b.y-a.y,len=Math.max(.001,Math.hypot(dx,dy));
- const stop=Math.max(.8,reach*.87);
- const lengthMeters=Math.max(.001,Math.hypot(dx*ARENA_METERS.width/100,dy*ARENA_METERS.height/100));
- const x=b.x-(dx/lengthMeters)*stop,y=b.y-(dy/lengthMeters)*stop;
+ const destination=approachSlot(actor,target,reach);
+ const {x,y}=destination;
+ slots.set(actor,{x,y});
  const moveMs=clamp(Math.round(Math.max(0,distance-reach)*125),280,1600),strikeMs=350;
  node.classList.add('kami-approaching');
  node.style.transition='left '+moveMs+'ms linear,top '+moveMs+'ms linear,transform .25s ease';
@@ -137,6 +178,7 @@ function onAttack(actor,target,onContact=null){
   engagements.set(actor,target);
   node.style.zIndex=String(20+depth*20+(actor.enemy?2:5)+x/20);
   node.style.transition='left .38s ease,top .38s ease,transform .26s ease';
+  slots.delete(actor);
   if(node._kamiReachSequence===seq)node._kamiReachSequence=null;
  }
 
@@ -177,6 +219,7 @@ function tick(b,dt){
  if(!b||b.ended)return;
  const field=getField();if(!field)return;
  createArena(field);
+ arenaUnits=[...b.allies,...b.enemies];
  coordinateEnemyFocus(b,dt);
  // Solamente posiciones visuales: no se teletransportan durante un ataque.
  for(const unit of [...b.allies,...b.enemies]){
@@ -292,4 +335,4 @@ css.textContent=`
 @media(prefers-reduced-motion:reduce){.kami-lane-arena .kami-fighter,.kami-lane-arena .kami-burst{animation:none!important;transition:none!important}}
 `;
 document.head.append(css);
-window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:9};
+window.KamiBattleLanes={place,tick,onAttack,onSkill,chooseTarget,laneFor,showAction,weaponReach,skillRangeMeters,worldDistance,rigState,version:10};
