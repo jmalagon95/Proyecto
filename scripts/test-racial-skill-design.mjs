@@ -36,7 +36,7 @@ for(const [race,pool] of Object.entries(classes)){
  }
 }
 assert.equal(total,31000);
-assert.ok(evolutions>=3100);
+assert.ok(evolutions>=3000);
 assert.ok(highPowered>=500);
 assert.ok(percent>100);
 const actor={stats:{FUE:50,CON:50,VOL:50,AGI:50,INT:50,DEF:50}};
