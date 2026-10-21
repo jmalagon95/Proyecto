@@ -1,4 +1,5 @@
 import {installRacialRig,tickRacialRig} from './racial-rig-renderer.js';
+import {installWoodSwordKairakh,tickWoodSwordKairakh} from './kairakh-wood-sword-skin.js';
 // Universal 2D skeletal mannequin. Race-independent anatomy and sockets.
 // Visual only; combat engine remains authoritative for hits and damage.
 export const SKELETON=Object.freeze({
@@ -53,6 +54,7 @@ export function createRigSvg({debug=false,character=null}={}){
    for(const [child,info] of Object.entries(SKELETON))if(info[0]===id)make(child);
  }
  make('root');const racial=installRacialRig(nodes,character);
+ installWoodSwordKairakh({nodes,svg},character);
  svg.setAttribute('data-rig-race',racial.race);
  return {svg,nodes,root,racial};
 }
@@ -123,6 +125,7 @@ export function tickRig(unit,dt){
    s.rotations[id]=(s.rotations[id]||0)+(target-(s.rotations[id]||0))*blend;
    node.setAttribute('transform','translate('+data[1]+' '+data[2]+') rotate('+s.rotations[id].toFixed(2)+')');
  }
+ tickWoodSwordKairakh(s);
 }
 export function rigState(unit){return rigs.get(unit)?.mode||null}
 export function rigSocket(unit,id){return rigs.get(unit)?.nodes[SOCKETS[id]]||null}
