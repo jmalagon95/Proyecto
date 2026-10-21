@@ -2,13 +2,13 @@
   {
     "id": "kairakh",
     "name": "Kairakh",
-    "tag": "Sangre y energía",
+    "tag": "Descendientes del dios salvaje de la guerra",
     "image": "/assets/races/kairakh.png",
     "emblem": "✦",
-    "description": "Guerreros de sangre y energía. Feroces, ágiles y marcados por venas de poder visibles.",
-    "history": "Linajes orgullosos forjados en regiones montañosas y salvajes. Su cultura premia la supervivencia, la voluntad y el dominio del propio cuerpo.",
+    "description": "Guerreros nacidos para el combate, descendientes de un dios de la guerra brutal y honorable. Sus ojos sobrenaturales, su único cuerno frontal y sus venas energéticas encarnan tres manifestaciones de su linaje divino.",
+    "history": "En Rhaz’Kel, Reino de Varkh, los Kairakh creen que el combate es el idioma de sus antepasados. Honran el coraje, el duelo franco, el cumplimiento de la palabra dada y la fuerza conquistada. La brutalidad no equivale a traición: derrotar a un rival con honor es sagrado, y abandonar a un compañero es vergonzoso.",
     "origin": "Rhaz’Kel · Reino de Varkh",
-    "visualRules": "Humanoide atlético de estética anime/manga oscura. EXACTAMENTE un cuerno central frontal, nunca dos. Orejas largas y puntiagudas, colmillos, uñas o garras y venas energéticas visibles bajo la piel. El cuerno, las venas y la anatomía deben leerse como rasgos biológicos de la raza, no como accesorios.",
+    "visualRules": "Humanoide atlético y poderoso, estética manga japonesa 2D oscura. EXACTAMENTE UN CUERNO central y frontal, nunca dos ni laterales: es tejido biológico sagrado, no casco ni accesorio. Orejas largas y puntiagudas, colmillos, uñas o garras, venas de energía claramente visibles bajo la piel (no toda la piel iluminada). OJOS sobrenaturales de mirada guerrera con iris o pupilas inusuales, diferenciados del ojo humano normal; cuerno y ojos son tan distintivos como las venas. Cuerpo y postura expresan ferocidad y honor, sin transformarlo en Oni ni demonio bicorne. Variantes masculina y femenina con igual anatomía racial.",
     "availableSexes": [
       "masculino",
       "femenino"
