@@ -73,16 +73,41 @@ export function simulateSurvivalMission(team,mission){
           actor.nextSkillAt=sec+Math.max(1,Number(action.cooldownSeconds||6));
           const penetration=action.results.find(e=>e.op==='penetration_pct')?.value||0;
           for(const e of action.results){
-            if(e.op==='damage'){
-              for(const target of (e.target==='area'?activeEnemies.slice(0,3):activeEnemies.slice(0,1))){
-                const dealt=Math.min(target.hp,Math.max(1,Math.round(e.amount*(1+penetration/100))));
-                target.hp-=dealt;actor.damage+=dealt;damageThisSecond+=dealt;
-                if(target.hp<=0){actor.kills++;enemiesDefeated++;killsThisSecond++;}
+            if(e.op==='damage'||e.op==='bonus_damage_pct_max_hp'){
+              const targets=e.target==='area'?activeEnemies.slice(0,3):activeEnemies.slice(0,1);
+              for(const target of targets){
+                const hits=e.op==='damage'?Math.min(25,Math.max(1,e.hits||1)):1;
+                for(let hit=0;hit<hits&&target.hp>0;hit++){
+                  let amount;
+                  if(e.op==='bonus_damage_pct_max_hp'){
+                    amount=Math.round((target.maxHp||target.hp)*Math.max(0,e.value||0)/100);
+                  }else{
+                    amount=e.amount*(1+penetration/100);
+                    amount*=Math.max(1,e.critMultiplier||1);
+                    if(e.executeBelowHpPct&&target.hp/target.maxHp*100<=e.executeBelowHpPct)
+                      amount*=Math.max(1,e.executeBonusMultiplier||1);
+                    const mitigation=enemyDefense*(1-Math.min(100,e.ignoreDefensePct||0)/100);
+                    amount=Math.max(1,Math.round(amount-mitigation));
+                    if(target.vulnerableUntil>sec)amount=Math.round(amount*(1+(target.vulnerablePct||0)/100));
+                  }
+                  const dealt=Math.min(target.hp,Math.max(1,amount));
+                  target.hp-=dealt;actor.damage+=dealt;damageThisSecond+=dealt;
+                  if(target.hp<=0){actor.kills++;enemiesDefeated++;killsThisSecond++;}
+                }
               }
-            }else if(e.op==='heal'){
+            }else if(e.op==='heal'||e.op==='shield'||e.op==='haste'){
               const target=chars.filter(x=>x.alive).sort((a,b)=>a.hp/a.maxHp-b.hp/b.maxHp)[0];
-              if(target)target.hp=Math.min(target.maxHp,target.hp+e.amount);
-            }else if(e.op==='shield')actor.shield+=e.amount;
+              if(target){
+                if(e.op==='heal')target.hp=Math.min(target.maxHp,target.hp+e.amount);
+                if(e.op==='shield')target.shield+=e.amount;
+                if(e.op==='haste')target.attackAccumulator=Math.min(2,target.attackAccumulator+e.value);
+              }
+            }else if(e.op==='vulnerability'){
+              for(const target of (e.target==='area'?activeEnemies.slice(0,3):activeEnemies.slice(0,1))){
+                target.vulnerablePct=Math.max(target.vulnerablePct||0,e.value);
+                target.vulnerableUntil=sec+Math.max(1,e.durationSeconds||1);
+              }
+            }
           }
           activeEnemies.splice(0,activeEnemies.length,...activeEnemies.filter(e=>e.hp>0));
           lines.push(actor.name+' ejecuta '+learned.name+'.');
@@ -96,8 +121,9 @@ export function simulateSurvivalMission(team,mission){
       while(a.attackAccumulator>=1&&activeEnemies.length){
         a.attackAccumulator-=1;
         const variance=.88+Math.random()*.24;
-        const dmg=Math.max(1,Math.round(a.attack.averageHit*a.bias.damage*variance-enemyDefense*.7));
+        let dmg=Math.max(1,Math.round(a.attack.averageHit*a.bias.damage*variance-enemyDefense*.7));
         const target=activeEnemies[0];
+        if(target.vulnerableUntil>sec)dmg=Math.round(dmg*(1+(target.vulnerablePct||0)/100));
         const applied=Math.min(dmg,target.hp);
         target.hp-=dmg;
         a.damage+=applied;
