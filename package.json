@@ -12,7 +12,10 @@
     "check:master": "node scripts/verify-master.mjs",
     "prepare:modular": "npm run content:build && npm run equipment:build",
     "test:combat": "node scripts/test-combat.mjs",
-    "test:sexes": "node scripts/test-sex-variants.mjs"
+    "test:sexes": "node scripts/test-sex-variants.mjs",
+    "predev": "node scripts/ensure-content.mjs",
+    "prebuild": "node scripts/ensure-content.mjs",
+    "test:skill-catalog": "node scripts/test-skill-catalog.mjs"
   },
   "dependencies": {
     "pixi.js": "^8.8.1"
