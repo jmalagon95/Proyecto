@@ -16,5 +16,12 @@ for(const pool of Object.values(classes)){
     assert.deepEqual(cls.availableSexes,SEXES,cls.name);
   }
 }
-assert.equal(count,38,'No deben desaparecer clases al añadir los sexos');
-console.log('✅ '+races.length+' razas × 2 sexos y '+count+' clases × 2 sexos');
+assert.equal(count,48,'Se esperan 8 genéricas y 40 raciales');
+for(const id of ['humanos','hombres_bestia'])assert.equal(classes[id]?.length,5,'Faltan las clases de '+id);
+const names=Object.values(classes).flat().map(c=>c.name);
+assert.equal(new Set(names).size,48,'Las 48 clases deben tener nombres únicos');
+const compatibility=JSON.parse(readFileSync(new URL('../data/equipment/weapon_class_compatibility.json',import.meta.url),'utf8'));
+for(const cls of Object.values(classes).flat())if(cls.weaponFamilyIds){
+  for(const family of cls.weaponFamilyIds)assert.ok(compatibility.families[family]?.includes(cls.name),'Arma no compatible '+cls.name+' / '+family);
+}
+console.log('✅ '+races.length+' razas disponibles y '+count+' clases catalogadas para ambos sexos');
