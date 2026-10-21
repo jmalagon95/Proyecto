@@ -113,6 +113,7 @@ function tick(b,dt,hooks={}){
     if(!u?.character||u.hp<=0)continue;
     const state=currentState(u),complete=advanceActionState(state,dt);
     if(complete){
+      window.KamiBattleLanes?.onSkill(u,primaryTarget(b),complete.skill,'skill');
       // Si cae o desaparece el último enemigo durante la ejecución, se cancela
       // sin producir daño inventado ni gastar una segunda habilidad.
       if(active(b).length&&u.hp>0){
