@@ -23,6 +23,7 @@ on:
       - 'scripts/integrate-battle-lanes.mjs'
       - 'scripts/integrate-manual-formations.mjs'
       - 'scripts/test-manual-formations.mjs'
+      - 'scripts/audit-mission-ui.mjs'
       - 'scripts/test-battle-lanes.mjs'
       - 'src/systems/combat-cooldowns.js'
       - 'src/systems/effects.js'
@@ -71,6 +72,7 @@ jobs:
           node scripts/test-master-canonical.mjs
           node scripts/test-battle-lanes.mjs
           node scripts/test-manual-formations.mjs
+          node scripts/audit-mission-ui.mjs
           node --check src/systems/battle-lanes.js
           node --check src/systems/master-racial-bridge.js
           node scripts/integrate-mission-experience.mjs
