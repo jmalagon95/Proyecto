@@ -114,52 +114,76 @@ function buildPassives(){
   return items;
 }
 
-function skillMechanics(cls,rank,r,i){
-  const p=rankIndex[rank];
-  const main=statForRole(cls.role||'');
-  const archetypes=['single','line','cone','area','self','ally','summon'];
-  const target=pick(archetypes,r);
-  const tags=[];
-  if(/Ranger|distancia|Artillero|Arquero|proyect/i.test(cls.name+' '+cls.role))tags.push('projectile');
-  else if(/Mago|Tejedor|Resonador|Conductor|Hemom/i.test(cls.name+' '+cls.role))tags.push('magic');
-  else if(/Invoc|Señor de los Cien Demonios|Colmena/i.test(cls.name+' '+cls.role))tags.push('summon');
-  else if(/Defensor|Guardián|Bastión/i.test(cls.name+' '+cls.role))tags.push('guard');
-  else tags.push(pick(['slash','pierce','impact','mobility'],r));
-  const power=Math.round((.75+p*.16+r()*.18)*100)/100;
-  const cooldown=Math.max(1,Math.round((7-p*.35+r()*2)*10)/10);
-  const effects=[{op:'damage',scalingStat:main,multiplier:power,target}];
-  if(/Apoyo|sanación|Cantor|Resonador/i.test(cls.name+' '+cls.role)&&i%4===0){
-    effects[0]={op:'heal',scalingStat:main,multiplier:Math.round((.55+p*.1)*100)/100,target:'ally'};
-    tags.push('heal');
-  } else if(/Defensor|Guardián|Bastión/i.test(cls.name+' '+cls.role)&&i%5===0){
-    effects.push({op:'shield',scalingStat:'DEF',multiplier:Math.round((.35+p*.07)*100)/100,target:'self'});
-  } else if(/Invoc|Señor de los Cien Demonios|Colmena/i.test(cls.name+' '+cls.role)&&i%6===0){
-    effects.push({op:'summon_boost_pct',value:3+p*2});
-  } else if(i%7===0){
-    effects.push({op:'penetration_pct',value:2+p*1.2});
-  }
-  return {target,tags:[...new Set(tags)],cooldownSeconds:cooldown,timeCostSeconds:Math.max(1,Math.round((2.5+p*.45+r())*10)/10),effects};
+// Skills use exactly one supported primary operation. No ally-targeted damage,
+// no enemy-targeted heals and no periodic damage in the 2D/2.5D combat catalogue.
+const roleProfiles={
+  'Taumaturgo Bélico':['magic','impact','pulse'],'Invocador de Avatares':['summon','command','impact'],
+  'Hierofante de Guerra':['heal','guard','impact'],'Quebrantador de Asedios':['impact','guard','pierce'],
+  'Exterminador Primordial':['projectile','pierce','mark'],'Monarca de la Espada Indómita':['slash','aura','impact'],
+  'Relojero de Luciérnagas':['guard','light','precision'],'Bailarín de las Siete Hojas':['slash','chain','precision'],
+  'Custodio del Último Brote':['heal','guard','nature'],'Arconte de los Gemelos Astrales':['summon','magic','guard'],
+  'Tirador de la Quietud':['projectile','precision','pierce'],'Deudor de Cien Golpes':['guard','counter','impact'],
+  'Demonio del Séptimo Impacto':['impact','combo','pierce'],'Censor de Juramentos Rotos':['counter','mark','magic'],
+  'Portador de Dos Veredictos':['slash','impact','combo'],'Monje de las Marcas Gemelas':['guard','impact','support'],
+  'Coleccionista de Últimos Suspiros':['precision','pierce','execute'],'Mayordomo del Trono Vacío':['guard','heal','support'],
+  'Confesor de Sangre Fría':['magic','counter','precision'],'Caballero del Ataúd Abierto':['guard','counter','slash'],
+  'Esgrimista de la Rosa Negra':['precision','pierce','counter'],'Matriarca de la Segunda Crisálida':['heal','guard','nature'],
+  'Martillo de Élitra':['guard','impact','counter'],'Aguijón de la Cuenta Regresiva':['pierce','combo','impact'],
+  'Obrero de las Cien Pinzas':['multi','slash','impact'],'Coronel de Antenas Partidas':['support','guard','precision'],
+  'Trenzador de Rayos Gemelos':['lightning','chain','magic'],'Latigador de Cola de Plasma':['lightning','counter','impact'],
+  'Calibrador de Frecuencia':['support','lightning','precision'],'Pararrayos Errante':['lightning','impact','counter'],
+  'Gemelo de Chispa':['summon','lightning','magic']
+};
+const racialWords={kairakh:['Guerra Ancestral','Cuerno Primordial','Furia Honorable','Mirada Divina'],
+elfos:['Luna Ancestral','Luciérnaga','Espíritu Verde','Alba Silvana'],
+kijins:['Calamidad','Dos Cuernos','Juicio Carmesí','Mandato Oni'],
+vampiros:['Rosa Negra','Nocthera','Eclipse Carmesí','Sangre Fría'],
+insectoides:['Élitro','Crisálida','Antena','Colmena'],
+reptro:['Relámpago','Escama','Cola de Plasma','Frecuencia'],
+generic:['Disciplina','Dominio','Arte','Voluntad']};
+function mainTags(cls){
+  return roleProfiles[cls.name]||(/sanación|curación|apoyo|support/i.test(cls.role)?['heal','guard','support']:
+    /invoc/i.test(cls.role)?['summon','magic','guard']:
+    /tanque|defensor/i.test(cls.role)?['guard','counter','impact']:
+    /mágico|magia|mago/i.test(cls.role)?['magic','impact','pulse']:
+    /ranger|distancia|arquero/i.test(cls.role)?['projectile','pierce','precision']:
+    ['slash','impact','pierce']);
 }
-
+function skillMechanics(cls,rank,r,i){
+  const tier=rankIndex[rank],tags=mainTags(cls);
+  const tag=tags[i%tags.length];
+  const role=String(cls.role||'').toLowerCase();
+  const healer=/sanador|healer|curación|sanación|apoyo|support/i.test(role);
+  const guard=/tanque|defensor|protección/i.test(role);
+  // Actives may heal or shield only if the class is able to support or defend.
+  const op=healer&&i%4===0?'heal':guard&&i%5===0?'shield':'damage';
+  const target=op==='heal'?'ally':op==='shield'?'self':i%6===0?'area':'single';
+  const main=cls.primaryStats?.[0]||statForRole(role);
+  const scale=op==='shield'?'DEF':op==='heal'?(cls.primaryStats?.[0]||'VOL'):main;
+  const multiplier=Math.round((0.65+tier*.11+r()*.22)*100)/100;
+  const effects=[{op,scalingStat:scale,multiplier,target}];
+  if(op==='damage'&&i%13===0)effects.push({op:'penetration_pct',value:Math.round((2+tier*.8)*10)/10});
+  return {target,tags:[tag],cooldownSeconds:Math.max(2,Math.round((9-tier*.35+r()*3)*10)/10),
+    timeCostSeconds:Math.round((2+tier*.16+r())*10)/10,effects};
+}
 function buildSkillsForClass(cls){
   const total=targets.skills.minimumPerClass;
   const items=[];
-  const cslug=slug(cls.name).slice(0,20).toUpperCase().replace(/-/g,'_');
+  const cslug=slug(cls.name).toUpperCase().replace(/-/g,'_');
+  const terms=racialWords[cls.group]||racialWords.generic;
+  const tags=mainTags(cls);
   for(let i=0;i<total;i++){
-    const r=rng('SKILL-'+cls.name+'-'+i);
+    const r=rng('SKILL-V3-'+cls.name+'-'+i);
     const rank=rankForIndex(i,targets.skills.rankCountsPerClass);
     const mech=skillMechanics(cls,rank,r,i);
     const weapon=pick(cls.weapons||['Sin arma'],r);
-    const name=`${pick(skillVerbs,r)} ${pick(skillForms,r)} · ${pick(skillEpithets,r)} · ${String(i+1).padStart(4,'0')}`;
+    const name=`${pick(skillVerbs,r)} de ${terms[(i+Math.floor(i/11))%terms.length]} · ${pick(skillEpithets,r)} · ${String(i+1).padStart(4,'0')}`;
     items.push({
-      id:`SK-${cslug}-${String(i+1).padStart(4,'0')}`,
-      name,className:cls.name,classGroup:cls.group,rank,
-      type:'active',
-      weaponRequirement:weapon,
-      mechanics:mech,
-      functional:true,
+      id:`SK-${cslug}-${String(i+1).padStart(4,'0')}`,name,className:cls.name,classGroup:cls.group,rank,
+      type:'active',weaponRequirement:weapon,mechanics:mech,designTags:tags,
+      resolverCompatible:true,implementedInAutoCombat:false,functional:true,
       learnCondition:{type:'class_mastery',className:cls.name,threshold:clamp((rankIndex[rank]+1)*10+Math.floor(r()*12),1,100)},
-      description:`Habilidad funcional exclusiva de ${cls.name}, rango ${rank}, compatible con ${weapon}.`
+      description:`Técnica activa de ${cls.name} (${rank}). ${cls.description} Requiere ${weapon}.`
     });
   }
   return items;
@@ -168,13 +192,14 @@ function buildSkillsForClass(cls){
 const passives=buildPassives();
 fs.writeFileSync(path.join(outDir,'passives.json'),JSON.stringify({schemaVersion:targets.schemaVersion,total:passives.length,items:passives}));
 
-const manifest={schemaVersion:targets.schemaVersion,generatedAt:new Date().toISOString(),passives:passives.length,classes:{}};
+const manifest={schemaVersion:targets.schemaVersion,generatedAt:new Date().toISOString(),passives:passives.length,classes:{},skillType:'active',combatEngineIntegration:'pending'};
 for(const cls of classEntries){
   const items=buildSkillsForClass(cls);
   const file=slug(cls.name)+'.json';
   fs.writeFileSync(path.join(skillsDir,file),JSON.stringify({schemaVersion:targets.schemaVersion,className:cls.name,total:items.length,items}));
-  manifest.classes[cls.name]={file:'skills/'+file,total:items.length};
+  manifest.classes[cls.name]={file:'skills/'+file,total:items.length,group:cls.group,rankCounts:targets.skills.rankCountsPerClass};
 }
 manifest.totalSkills=Object.values(manifest.classes).reduce((a,b)=>a+b.total,0);
+if(manifest.totalSkills!==classEntries.length*targets.skills.minimumPerClass)throw new Error('Mismatch skill count');
 fs.writeFileSync(path.join(outDir,'manifest.json'),JSON.stringify(manifest,null,2));
 console.log(`Generated ${manifest.passives} passives and ${manifest.totalSkills} skills across ${Object.keys(manifest.classes).length} classes.`);
