@@ -101,11 +101,13 @@ try{
  const atlasResponse=await page.request.get('http://127.0.0.1:5173/assets/battle/kairakh_star1/attack_basic_30.webp');
  assert.equal(atlasResponse.status(),200,'Falta el atlas real en el repositorio');
  const started=await page.evaluate(()=>{
-  const hero=window.eval('battle.allies[0]');
-  const foe=window.eval('battle.enemies[0]');
-  if(!hero?.node||!foe?.node)return false;
+  const heroNode=document.querySelector('#battleField .fighter:not(.enemy)');
+  const foeNode=document.querySelector('#battleField .fighter.enemy');
+  if(!heroNode||!foeNode)return false;
+  const hero={node:heroNode,character:{race:'Kairakh',currentStar:1,equipment:{},weapon:'Espada de madera'},lane:0,index:0,hp:30,maxHp:30};
+  const foe={node:foeNode,enemy:true,lane:0,index:0,hp:30,maxHp:30};
   window.KamiBattleLanes.onAttack(hero,foe);
-  return hero.node.classList.contains('kami-attack-sprite-playing');
+  return heroNode.classList.contains('kami-attack-sprite-playing');
  });
  assert.ok(started,'El ataque básico no reproduce los 30 fotogramas');
  await page.waitForTimeout(340);
