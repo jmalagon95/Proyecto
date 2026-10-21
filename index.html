@@ -854,7 +854,7 @@ function displayMissionStats(b){
     node.style.left=(u.enemy?59+(u.index%3)*12:9+(u.index%3)*12)+'%';
     node.style.top=`calc(${[16,44,71][u.lane]}% - 45px)`;
     node.innerHTML=`<div class="unit-life"><i style="width:100%"></i></div><div class="unit-body" ${u.enemy?'':`style="background-image:url('${ASSETS[u.character.race]}')"`}>${u.enemy?goblinSprite:''}</div><div class="unit-name">${esc(u.name)}</div>`;
-    field.append(node);u.node=node;return node;
+    field.append(node);u.node=node;window.KamiBattleLanes?.place(u,node,field);return node;
   }
   function addGoblin(){
      const m=battle.mission,index=battle.enemies.length;
@@ -910,6 +910,7 @@ team.forEach((c,index)=>{
     el.style.left=u.node.style.left;el.style.top=u.node.style.top;field.append(el);setTimeout(()=>el.remove(),900);
   }
   function swipe(a,b){
+    window.KamiBattleLanes?.onAttack(a,b);
     if(!a.node||!b.node)return;
     a.node.classList.remove('attacking');void a.node.offsetWidth;a.node.classList.add('attacking');setTimeout(()=>a.node?.classList.remove('attacking'),420);
     b.node.classList.add('hit');setTimeout(()=>b.node?.classList.remove('hit'),190);
@@ -938,6 +939,7 @@ Math.ceil(target.hp)+'/'+Math.ceil(target.maxHp)+' PV restantes).');
     if(target.hp<=0){if(target.enemy){battle.kills++;a.kills++;if(animate)logBattle(a.name+' derrota a un goblin.')}else if(animate)logBattle(target.name+' queda fuera de combate.');}
   }
   function closestTarget(u,all){
+    if(window.KamiBattleLanes)return window.KamiBattleLanes.chooseTarget(u,all);
     const live=all.filter(x=>x.hp>0);if(!live.length)return null;
     live.sort((a,b)=>Math.abs(a.lane-u.lane)-Math.abs(b.lane-u.lane)||a.hp-b.hp);return live[0];
   }
@@ -956,6 +958,8 @@ Math.ceil(target.hp)+'/'+Math.ceil(target.maxHp)+' PV restantes).');
         }
       });
     }
+    /* KAMI_BATTLE_25D_LANES_V1 */
+    window.KamiBattleLanes?.tick(battle,dt);
     battle.elapsed+=dt;battle.timeLeft=Math.max(0,battle.mission.duration-battle.elapsed);
     for(const a of battle.allies){if(a.hp<=0)continue;a.cooldown-=dt;
       if(battle.auto&&a.cooldown<=0){const t=closestTarget(a,battle.enemies);if(t)performAttack(a,t,animate);a.cooldown+=Math.max(.65,1.38-(a.character.stats.AGI||1)*.011)}}
@@ -986,7 +990,7 @@ if(battle.allies.every(a=>a.hp<=0)){finishBattle(false,false);return}
   }
   $('autoBtn').onclick=()=>{if(!battle)return;battle.auto=!battle.auto;$('autoBtn').textContent=battle.auto?'AUTO ✓':'MANUAL';logBattle(battle.auto?'Los héroes vuelven a atacar automáticamente.':'Modo manual: toca un goblin para atacar.')};
   $('speedBtn').onclick=()=>{if(!battle)return;battle.speed=battle.speed===1?2:battle.speed===2?3:1;state.settings.battleSpeed=battle.speed;$('speedBtn').textContent='×'+battle.speed;save()};
-  $('repositionBtn').onclick=()=>{if(!battle)return;for(const u of battle.allies){if(u.hp<=0)continue;u.lane=(u.lane+1)%3;u.node.style.top=`calc(${[16,44,71][u.lane]}% - 45px)`}logBattle('El equipo se mueve al siguiente carril.')};
+  $('repositionBtn').onclick=()=>{if(!battle)return;for(const u of battle.allies){if(u.hp<=0)continue;u.lane=(u.lane+1)%3;window.KamiBattleLanes?.place(u,u.node,field)}logBattle('El equipo se mueve al siguiente carril.')};
   $('simulateBattle').onclick=()=>{return;
     if(!battle||battle.ended)return;
     // Advance the SAME combat algorithm (no fabricated victory or fake damage).
@@ -1071,4 +1075,4 @@ let rewards=[];
   renderMissions();renderItems();renderSanctuary('invoke');
 })();
 
-</script><script type="module" src="/src/systems/master-racial-bridge.js"></script></body></html>
+</script><script type="module" src="/src/systems/master-racial-bridge.js"></script><script type="module" src="/src/systems/battle-lanes.js"></script></body></html>
