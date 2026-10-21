@@ -892,14 +892,15 @@ function displayMissionStats(b){
      $('speedBtn').hidden=true;$('speedBtn').disabled=true;
      $('autoBtn').hidden=true;$('autoBtn').disabled=true;
 team.forEach((c,index)=>{
-      let u={id:c.id,name:c.name,character:c,enemy:false,hp:Math.max(1,c.hp||Math.ceil(maxHP(c)*.2)),maxHp:maxHP(c),attack:combatStatDamage(c.stats,c.level,c.star),defense:combatStatDefense(c.stats),index,lane:index%3,cooldown:.4+index*.18,damage:0,kills:0};
+      let u={id:c.id,name:c.name,character:c,enemy:false,hp:Math.max(1,c.hp||Math.ceil(maxHP(c)*.2)),maxHp:maxHP(c),attack:combatStatDamage(c.stats,c.level,c.star),defense:combatStatDefense(c.stats),index,lane:(window.KamiBattleLanes?.laneFor(c,index)??index%3),cooldown:.4+index*.18,damage:0,kills:0};
       battle.allies.push(u);unitDom(u);
     });
     for(let i=0;i<Math.min(3,1+m.difficulty);i++)addGoblin();
     if(titleEl)titleEl.textContent=m.name+' · '+m.place;
     $('battle').querySelector('.battle-top .serif').textContent='Combate táctico · tres carriles';
     $('autoBtn').textContent='AUTO ✓';$('speedBtn').textContent='×'+battle.speed;
-    $('repositionBtn').textContent='Cambiar carriles';
+    $('repositionBtn').textContent='Posiciones automáticas';$('repositionBtn').hidden=true;
+    /* KAMI_BATTLE_ROLE_LANES_V1 */
     updateBars();logBattle('¡Comienza '+m.name+'! Tus aliados preparan sus ataques.');
     battler.last=0;battler.frameUi=0;battler.frame=requestAnimationFrame(battleFrame);
   };
