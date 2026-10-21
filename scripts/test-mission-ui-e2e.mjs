@@ -49,6 +49,21 @@ try{
  assert.equal(battleState.heroes,2,'No aparecen los dos héroes seleccionados');
  assert.ok(battleState.slots.some(x=>x.lane==='0'),'La posición trasera no se aplicó al combate');
  assert.ok(battleState.entries>=1,'La crónica no avanza segundo a segundo');
+ // Adelanta el reloj solo en esta prueba automatizada: el usuario sigue viendo
+ // 180 segundos reales sin botones de resolución instantánea.
+ await page.evaluate(()=>window.eval('stepLogic(180,false)'));
+ await page.waitForTimeout(150);
+ const results=await page.evaluate(()=>({
+  resultVisible:document.getElementById('battleResults')?.classList.contains('on'),
+  damageTab:!!document.querySelector('#kamiResultSummary [data-stats="damage"]'),
+  mvpTab:!!document.querySelector('#kamiResultSummary [data-stats="mvp"]'),
+  rows:document.querySelectorAll('#kamiResultSummary .result-row').length
+ }));
+ console.log('RESULT_CHECK',JSON.stringify(results));
+ assert.ok(results.resultVisible,'No aparecen los resultados al acabar los 180 segundos');
+ assert.ok(results.damageTab&&results.mvpTab,'Falta la clasificación de daño o pestaña MVP');
+ await page.locator('#kamiResultSummary [data-stats="mvp"]').click();
+ assert.ok(await page.locator('#kamiResultSummary .kami-mvp').count(),'No se muestra el MVP');
  assert.ok(!errors.length,'Errores de ejecución '+errors.join(' | '));
  console.log('✅ E2E Android: menú, dos héroes, ubicación manual, guardado y recuperación de formación');
 }finally{await browser.close()}
