@@ -22,6 +22,8 @@ on:
       - 'src/systems/battle-lanes.js'
       - 'scripts/remove-static-combat-art.mjs'
       - 'src/systems/mannequin-rig.js'
+      - 'src/systems/kairakh-wood-sword-skin.js'
+      - 'scripts/test-wood-sword-kairakh.mjs'
       - 'src/systems/racial-rig-profiles.js'
       - 'src/systems/racial-rig-renderer.js'
       - 'scripts/test-racial-rigs.mjs'
@@ -71,6 +73,7 @@ jobs:
           node scripts/test-combat.mjs
           node scripts/test-combat-cooldowns.mjs
           node scripts/test-mannequin-rig.mjs
+          node scripts/test-wood-sword-kairakh.mjs
           node scripts/test-kairakh-star1-anchors.mjs
           node scripts/test-racial-rigs.mjs
           node scripts/test-goblin-gacha.mjs
@@ -111,6 +114,7 @@ jobs:
           node scripts/audit-mission-ui.mjs
           node scripts/audit-lobby-ui.mjs
           node --check src/systems/mannequin-rig.js
+          node --check src/systems/kairakh-wood-sword-skin.js
           node --check src/systems/racial-rig-profiles.js
           node --check src/systems/racial-rig-renderer.js
           node --check src/systems/battle-lanes.js
