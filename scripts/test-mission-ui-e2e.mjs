@@ -34,10 +34,10 @@ try{
  await page.locator('[data-load="0"]').click();
  assert.deepEqual(await page.evaluate(()=>window.eval('state.missionPositions.test02')),{lane:0,slot:4});
  await page.locator('#startMission').click();
- await page.waitForFunction(()=>Boolean(window.KamiBattleFocus&&document.querySelector('#battleField .fighter.enemy')));
+ await page.waitForFunction(()=>Boolean(window.KamiBattleFocus&&document.getElementById('kamiFocusPanel')&&document.querySelector('#battleField .fighter.enemy:not(.ko)')));
  const focusStatus=await page.evaluate(()=>{
    document.querySelector('#battleField .fighter:not(.enemy)')?.click();
-   document.querySelector('#battleField .fighter.enemy')?.click();
+   document.querySelector('#battleField .fighter.enemy:not(.ko)')?.click();
    return {
      selected:window.KamiBattleFocus?.selected,
      assignments:[...window.KamiBattleFocus.assigned.entries()],
