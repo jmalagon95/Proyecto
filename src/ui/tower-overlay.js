@@ -42,7 +42,7 @@ function escapeText(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 function win(){const result=clearTowerFloor(progress,fight.f.floor);progress=result.state;persist();if(result.rewards){
  // Reward grant to the actual save only when successfully parsed and matching an existing resource object.
  const s=mainSave();if(s.resources&&Number.isFinite(s.resources.gold)){s.resources.gold+=result.rewards.coins;
- try{localStorage.setItem(SAVE,JSON.stringify(s))}catch{}}
+ try{localStorage.setItem(SAVE,JSON.stringify(s));localStorage.setItem('kami_v12_master',JSON.stringify(s));setTimeout(()=>location.reload(),1800)}catch{}}
  }
  by('ktLog').textContent='¡Victoria! '+(result.rewards?'Primera recompensa: '+result.rewards.coins+' monedas / '+result.rewards.xp+' XP (XP pendiente de conexión a personajes).':'Piso ya completado.');
  stop(false);render();}
