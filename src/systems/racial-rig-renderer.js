@@ -59,6 +59,18 @@ export function installRacialRig(nodes,character){
    const g=ornament(nodes,bone,'chitin');
    path(g,'M -9 -6 Q 0 -13 9 -6 M -9 2 Q 0 8 9 2',shadow,'none',2,{'data-feature':'chitin'});
   }
+ }else if(id==='goblin'){
+  path(face,'M -11 -14 L -30 -24 L -14 -4 Z M 11 -14 L 30 -24 L 14 -4 Z',shadow,tone,1.2,{'data-feature':'long_ears'});
+  path(face,'M -9 -13 L -3 -11 M 3 -11 L 9 -13','#2b1d12','none',2.2,{'data-feature':'angry_brows'});
+  el('circle',{cx:-6,cy:-9,r:1.7,fill:accent},face);el('circle',{cx:6,cy:-9,r:1.7,fill:accent},face);
+  path(face,'M 0 -9 Q 5 -3 1 0',shadow,'none',1.6,{'data-feature':'hooked_nose'});
+  path(face,'M -6 3 L -4 6 L -2 3 L 0 6 L 2 3 L 4 6 L 6 3','#efe3c0','none',1,{'data-feature':'teeth'});
+  const cloth=ornament(nodes,'root','loincloth');
+  path(cloth,'M -16 -4 L 16 -4 L 11 22 L 2 16 L -6 24 L -12 14 Z','#3b2a1c','#6b4a2c',1.2,{'data-feature':'loincloth'});
+  const club=ornament(nodes,'wristR','club');
+  path(club,'M -2 6 L 3 6 L 6 46 L -5 46 Z','#3b2a1c','#7a5a36',1.2,{'data-feature':'club'});
+  path(club,'M -8 40 Q 0 30 9 40 L 10 58 Q 0 66 -9 58 Z','#3b2a1c','#8b6a42',1.2);
+  for(const [x,y] of [[-6,46],[7,48],[0,58]])el('circle',{cx:x,cy:y,r:1.8,fill:'#bdbdb0'},club);
  }else if(id==='reptro'){
   path(face,'M -10 -17 Q -6 -21 -1 -15 Q -6 -10 -10 -17 Z M 10 -17 Q 6 -21 1 -15 Q 6 -10 10 -17 Z',shadow,accent,1,{'data-feature':'reptilian_eyes'});
   path(face,'M -12 -12 L -15 -12 M 12 -12 L 15 -12',shadow,'none',2,{'data-feature':'ear_openings'});

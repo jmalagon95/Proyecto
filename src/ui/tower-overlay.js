@@ -3,7 +3,8 @@ const KEY='kami_tower_progress_v2',SAVE='kami_v16_master';
 const el=document.createElement('div');el.id='kamiTowerOverlay';
 el.innerHTML='<div class="kt-head"><b>TORRE DE LOS 30 PISOS</b><button id="ktClose">✕</button></div><p id="ktStatus"></p><div id="ktFloorList"></div><div id="ktBattle" hidden><h3 id="ktName"></h3><div id="ktUnits"></div><p id="ktLog"></p><button id="ktRetreat">Retirarse</button></div>';
 const css=document.createElement('style');css.textContent=`
-#ktOpen{position:fixed;right:14px;bottom:18px;z-index:1999;padding:13px 20px;border:1px solid #c99c57;border-radius:12px;background:#122034;color:#f3d29b;box-shadow:0 4px 18px #000b}
+/* La Torre se abre desde el panel de accesos del lobby (window.KamiTower.open); ya no flota sobre todas las pantallas. */
+#ktOpen{display:none!important}
 #kamiTowerOverlay{display:none;position:fixed;inset:0;z-index:2000;overflow:auto;background:linear-gradient(165deg,#06101b,#182538);color:#f2e5cc;padding:18px;font-family:system-ui}
 #kamiTowerOverlay.open{display:block}
 .kt-head{display:flex;justify-content:space-between;align-items:center;font-size:19px}.kt-head button,#ktRetreat{padding:10px;background:#27364b;color:white;border:1px solid #8c795c;border-radius:8px}
@@ -61,6 +62,8 @@ function start(n){stop();const f=TOWER_FLOORS[n-1],allies=party();by('ktBattle')
 fight={f,wave:1,allies,enemies:enemies(f,1),active:true};by('ktLog').textContent='Combate automático en progreso';last=0;draw();raf=requestAnimationFrame(tick)}
 function render(){by('ktStatus').textContent='Desbloqueado hasta el piso '+progress.unlockedFloor;
 by('ktFloorList').innerHTML=TOWER_FLOORS.map(f=>`<button class="kt-floor" data-floor="${f.floor}" ${f.floor>progress.unlockedFloor?'disabled':''}><strong>${f.floor} ${progress.completed.includes(f.floor)?'✓':''}</strong>${escapeText(f.zone)}<small style="display:block">${f.boss?'JEFE: '+escapeText(f.boss):f.elite?'ÉLITE · ':'Normal · '} ${f.waves} oleadas</small></button>`).join('')}
-open.addEventListener('click',()=>{el.classList.add('open');render()});by('ktClose').addEventListener('click',()=>{stop();el.classList.remove('open')});
+function openTower(){el.classList.add('open');render()}
+open.addEventListener('click',openTower);
+window.KamiTower={open:openTower};by('ktClose').addEventListener('click',()=>{stop();el.classList.remove('open')});
 by('ktRetreat').addEventListener('click',()=>{stop();by('ktLog').textContent='Retirada'});
 by('ktFloorList').addEventListener('click',e=>{const b=e.target.closest('[data-floor]');if(b&&!b.disabled)start(Number(b.dataset.floor))});

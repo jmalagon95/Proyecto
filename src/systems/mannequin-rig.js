@@ -23,11 +23,11 @@ function tag(name,props,parent){
  if(parent)parent.appendChild(el);
  return el;
 }
-function piece(id,group){
- const ink='#61748d',pale='#e1e7f0',shadow='#bdcadb';
+function piece(id,group,debug=false){
+ const ink='#2a2430',pale='#d9c8bd',shadow='#a8958d';
  const shape=(name,attr)=>tag(name,{...attr,stroke:ink,'stroke-width':1.2},group);
  if(id==='head'){shape('ellipse',{cx:0,cy:-10,rx:12,ry:17,fill:'#eef2f6'});
-   tag('path',{d:'M 0 -25 V 4 M -8 -8 H 8',stroke:'#8ca4bf',fill:'none','stroke-width':.8},group);return}
+   if(debug)tag('path',{d:'M 0 -25 V 4 M -8 -8 H 8',stroke:'#8ca4bf',fill:'none','stroke-width':.8},group);return}
  if(id==='root'){shape('ellipse',{cx:0,cy:0,rx:17,ry:12,fill:shadow});return}
  if(id==='chest'){shape('path',{d:'M -22 -16 Q 0 -23 22 -16 L 14 17 L -14 17 Z',fill:pale});return}
  if(id==='spine'){shape('path',{d:'M -12 -2 L 12 -2 L 13 -28 L -13 -28 Z',fill:shadow});return}
@@ -38,7 +38,8 @@ function piece(id,group){
  const w=id.startsWith('hip')?11:id.startsWith('knee')?8:id.startsWith('shoulder')?8:6;
  shape('path',{d:'M '+(-w)+' -4 Q '+(-w-2)+' '+(length/2)+' '+(-w*.7)+' '+length+
     ' Q 0 '+(length+4)+' '+(w*.7)+' '+length+' Q '+(w+2)+' '+(length/2)+' '+w+' -4 Z',fill:pale});
- tag('circle',{cx:0,cy:0,r:3,fill:'#78bcff',stroke:'#275196','stroke-width':1.2},group);
+ // Los puntos azules de articulación solo se ven en modo depuración.
+ if(debug)tag('circle',{cx:0,cy:0,r:3,fill:'#78bcff',stroke:'#275196','stroke-width':1.2},group);
 }
 export function createRigSvg({debug=false,character=null}={}){
  const svg=tag('svg',{viewBox:'0 0 140 224',width:'100%',height:'100%',role:'img','aria-label':'Maniquí articulado 2D'});
@@ -48,7 +49,7 @@ export function createRigSvg({debug=false,character=null}={}){
  function make(id){
    const spec=SKELETON[id],parent=spec[0]?nodes[spec[0]]:root;
    const g=tag('g',{'data-bone':id,transform:'translate('+spec[1]+' '+spec[2]+')'},parent);
-   nodes[id]=g;piece(id,g);
+   nodes[id]=g;piece(id,g,debug);
    for(const [socket,bone] of Object.entries(SOCKETS))if(bone===id)
      tag('circle',{'data-socket':socket,cx:0,cy:0,r:debug?4:0,fill:'#ffb95d'},g);
    for(const [child,info] of Object.entries(SKELETON))if(info[0]===id)make(child);
@@ -62,18 +63,19 @@ export function sampleRigPose(mode='idle',t=0,progress=0,variant=0){
  const p=clamp(progress,0,1),a={},movement={x:0,y:0};
  const wave=Math.sin(t*10);
  if(mode==='walk'||mode==='run'){
-   const strength=mode==='run'?34:20;
-   a.hipL=wave*strength;a.hipR=-wave*strength;
-   a.kneeL=Math.max(0,-wave)*31;a.kneeR=Math.max(0,wave)*31;
-   a.shoulderL=-wave*strength*.7;a.shoulderR=wave*strength*.7;
-   a.elbowL=-12;a.elbowR=-12;a.chest=mode==='run'?8:3;
-   movement.y=Math.abs(wave)*(mode==='run'?3:1.5);
+   const run=mode==='run',strength=run?42:22,phase=t*(run?13:9),wave=Math.sin(phase);
+   a.hipL=wave*strength-(run?8:0);a.hipR=-wave*strength-(run?8:0);
+   a.kneeL=Math.max(0,-wave)*(run?58:30)+(run?10:4);a.kneeR=Math.max(0,wave)*(run?58:30)+(run?10:4);
+   a.shoulderL=-wave*strength*.8;a.shoulderR=wave*strength*.8;
+   a.elbowL=run?-70:-18;a.elbowR=run?-70:-18;
+   a.chest=run?16:4;a.spine=run?6:2;a.head=run?-10:-2;
+   movement.y=-Math.abs(Math.sin(phase))*(run?5:2)+(run?3:1);movement.x=run?4:0;
  }else if(mode==='attack'){
    const wind=p<.35?ease(p/.35):p<.65?1-ease((p-.35)/.30):0;
    const swing=p<.35?0:p<.65?ease((p-.35)/.30):1-ease((p-.65)/.35);
    a.chest=-18*wind+22*swing;a.shoulderR=-85*wind+102*swing;
    a.elbowR=-30*wind+15*swing;a.shoulderL=20*wind-10*swing;
-   a.hipL=-20*swing;a.hipR=13*swing;movement.x=12*swing;
+   a.hipL=-16-20*swing;a.kneeL=22-10*swing;a.hipR=12+13*swing;a.kneeR=14;movement.x=14*swing;movement.y=2+3*wind;
    if(variant===1){ // Segundo golpe: corte diagonal, más torsión del torso.
      a.chest+=12*swing;a.shoulderR+=-24*wind+18*swing;
      a.elbowR+=15*wind-20*swing;a.head=-8*swing;
@@ -93,8 +95,14 @@ export function sampleRigPose(mode='idle',t=0,progress=0,variant=0){
  }else if(mode==='death'){
    const k=ease(p);a.chest=-72*k;a.head=-19*k;a.hipL=38*k;a.hipR=-18*k;movement.y=28*k;
  }else{
-   const breathe=Math.sin(t*2.5);a.chest=breathe*1.5;a.head=-breathe*.8;
-   a.shoulderL=-2+breathe*1.5;a.shoulderR=2-breathe*1.5;movement.y=breathe*1.2;
+   // Pose de guardia (referencia Dragon Blaze / Epic Seven): rodillas flexionadas,
+   // torso inclinado hacia el rival y brazos arriba protegiendo el cuerpo.
+   const breathe=Math.sin(t*2.6),sway=Math.sin(t*1.3);
+   a.chest=6+breathe*1.6;a.spine=2;a.head=-4-breathe*.8;
+   a.shoulderR=-38+breathe*2.5;a.elbowR=-62+breathe*3;a.wristR=-10;
+   a.shoulderL=-18-breathe*2;a.elbowL=-74-breathe*2;a.wristL=8;
+   a.hipL=-16;a.kneeL=22;a.ankleL=-6;a.hipR=12;a.kneeR=14;a.ankleR=-4;
+   movement.y=2.5+breathe*1.1;movement.x=sway*.6;
  }
  return {angles:a,movement};
 }
@@ -103,7 +111,9 @@ export function attachRig(unit,{debug=false}={}){
  if(!unit?.node)return null;
  const host=unit.node.querySelector('.unit-body')||unit.node;
  const existing=rigs.get(unit);if(existing)return existing;
- const parts=createRigSvg({debug,character:unit.character||unit.ref||null});host.append(parts.svg);host.classList.add('kami-rig-host');
+ // Los enemigos sin raza jugable usan la anatomía de goblin.
+ const character=unit.character||unit.ref||(unit.enemy?{race:'Goblin'}:null);
+ const parts=createRigSvg({debug,character});host.append(parts.svg);host.classList.add('kami-rig-host');
  const state={...parts,mode:'idle',clock:0,time:0,duration:0,rotations:{},previousHp:unit.hp,attackCount:0,attackVariant:0};
  rigs.set(unit,state);return state;
 }
