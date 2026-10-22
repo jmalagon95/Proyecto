@@ -1,4 +1,5 @@
 import {TOWER_FLOORS,normalizeTowerProgress,clearTowerFloor,getTowerParty} from '../systems/tower-progression.js';
+import {ruleMaxHp,ruleAttack,ruleMitigate,ruleAttackInterval} from '../systems/combat-stats.js';
 const KEY='kami_tower_progress_v2',SAVE='kami_v16_master';
 const el=document.createElement('div');el.id='kamiTowerOverlay';
 el.innerHTML='<div class="kt-head"><b>TORRE DE LOS 30 PISOS</b><button id="ktClose">✕</button></div><p id="ktStatus"></p><div id="ktFloorList"></div><div id="ktBattle" hidden><h3 id="ktName"></h3><div id="ktUnits"></div><p id="ktLog"></p><button id="ktRetreat">Retirarse</button></div>';
@@ -26,16 +27,19 @@ function mainSave(){try{return JSON.parse(localStorage.getItem(SAVE))||{}}catch{
 function party(){
  const s=mainSave(),arr=getTowerParty(s.characters,s.team);
  const chosen=arr.slice(0,5);
- return chosen.map((c,i)=>{const st=c.stats||{}, hp=80+(st.CON||10)*8+(c.level||1)*6;return {
+ // Mismas reglas que el combate principal (combat-stats.js): vida, ataque, DEF y velocidad.
+ return chosen.map((c,i)=>{const st=c.stats||{},level=c.level||1,hp=ruleMaxHp(st,level);return {
  id:c.id, name:c.name||'Aventurero', side:'ally', x:16,y:15+i*16,hp,max:hp,
- damage:8+(st.FUE||10)*1.5+(c.level||1)*2,range:c.role?.match(/mago|arquero|tirador|hechic/i)?27:12,speed:12+(st.AGI||10)*0.15,cd:0,
- dodge:Math.min(.3,(st.AGI||0)*.004),block:Math.min(.25,(st.DEF||0)*.003)
+ damage:ruleAttack(st,level,c.star||c.currentStar||1,c.role),def:Number(st.DEF)||0,interval:ruleAttackInterval(st),
+ range:String(c.role||'').match(/mago|m[aá]gic|ranger|tirador|arquero|hechic|invoca/i)?27:12,speed:12+(st.AGI||0)*0.4,cd:0,
+ dodge:Math.min(.25,(4+(st.AGI||0)*.19)/100),block:0
  }});
 }
+// Enemigos de la torre: escalan por piso (enemyHPPercent / enemyAttackPercent) sobre una base de goblin ★1.
 function enemies(f,w){const boss=!!f.boss&&w===f.waves,n=boss?1:Math.min(5,2+Math.floor((f.floor-1)/10));
 return Array.from({length:n},(_,i)=>({id:'e'+i,name:boss?f.boss:f.enemies[i%f.enemies.length],side:'enemy',x:85,y:20+i*18,
- hp:(boss?360:65)*f.enemyHPPercent/100,max:(boss?360:65)*f.enemyHPPercent/100,
- damage:(boss?22:7)*f.enemyAttackPercent/100,range:boss?16:12,speed:boss?7:9,cd:0,dodge:0,block:boss?.15:0
+ hp:(boss?140:30)*f.enemyHPPercent/100,max:(boss?140:30)*f.enemyHPPercent/100,
+ damage:(boss?16:8)*f.enemyAttackPercent/100,def:boss?4:1,interval:boss?1.5:1.35,range:boss?16:12,speed:boss?7:9,cd:0,dodge:.03,block:boss?.15:0
  }))}
 function draw(){if(!fight)return;by('ktUnits').innerHTML=[...fight.allies,...fight.enemies].filter(u=>u.hp>0).map(u=>`<div class="kt-unit ${u.side}" style="left:${u.x}%;top:${u.y}%"><div>${escapeText(u.name)}</div><progress max="${u.max}" value="${u.hp}"></progress></div>`).join('');
 by('ktName').textContent=`Piso ${fight.f.floor} · ${fight.f.zone} · Oleada ${fight.wave}/${fight.f.waves}`}
@@ -53,7 +57,7 @@ const allies=fight.allies.filter(u=>u.hp>0),foes=fight.enemies.filter(u=>u.hp>0)
 for(const u of [...allies,...foes]){const enemy=(u.side==='ally'?foes:allies).filter(e=>e.hp>0).sort((a,b)=>Math.hypot(a.x-u.x,(a.y-u.y)*1.4)-Math.hypot(b.x-u.x,(b.y-u.y)*1.4))[0];if(!enemy)continue;
 const dx=enemy.x-u.x,dy=(enemy.y-u.y)*1.4,dist=Math.hypot(dx,dy);u.cd-=dt;
 if(dist>u.range){const mv=Math.min(dist-u.range,u.speed*dt);u.x+=dx/dist*mv;u.y+=dy/dist*mv/1.4}
-else if(u.cd<=0){u.cd=1.1;if(Math.random()>=enemy.dodge){let dmg=u.damage;if(Math.random()<enemy.block)dmg*=.55;enemy.hp=Math.max(0,enemy.hp-dmg)}}}
+else if(u.cd<=0){u.cd=u.interval||1.3;if(Math.random()>=enemy.dodge){let dmg=ruleMitigate(u.damage*(.85+Math.random()*.3),enemy.def||0);if(Math.random()<enemy.block)dmg*=.55;enemy.hp=Math.max(0,enemy.hp-dmg)}}}
 if(fight.allies.every(u=>u.hp<=0)){by('ktLog').textContent='Derrota: mejora tus héroes antes de reintentar.';stop(false);return}
 if(fight.enemies.every(u=>u.hp<=0)){if(fight.wave<fight.f.waves){fight.wave++;fight.enemies=enemies(fight.f,fight.wave);
 by('ktLog').textContent='¡Oleada superada!'}else{win();return}}

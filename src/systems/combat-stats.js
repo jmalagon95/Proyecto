@@ -67,3 +67,29 @@ export function damageAfterDefense(rawDamage,defense=0){
   const d=Math.max(0,Number(defense)||0);
   return Math.max(1,Math.round(Math.max(0,rawDamage)*100/(100+d)));
 }
+
+// ───────────────────────────────────────────────────────────────
+// REGLAS DE COMBATE v0.18 · fuente única
+// El maestro (index.html, KAMI_COMBAT_RULES_V18), las técnicas raciales
+// y la Torre usan exactamente estas fórmulas:
+//   VIDA     = 20 + CON·3 + 2 por nivel
+//   ATAQUE   = 10 + atributo principal·1,6 + 1,2 por nivel + 1,5 por estrella
+//              principal: FUE tanques; INT magia/apoyo/sanación/invocación/control;
+//              AGI tiradores/duelistas/precisión; FUE el resto (y goblins)
+//   DEFENSA  = daño × 100 / (100 + DEF·6)      (DEF 5 → −23 %, DEF 10 → −38 %)
+//   VELOCIDAD= un ataque cada máx(0,6 s, 1,45 − AGI·0,035)
+//   ESQUIVA/PARADA/BLOQUEO: combat-defense.js (AGI y equipo)
+// ───────────────────────────────────────────────────────────────
+export function rulePrimaryStat(stats={},role=''){
+  const r=String(role||'').toLowerCase();
+  if(/tanque|defens|protector/.test(r))return Math.max(0,Number(stats.FUE)||0);
+  if(/m[aá]gic|mago|invoca|sana|apoyo|support|control|especialista/.test(r))return Math.max(0,Number(stats.INT)||0);
+  if(/ranger|tirador|distancia|duelista|asesino|precisi/.test(r))return Math.max(0,Number(stats.AGI)||0);
+  return Math.max(0,Number(stats.FUE)||0);
+}
+export function ruleMaxHp(stats={},level=1){return Math.max(1,20+Math.max(0,Number(stats.CON)||0)*3+(Math.max(1,level)-1)*2)}
+export function ruleAttack(stats={},level=1,star=1,role=''){
+  return 10+rulePrimaryStat(stats,role)*1.6+(Math.max(1,level)-1)*1.2+(Math.max(1,star)-1)*1.5;
+}
+export function ruleMitigate(raw,defense=0){return Math.max(1,Math.round(Math.max(0,raw)*100/(100+Math.max(0,Number(defense)||0)*6)))}
+export function ruleAttackInterval(stats={}){return Math.max(.6,1.45-Math.max(0,Number(stats.AGI)||0)*.035)}

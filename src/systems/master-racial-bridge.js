@@ -1,4 +1,5 @@
 import {resolveDefense,showDefense} from './combat-defense.js';
+import {ruleMitigate} from './combat-stats.js';
 import {skillRangeMeters,weaponRangeMeters,distanceMeters,withinReach} from './combat-reach.js';
 import {racialTechniqueFor} from './racial-techniques.js';
 import {resolveSkill} from './effects.js';
@@ -49,11 +50,16 @@ function notify(hooks,a,t,title,amount,kind){
   if(!hooks?.animate)return;
   try{hooks.announce?.(a,t,title,round(amount),kind)}catch(error){console.warn('[Kami] Efecto visual:',error)}
 }
-function hit(b,a,e,amount,hooks,title){
+function hit(b,a,e,amount,hooks,title,defenseValue=e?.defense){
   if(!e||e.hp<=0)return 0;
-  const defense=resolveDefense(a,e,amount);
+  // Misma mitigación por DEF que el ataque básico (combat-stats.js · ruleMitigate).
+  const mitigated=ruleMitigate(amount,defenseValue||0);
+  const defense=resolveDefense(a,e,mitigated);
   showDefense(e,defense);
-  const actual=Math.min(round(defense.damage),e.hp);
+  let landed=defense.damage;
+  // Los escudos de los aliados absorben también el daño de técnicas.
+  if(!e.enemy&&landed>0){landed=absorb(e,landed).remaining}
+  const actual=Math.min(round(landed),e.hp);
   e.hp=Math.max(0,e.hp-actual);
   a.damage=(a.damage||0)+actual;
   if(e.hp===0){b.kills=(b.kills||0)+1;a.kills=(a.kills||0)+1}
@@ -74,7 +80,7 @@ function applyResults(b,a,skill,results,hooks){
             Math.max(1,effect.executeBonusMultiplier||1):1;
           const defense=effect.op==='damage'?(enemy.defense||0)*(1-clamp(effect.ignoreDefensePct||0,0,100)/100):0;
           const vuln=enemy.kamiVulnerableUntil>b.elapsed?1+(enemy.kamiVulnerabilityPct||0)/100:1;
-          spent+=hit(b,a,enemy,Math.max(1,(base*execution-defense)*vuln),hooks,skill.name);
+          spent+=hit(b,a,enemy,Math.max(1,base*execution*vuln),hooks,skill.name,defense);
         }
       }
     }else if(effect.op==='heal'||effect.op==='shield'||effect.op==='haste'){
@@ -100,16 +106,17 @@ function castRacial(b,u,hooks){
   if(r.racialRemaining>0)return false;
   const enemies=active(b), allies=companions(b);
   const skill=descriptor, stat=Math.max(1,Number(u.character.stats?.[skill.stat]||1));
-  const base=round(stat*.65+Number(u.character.level||1)*.45);
+  // Base de técnica = ataque básico calculado con el atributo de la técnica (combat-stats.js).
+  const base=round(10+stat*1.6+(Math.max(1,Number(u.character.level||1))-1)*1.2);
   if(skill.kind==='heal'&&!allies.some(x=>x.hp<x.maxHp))return false;
   r.racialRemaining=skillCooldown(skill,u.character);
   const foe=primaryTarget(b,u);
   if(foe&&skill.kind!=='heal'&&!['shield','guard','evade'].includes(skill.kind)&&!inSkillRange(u,foe,skill))return false;
   const weak=allies.sort((a,c)=>a.hp/a.maxHp-c.hp/c.maxHp)[0];
   if(skill.kind==='heal'){
-    const healed=Math.min(weak.maxHp-weak.hp,base*2);weak.hp+=healed;notify(hooks,u,weak,skill.name,healed,'heal');
+    const healed=Math.min(weak.maxHp-weak.hp,round(base*1.1));weak.hp+=healed;notify(hooks,u,weak,skill.name,healed,'heal');
   }else if(['shield','guard','evade'].includes(skill.kind)){
-    currentState(weak).shield+=base*2;notify(hooks,u,weak,skill.name,base*2,'shield');
+    currentState(weak).shield+=round(base*1.2);notify(hooks,u,weak,skill.name,round(base*1.2),'shield');
   }else if(skill.kind==='haste'){
     const fastest=[...allies].sort((a,c)=>c.attack-a.attack)[0];if(fastest)fastest.cooldown=Math.max(0,fastest.cooldown-.5);
     hit(b,u,foe,base,hooks,skill.name);

@@ -76,5 +76,22 @@ function initWorld(){
  setPhase(result?.classList.contains('show')?'result':'intro');
 }
 
-function init(){initWorld();refreshPortraits()}
+// ── Reparación de partidas: rol de clase ──────────────────────
+// Hasta v0.17 todos los personajes se guardaban con rol 'Guerrero' aunque fueran
+// magos, sanadores o tiradores. Se recupera el rol real de su clase.
+function repairRoles(){
+ try{
+  if(typeof state!=='object'||!Array.isArray(state?.characters)||typeof CLASSES!=='object')return;
+  let changed=false;
+  for(const c of state.characters){
+   const role=(CLASSES[c.race]||[]).find(k=>k.name===c.className)?.role;
+   if(role&&c.role!==role){c.role=role;changed=true}
+  }
+  if(changed&&typeof save==='function')save();
+ }catch(error){console.warn('[Kami] No se pudo reparar el rol de clase',error)}
+}
+function init(){initWorld();refreshPortraits();repairRoles();
+ // También tras «Continuar», que carga la partida guardada después de iniciar.
+ document.getElementById('continueGame')?.addEventListener('click',()=>setTimeout(repairRoles,0));
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();

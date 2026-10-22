@@ -161,3 +161,27 @@
 
 /* El contador de misiones ya aparece en «Siguiente misión» (Superadas: N); el chip tapaba el Portal. */
 #lobbyMissionCounter{display:none!important}
+
+/* ───────────── Secciones del lobby (v0.18) ───────────── */
+#storeModal .items .item b{color:#f3e6cb!important;font-size:11px;line-height:1.2}
+#storeModal .items .item small{color:#a9b8cc}
+#sanctModal .class-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
+#sanctModal .class-actions .btn{width:100%;min-height:48px}
+/* Torre de los 30 pisos con la misma estética que el resto del juego */
+#kamiTowerOverlay{background:radial-gradient(ellipse at 50% 0,#2a3a5c,#0a1222 55%,#060a14)!important;color:#f6eedc!important;
+ font-family:system-ui,sans-serif!important;padding:max(14px,2vw)!important}
+#kamiTowerOverlay .kt-head{max-width:1100px;margin:0 auto 6px;padding:10px 0;border-bottom:1px solid #d6b5774d}
+#kamiTowerOverlay .kt-head b{font:500 clamp(20px,3vw,30px)/1.2 Georgia,serif;letter-spacing:.04em;color:#f3d9a8}
+#kamiTowerOverlay .kt-head button,#kamiTowerOverlay #ktRetreat{min-width:44px;min-height:44px;border-radius:10px!important;
+ background:linear-gradient(160deg,#26344e,#131c2e)!important;border:1px solid #ad8758!important;color:#f3e2c4!important}
+#kamiTowerOverlay #ktStatus{max-width:1100px;margin:8px auto 12px;color:#aab6ca}
+#kamiTowerOverlay #ktFloorList,#kamiTowerOverlay #ktBattle{max-width:1100px;margin-inline:auto}
+#kamiTowerOverlay #ktFloorList{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important}
+#kamiTowerOverlay .kt-floor{border-radius:12px!important;border:1px solid #c9a76c66!important;background:linear-gradient(135deg,#192540f2,#0b1425f5)!important;
+ color:#e9dcc2!important;font-size:12px;line-height:1.35;cursor:pointer;transition:transform .15s ease,border-color .15s ease}
+#kamiTowerOverlay .kt-floor:not(:disabled):hover{transform:translateY(-2px);border-color:#f6cb83!important}
+#kamiTowerOverlay .kt-floor strong{font:600 24px/1.1 Georgia,serif!important;color:#f3d9a8;margin-bottom:4px}
+#kamiTowerOverlay .kt-floor small{color:#a9b8d0;margin-top:3px}
+#kamiTowerOverlay .kt-floor:disabled{opacity:.38;cursor:not-allowed}
+#kamiTowerOverlay #ktBattle{border-radius:16px!important;border-color:#d6b5774d!important;background:#0b1424f2!important}
+#kamiTowerOverlay #ktName{font:500 20px Georgia,serif;color:#f3d9a8;margin:0 0 10px}
